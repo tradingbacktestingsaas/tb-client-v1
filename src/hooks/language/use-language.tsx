@@ -8,14 +8,34 @@ import es from "../../../public/locales/es.json";
 
 type SupportedLanguage = "en" | "es";
 
-const messages = {
-  en,
-  es,
-};
-
 const flagMap: Record<SupportedLanguage, string> = {
   en: "🇺🇸",
   es: "🇪🇸",
+};
+
+// ✅ Flatten nested JSON to dot notation
+const flattenMessages = (
+  nestedMessages: any,
+  prefix = ""
+): Record<string, string> => {
+  return Object.keys(nestedMessages).reduce((messages, key) => {
+    const value = nestedMessages[key];
+    const prefixedKey = prefix ? `${prefix}.${key}` : key;
+
+    if (typeof value === "string") {
+      messages[prefixedKey] = value;
+    } else {
+      Object.assign(messages, flattenMessages(value, prefixedKey));
+    }
+
+    return messages;
+  }, {} as Record<string, string>);
+};
+
+// ✅ Apply flattening to both languages
+const messages = {
+  en: flattenMessages(en),
+  es: flattenMessages(es),
 };
 
 interface LanguageContextType {
@@ -24,12 +44,15 @@ interface LanguageContextType {
   flag: string;
 }
 
-const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+const LanguageContext = createContext<LanguageContextType | undefined>(
+  undefined
+);
 
-export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   const [language, setLanguageState] = useState<SupportedLanguage>("en");
 
-  // Load saved language from localStorage on mount
   useEffect(() => {
     const storedLang = localStorage.getItem("lang") as SupportedLanguage;
     if (storedLang && messages[storedLang]) {
@@ -47,6 +70,10 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     setLanguage,
     flag: flagMap[language],
   };
+
+  // ✅ Debugging step — check the loaded messages
+  console.log("Loaded language:", language);
+  console.log("Flattened messages:", messages[language]);
 
   return (
     <LanguageContext.Provider value={value}>

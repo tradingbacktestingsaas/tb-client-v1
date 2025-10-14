@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getCsrfToken } from "@/lib/csrf";
+import { getCsrfToken } from "@/lib/retrieve_csrf";
 import qs from "qs";
 
 const VERSION = "v1";
@@ -16,10 +16,51 @@ const api = axios.create({
 });
 
 // Optional: request interceptor for CSRF token
-api.interceptors.request.use((config) => {
-  const csrf = getCsrfToken();
-  if (csrf) config.headers["X-CSRF-Token"] = csrf;
-  return config;
-});
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("access_token");
+    if (token) config.headers.Authorization = `Bearer ${token}`;
+
+    const csrf = getCsrfToken();
+    if (csrf) config.headers["X-CSRF-Token"] = csrf;
+
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (!error.response) {
+      console.error("❌ Network Error:", error.message);
+    } else {
+      const { status, data } = error.response;
+
+      switch (status) {
+        case 400:
+          console.warn("Bad request:", data.message || data);
+          break;
+        case 401:
+          console.warn("Unauthorized — maybe redirect to login?");
+          // e.g. clear tokens / redirect
+          break;
+        case 403:
+          console.warn("Forbidden: You don’t have access");
+          break;
+        case 500:
+          console.error(
+            "Server error:",
+            data.message || "Internal Server Error"
+          );
+          break;
+        default:
+          console.error("API error:", status, data);
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 export default api;

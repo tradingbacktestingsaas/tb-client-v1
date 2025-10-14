@@ -1,1 +1,31 @@
-{}
+{
+  "auth": {
+    "welcome_back": "Bienvenido de nuevo",
+    "sign_in": "Iniciar sesión",
+    "sign_in_description": "Por favor, ingresa tus credenciales para continuar.",
+    "email_label": "Correo electrónico",
+    "password_label": "Contraseña",
+    "create_one": "Crear uno",
+    "submit_button": "Iniciar sesión",
+    "forgot_password": "¿Olvidaste tu contraseña?",
+    "dont_have_account": "¿No tienes una cuenta?",
+    "sign_up": "Regístrate"
+  },
+  "offerings": {
+    "title": "Lo que ofrecemos",
+    "features": {
+      "title01": "Pruebas de estrategias",
+      "desc01": "Simula y valida tus estrategias de trading utilizando datos históricos del mercado en varios marcos temporales y clases de activos.",
+      "title02": "Noticias de mercado en tiempo real",
+      "desc02": "Mantente al día con noticias financieras y actualizaciones de los mercados globales en tiempo real.",
+      "title03": "Calendarios económicos y eventos",
+      "desc03": "Consulta los próximos comunicados económicos, decisiones de bancos centrales y eventos que mueven el mercado para una mejor planificación.",
+      "title04": "Integración con MetaTrader",
+      "desc04": "Sincroniza fácilmente con MT4/MT5 para reflejar operaciones, importar datos y gestionar posiciones desde una sola plataforma.",
+      "title05": "Calculadoras de tamaño de lote y riesgo",
+      "desc05": "Calcula tamaños de lote, valores de pip y porcentajes de riesgo según tu saldo de cuenta y estrategia.",
+      "title06": "Analítica de rendimiento",
+      "desc06": "Analiza tu historial de operaciones, identifica patrones y genera informes detallados de rendimiento."
+    }
+  }
+}

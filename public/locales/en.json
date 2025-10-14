@@ -1,1 +1,31 @@
-{}
+{
+  "auth": {
+    "welcome_back": "Welcome Back",
+    "sign_in": "Sign In",
+    "sign_in_description": "Please enter your credentials to continue.",
+    "email_label": "Email",
+    "password_label": "Password",
+    "submit_button": "Sign In",
+    "create_one": "Create One",
+    "forgot_password": "Forgot your password?",
+    "dont_have_account": "Don’t have an account?",
+    "sign_up": "Sign Up"
+  },
+  "offerings": {
+    "title": "What We Offer",
+    "features": {
+      "title01": "Strategy Backtesting",
+      "desc01": "Simulate and validate your trading strategies using historical market data across various timeframes and asset classes.",
+      "title02": "Real-Time Market News",
+      "desc02": "Stay ahead with up-to-the-minute financial news and updates from global markets.",
+      "title03": "Economic Calendars & Events",
+      "desc03": "Track upcoming economic releases, central bank decisions, and market-moving events for better planning.",
+      "title04": "MetaTrader Integration",
+      "desc04": "Seamlessly sync with MT4/MT5 to mirror trades, import data, and manage positions from one platform.",
+      "title05": "Lot Size & Risk Calculators",
+      "desc05": "Calculate lot sizes, pip values, and risk percentages based on your account balance and strategy.",
+      "title06": "Performance Analytics",
+      "desc06": "Analyze your trade history, spot patterns, and generate detailed performance reports."
+    }
+  }
+}

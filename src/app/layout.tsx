@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/provider/theme/provider";
 import { LanguageProvider } from "@/hooks/language/use-language";
+import { Toaster } from "@/components/ui/sonner";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -25,13 +26,17 @@ export default function RootLayout({
       <link rel="preconnect" href="https://www.google.com" />
       <link rel="preconnect" href="https://www.gstatic.com" crossOrigin="" />
 
-      <body className={`${poppins.variable} antialiased`}>
+      <body
+        suppressHydrationWarning
+        className={`${poppins.variable} antialiased`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
+          <Toaster />
           <LanguageProvider>{children}</LanguageProvider>
         </ThemeProvider>
       </body>
