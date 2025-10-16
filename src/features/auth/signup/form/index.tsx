@@ -249,15 +249,15 @@ const SignUpForm = () => {
     if (!token) toast.error("Please verify you are not a robot.");
 
     try {
-      const newValues = { ...values, captcha: token };
+      const newValues = { ...values, captcha: token ?? "" };
       const response = await signupMutation.mutateAsync(newValues);
 
-      toast.success(response.message || "registration successful!");
-
-      if (response?.redirect) {
+      if (signupMutation.isSuccess) {
+        toast.success(response.message || "Registration successful!");
         form.reset();
         redirectSignin();
       } else {
+        toast.error(response.message || "Registration failed!");
         form.reset();
         return;
       }

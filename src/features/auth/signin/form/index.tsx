@@ -239,21 +239,19 @@ const SignInForm = () => {
         ...values,
         captcha: token,
       });
-      toast.success(response.message || "Login successful!");
-      await new Promise((res) => setTimeout(res, 1000));
 
-      if (googleSignInMutation.isSuccess) {
+      if (signInMutation.isSuccess) {
+        toast.success(response.message || "Login successful!");
+        await new Promise((res) => setTimeout(res, 1000));
         form.reset();
         redirectDashboard();
       } else {
         form.reset();
+        toast.error(response.message || "Login successful!");
         recaptchaRef.current?.reset();
       }
     } catch (e: unknown) {
-      const { message } = getErrorMessage(
-        e,
-        "Something went wrong. Try again."
-      );
+      const { message } = getErrorMessage( e,"Something went wrong. Try again.");
       console.error("❌ Submit error:", e);
       toast.error(message);
     } finally {
@@ -278,11 +276,16 @@ const SignInForm = () => {
         credential: credentialResponse.credential,
         captcha: token,
       });
-      console.log(response);
-      
-      toast.success(response.message || "Login successful!");
-      await new Promise((res) => setTimeout(res, 1000));
-      redirectDashboard();
+
+      if (googleSignInMutation.isSuccess) {
+        toast.success(response.message || "Google login successful!");
+        form.reset();
+        redirectDashboard();
+      } else {
+        form.reset();
+        toast.error(response.message || "Failed to signIn with Google.");
+        recaptchaRef.current?.reset();
+      }
     } catch (e: unknown) {
       const { message } = getErrorMessage(e, "Google sign-in failed.");
       console.error("❌ Google sign-in error:", e);

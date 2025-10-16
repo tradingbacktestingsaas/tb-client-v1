@@ -34,6 +34,7 @@ import { FormattedMessage } from "react-intl";
 import Link from "next/link";
 import { useRedirect } from "@/utils/redirect";
 import useAccountRecovery from "../hook/use-google";
+import { getErrorMessage } from "@/lib/error_handler/error";
 
 type ForgotPassFormValues = z.infer<typeof forgotPassSchema>;
 
@@ -169,34 +170,22 @@ const ForgotPasswordForm = () => {
     try {
       const response = await accountRecoveryMutation.mutateAsync(values);
 
-      toast.success(response.message || "Account Recovered!");
-      await new Promise((res) => setTimeout(res, 1000));
-
-      if (response?.redirect) {
+      if (accountRecoveryMutation.isSuccess) {
         form.reset();
+        toast.success(response.message || "Account Recovered!");
         redirect(response?.redirect);
       } else {
+        toast.error(response.message || "Account Not Recovered!");
         form.reset();
         return;
       }
     } catch (error: unknown) {
+      const { message } = getErrorMessage(
+        error,
+        "Failed to retrieve associated account."
+      );
       console.error("❌ Submit error:", error);
-      if (
-        error &&
-        typeof error === "object" &&
-        "response" in error &&
-        error.response &&
-        typeof error.response === "object" &&
-        "data" in error.response &&
-        error.response.data &&
-        typeof error.response.data === "object" &&
-        "message" in error.response.data &&
-        typeof error.response.data.message === "string"
-      ) {
-        toast.error(error.response.data.message);
-      } else {
-        toast.error("Something went wrong. Try again.");
-      }
+      toast.error(message);
     }
   });
 

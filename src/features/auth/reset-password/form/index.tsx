@@ -32,6 +32,7 @@ import { useResetPassword } from "../hook/use-signin";
 import { Spinner } from "@/components/ui/spinner";
 import { FormattedMessage } from "react-intl";
 import { useRedirect } from "@/utils/redirect";
+import { getErrorMessage } from "@/lib/error_handler/error";
 
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
@@ -160,15 +161,18 @@ const ResetPasswordForm = () => {
     const newValues = { ...values, token: token ?? "" };
     try {
       const response = await resetPassMutation.mutateAsync(newValues);
-      toast.success(response.message || "Reset Password Successful!");
-
-      form.reset();
-      redirectSignin();
-    } catch (error: ) {
-      console.error("❌ Submit error:", error);
-      const msg =
-        error?.response?.data?.message || "Something went wrong. Try again.";
-      toast.error(msg);
+      if (resetPassMutation.isSuccess) {
+        toast.success(response.message || "Reset Password Successful!");
+        form.reset();
+        redirectSignin();
+      } else {
+        toast.error(response.message || "Reset Password Failed!");
+        form.reset();
+      }
+    } catch (e: unknown) {
+      const { message } = getErrorMessage(e, "Failed to reset password.");
+      console.error("❌ reset-password error:", e);
+      toast.error(message);
     }
   });
 
