@@ -35,6 +35,7 @@ import Link from "next/link";
 import { useRedirect } from "@/utils/redirect";
 import useSignup from "../hook/use-signup";
 import RecaptchaV2, { RecaptchaV2Handle } from "@/lib/recaptcha/recaptchaV2";
+import { getErrorMessage } from "@/lib/error_handler/error";
 
 type SignUpFormValues = z.infer<typeof signupSchema>;
 
@@ -261,11 +262,10 @@ const SignUpForm = () => {
         form.reset();
         return;
       }
-    } catch (error: any) {
-      console.error("❌ Submit error:", error);
-      const msg =
-        error?.response?.data?.message || "Something went wrong. Try again.";
-      toast.error(msg);
+    } catch (e: unknown) {
+      const { message } = getErrorMessage(e, "Sign-up failed.");
+      console.error("❌ Sign-up error:", e);
+      toast.error(message);
     }
   });
 
