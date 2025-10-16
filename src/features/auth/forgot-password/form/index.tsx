@@ -1,5 +1,6 @@
 "use client";
 
+import { Control, UseFormReturn } from "react-hook-form";
 import {
   Card,
   CardContent,
@@ -78,10 +79,10 @@ const FormContent = ({
   isSubmitting,
   form,
 }: {
-  control: any;
+  control: Control<ForgotPassFormValues>;
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
-  form: any;
+  form: UseFormReturn<ForgotPassFormValues>;
 }) => {
   return (
     <CardContent>
@@ -178,11 +179,24 @@ const ForgotPasswordForm = () => {
         form.reset();
         return;
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("❌ Submit error:", error);
-      const msg =
-        error?.response?.data?.message || "Something went wrong. Try again.";
-      toast.error(msg);
+      if (
+        error &&
+        typeof error === "object" &&
+        "response" in error &&
+        error.response &&
+        typeof error.response === "object" &&
+        "data" in error.response &&
+        error.response.data &&
+        typeof error.response.data === "object" &&
+        "message" in error.response.data &&
+        typeof error.response.data.message === "string"
+      ) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Something went wrong. Try again.");
+      }
     }
   });
 

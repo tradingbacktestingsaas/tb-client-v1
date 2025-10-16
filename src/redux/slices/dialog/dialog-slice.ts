@@ -1,11 +1,15 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
+interface DialogData {
+  [key: string]: unknown;
+}
+
 interface DialogState {
   isOpen: boolean;
   formType: "trade" | "account" | "strategy" | null;
   mode: "add" | "edit";
   size: "sm" | "md" | "lg" | "xl";
-  data: any | null;
+  data: DialogData | null;
 }
 
 const initialState: DialogState = {
@@ -26,7 +30,7 @@ const dialogSlice = createSlice({
         formType: DialogState["formType"];
         mode?: DialogState["mode"];
         size?: DialogState["size"];
-        data?: any;
+        data?: DialogData;
       }>
     ) => {
       state.isOpen = true;

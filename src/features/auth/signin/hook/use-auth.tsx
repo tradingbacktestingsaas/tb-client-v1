@@ -44,11 +44,7 @@ export const useSignin = () =>
       console.error("Sign-in Error:", message);
     },
 
-    retry(failureCount) {
-      failureCount = failureCount + 1;
-      failureCount < 3;
-      return (this.retry = false);
-    },
+    retry: false,
   });
 
 export const useGoogleSignin = () => {

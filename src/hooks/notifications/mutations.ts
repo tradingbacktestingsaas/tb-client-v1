@@ -41,7 +41,7 @@ export const useBulkDeleteNotifications = () =>
     },
   });
 
-export const deleteNotificationById = () =>
+export const useDeleteNotificationById = () =>
   useMutation({
     mutationFn: async (notificationId: string) => {
       const { data } = await api.delete(
@@ -51,9 +51,11 @@ export const deleteNotificationById = () =>
     },
   });
 
-export default {
+const notificationMutations = {
   useMarkAllRead,
   useMarkReadByUserId,
   useBulkDeleteNotifications,
-  deleteNotificationById,
+  useDeleteNotificationById,
 };
+
+export default notificationMutations;

@@ -14,8 +14,12 @@ const flagMap: Record<SupportedLanguage, string> = {
 };
 
 // ✅ Flatten nested JSON to dot notation
+interface NestedMessages {
+  [key: string]: string | NestedMessages;
+}
+
 const flattenMessages = (
-  nestedMessages: any,
+  nestedMessages: NestedMessages,
   prefix = ""
 ): Record<string, string> => {
   return Object.keys(nestedMessages).reduce((messages, key) => {

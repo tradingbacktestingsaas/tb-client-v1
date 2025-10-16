@@ -1,5 +1,4 @@
 // src/services/notificationService.ts
-import axios from "axios";
 import { getSocket } from "@/lib/socket";
 import { AppDispatch } from "@/redux/store";
 import {

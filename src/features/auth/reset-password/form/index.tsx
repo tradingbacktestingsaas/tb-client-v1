@@ -24,7 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { Control, useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { resetPasswordSchema } from "./validation";
@@ -77,10 +77,10 @@ const FormContent = ({
   isSubmitting,
   form,
 }: {
-  control: any;
+  control: Control<ResetPasswordValues>;
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
-  form: any;
+  form: UseFormReturn<ResetPasswordValues>;
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -164,7 +164,7 @@ const ResetPasswordForm = () => {
 
       form.reset();
       redirectSignin();
-    } catch (error: any) {
+    } catch (error: ) {
       console.error("❌ Submit error:", error);
       const msg =
         error?.response?.data?.message || "Something went wrong. Try again.";

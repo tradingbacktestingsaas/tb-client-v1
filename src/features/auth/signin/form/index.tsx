@@ -25,7 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { Control, useForm, UseFormReturn } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { signInSchema } from "./validation";
@@ -37,6 +37,7 @@ import { useRedirect } from "@/utils/redirect";
 import { GoogleCredentialResponse, GoogleLogin } from "@react-oauth/google";
 import RecaptchaV2, { RecaptchaV2Handle } from "@/lib/recaptcha/recaptchaV2";
 import { Separator } from "@/components/ui/separator";
+import { getErrorMessage } from "@/lib/error_handler/error";
 
 type SignInFormValues = z.infer<typeof signInSchema>;
 
@@ -79,10 +80,10 @@ const FormContent = ({
   isSubmitting,
   form,
 }: {
-  control: any;
+  control: Control<SignInFormValues>;
   onSubmit: (e?: React.BaseSyntheticEvent) => Promise<void>;
   isSubmitting: boolean;
-  form: any;
+  form: UseFormReturn<SignInFormValues>;
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -214,12 +215,10 @@ const FormFooter = ({
   </CardFooter>
 );
 
-//  main form
 const SignInForm = () => {
-  const signInMutation = useSignin();
+  const signInMutation = useSignin(); // (react-query)
   const googleSignInMutation = useGoogleSignin();
   const recaptchaRef = useRef<RecaptchaV2Handle>(null);
-
   const { redirectDashboard } = useRedirect();
 
   const form = useForm<SignInFormValues>({
@@ -229,12 +228,17 @@ const SignInForm = () => {
 
   const onSubmit = form.handleSubmit(async (values) => {
     const token = await recaptchaRef.current?.execute();
-    if (!token) toast.error("Please verify you are not a robot.");
+    if (!token) {
+      toast.error("Please verify you are not a robot.");
+      recaptchaRef.current?.reset();
+      return;
+    }
 
     try {
-      const newValues = { ...values, captcha: token ? token : "" };
-      const response = await signInMutation.mutateAsync(newValues);
-
+      const response = await signInMutation.mutateAsync({
+        ...values,
+        captcha: token,
+      });
       toast.success(response.message || "Login successful!");
       await new Promise((res) => setTimeout(res, 1000));
 
@@ -244,13 +248,16 @@ const SignInForm = () => {
       } else {
         form.reset();
         recaptchaRef.current?.reset();
-        return;
       }
-    } catch (error: any) {
-      console.error("❌ Submit error:", error);
-      const msg =
-        error?.response?.data?.message || "Something went wrong. Try again.";
-      toast.error(msg);
+    } catch (e: unknown) {
+      const { message } = getErrorMessage(
+        e,
+        "Something went wrong. Try again."
+      );
+      console.error("❌ Submit error:", e);
+      toast.error(message);
+    } finally {
+      recaptchaRef.current?.reset();
     }
   });
 
@@ -260,17 +267,28 @@ const SignInForm = () => {
     if (!credentialResponse?.credential) return;
 
     const token = await recaptchaRef.current?.execute();
-    if (!token) toast.error("Please verify you are not a robot.");
+    if (!token) {
+      toast.error("Please verify you are not a robot.");
+      recaptchaRef.current?.reset();
+      return;
+    }
 
-    const values = {
-      credential: credentialResponse?.credential,
-      captcha: token ? token : "",
-    };
-    const response = await googleSignInMutation.mutateAsync(values);
-    if (googleSignInMutation.isSuccess) {
+    try {
+      const response = await googleSignInMutation.mutateAsync({
+        credential: credentialResponse.credential,
+        captcha: token,
+      });
+      console.log(response);
+      
       toast.success(response.message || "Login successful!");
       await new Promise((res) => setTimeout(res, 1000));
       redirectDashboard();
+    } catch (e: unknown) {
+      const { message } = getErrorMessage(e, "Google sign-in failed.");
+      console.error("❌ Google sign-in error:", e);
+      toast.error(message);
+    } finally {
+      recaptchaRef.current?.reset();
     }
   };
 
