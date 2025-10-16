@@ -2,14 +2,22 @@
   "auth": {
     "welcome_back": "Bienvenido de nuevo",
     "sign_in": "Iniciar sesión",
-    "sign_in_description": "Por favor, ingresa tus credenciales para continuar.",
+    "click_here": "Haz clic aquí",
+    "sign_in_description": "Por favor, introduce tus credenciales para continuar.",
+    "sign_up_description": "Registra tu cuenta y continúa para iniciar sesión.",
+    "account_recovery": "¿Recuperar cuenta?",
+    "account_recovery_description": "Ingresa el correo electrónico asociado a tu cuenta para recuperarla.",
+    "first_name_label": "Nombre",
+    "last_name_label": "Apellido",
     "email_label": "Correo electrónico",
     "password_label": "Contraseña",
-    "create_one": "Crear uno",
     "submit_button": "Iniciar sesión",
+    "create_one": "Crea una",
     "forgot_password": "¿Olvidaste tu contraseña?",
     "dont_have_account": "¿No tienes una cuenta?",
-    "sign_up": "Regístrate"
+    "have_account": "¿Ya tienes una cuenta?",
+    "sign_up": "Regístrate",
+    "find_my_account": "Encontrar mi cuenta"
   },
   "offerings": {
     "title": "Lo que ofrecemos",

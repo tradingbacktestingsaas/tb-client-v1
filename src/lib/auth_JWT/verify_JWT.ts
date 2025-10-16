@@ -6,7 +6,6 @@ const VERSION = "v1";
 const PRIVACY = "public";
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8080";
 
-
 /**
  * Verify a given JWT server-side
  * @param {string} accessToken - The JWT to be verified
@@ -14,21 +13,19 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8080";
  * @throws {Error} If the JWT is invalid
  */
 export const verifyJWTServer = async (accessToken: string) => {
+  console.log(accessToken, "CLIENT: COOKIE CHECK");
   const res = await fetch(
     `${BASE_URL}/${PRIVACY}/api/${VERSION}${apiEndpoints.auth.verifyJWT}`,
     {
-      headers: {
+      headers: {        
         "Content-Type": "application/json",
-        authorization: `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
       method: "GET",
       cache: "no-store",
       credentials: "include",
     }
   );
-  if (!res.ok) {
-    throw new Error("Failed to verify JWT");
-  }
-
+  
   return res.json();
 };

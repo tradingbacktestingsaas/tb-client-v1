@@ -7,6 +7,7 @@ import accountReducer from "./slices/trade-account/trade_account-slice";
 import uiReducer from "./slices/ui/slice";
 import strategyReducer from "./slices/strategy/slice";
 import dialogReducer from "./slices/dialog/dialog-slice";
+import notificationReducer from "./slices/notification/slice";
 
 // Persist config for redux-persist
 const persistConfig = {
@@ -23,6 +24,7 @@ const rootReducer = combineReducers({
   strategy: strategyReducer,
   dialog: dialogReducer,
   ui: uiReducer,
+  notification: notificationReducer,
 });
 
 // Configuring the Redux store
@@ -34,6 +36,7 @@ const store = configureStore({
         ignoredActions: ["persist/PERSIST"],
       },
     }),
+  devTools: process.env.NODE_ENV !== "production",
 });
 
 const persistor = persistStore(store);

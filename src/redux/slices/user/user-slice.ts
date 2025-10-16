@@ -68,7 +68,7 @@ const userSlice = createSlice({
     loginFailure(state, action: PayloadAction<string>) {
       state.user = null;
       state.error = action.payload;
-      state.isAuthenticated = false;
+      state.isAuthenticated = false
     },
     /**
      * Resets the user state to null, sets the error state to null, and sets isAuthenticated to false.

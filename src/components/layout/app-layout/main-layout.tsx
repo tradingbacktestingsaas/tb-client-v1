@@ -13,6 +13,7 @@ import { AppSidebar } from "@/components/layout/app-layout/app-sidebar";
 import ReactQueryClientProvider from "@/provider/react-query";
 import StoreProvider from "@/redux/store-provider";
 import { Div } from "@/components/ui/tags";
+import SocketBridge from "@/lib/socket/socket-bridget";
 
 const MemoizedAppSidebar = React.memo(AppSidebar);
 
@@ -29,13 +30,15 @@ export default function MainLayout({
   if (isAuthPath || isPlansRoute || isRoute) {
     return (
       <StoreProvider>
-        <GoogleOAuthProvider
-          clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}
-        >
-          <ReactQueryClientProvider>
-            <Div className="w-full h-full">{children}</Div>
-          </ReactQueryClientProvider>
-        </GoogleOAuthProvider>
+        <SocketBridge userId="f6a59e30-a62c-4d9b-8cac-52ee1a1becb1">
+          <GoogleOAuthProvider
+            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}
+          >
+            <ReactQueryClientProvider>
+              <Div className="w-full h-full">{children}</Div>
+            </ReactQueryClientProvider>
+          </GoogleOAuthProvider>
+        </SocketBridge>
       </StoreProvider>
     );
   }

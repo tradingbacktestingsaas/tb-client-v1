@@ -11,7 +11,11 @@ import {
   Link,
 } from "lucide-react";
 import { FormattedMessage } from "react-intl";
-import { Div, H1, Span } from "../ui/tags";
+import { Div, Span } from "../ui/tags";
+// import Image from "next/image";
+// import dark_logo from "../../../public/assets/logo/dark.png";
+// import light_logo from "../../../public/assets/logo/light.png";
+// import { useTheme } from "next-themes";
 
 const OfferCard = ({
   titleId,
@@ -25,11 +29,11 @@ const OfferCard = ({
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="flex justify-between items-center">
+        <CardTitle className="flex justify-between items-center text-sm">
           <FormattedMessage id={titleId} /> {icon}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="text-sm">
         <FormattedMessage id={descriptionId} />
       </CardContent>
     </Card>
@@ -37,6 +41,7 @@ const OfferCard = ({
 };
 
 const OfferSection = () => {
+  // const { theme } = useTheme();
   const features = [
     {
       titleId: "offerings.features.title01",
@@ -73,12 +78,24 @@ const OfferSection = () => {
   return (
     <Div className="max-w-5xl bg-transparent mx-auto space-y-6 mt-12">
       <Span className="text-4xl space-x-3 flex justify-center md:flex lg:flex md:text-5xl font-extrabold tracking-tight">
-        <H1 className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
+        {/* <H1 className="bg-gradient-to-r from-pink-500 to-rose-500 bg-clip-text text-transparent">
           <FormattedMessage
             id="offerings.title"
             defaultMessage="What We Offer"
           />
-        </H1>
+        </H1> */}
+        {/* <Image
+          src={
+            theme === "light"
+              ? light_logo
+              : theme === "dark"
+              ? dark_logo
+              : dark_logo
+          }
+          alt="logo"
+          height={100}
+          width={100}
+        /> */}
       </Span>
 
       <Div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 p-3 bg-transparent">

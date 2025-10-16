@@ -28,17 +28,15 @@ import { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signInSchema } from "./validation";
-import { useGoogleSignin, useSignin } from "../hook/use-auth";
+import { signupSchema } from "./validation";
 import { Spinner } from "@/components/ui/spinner";
 import { FormattedMessage } from "react-intl";
 import Link from "next/link";
 import { useRedirect } from "@/utils/redirect";
-import { GoogleCredentialResponse, GoogleLogin } from "@react-oauth/google";
+import useSignup from "../hook/use-signup";
 import RecaptchaV2, { RecaptchaV2Handle } from "@/lib/recaptcha/recaptchaV2";
-import { Separator } from "@/components/ui/separator";
 
-type SignInFormValues = z.infer<typeof signInSchema>;
+type SignUpFormValues = z.infer<typeof signupSchema>;
 
 const FormHeader = () => {
   const { theme } = useTheme();
@@ -47,12 +45,12 @@ const FormHeader = () => {
       <Div className="space-y-1">
         <CardTitle>
           <H1 className="text-4xl">
-            <FormattedMessage id="auth.sign_in" defaultMessage={"Sign In"} />
+            <FormattedMessage id="auth.sign_up" defaultMessage={"Sign Up"} />
           </H1>
         </CardTitle>
         <CardDescription className="text-md">
           <Para>
-            <FormattedMessage id="auth.sign_in_description" />
+            <FormattedMessage id="auth.sign_up_description" />
           </Para>
         </CardDescription>
       </Div>
@@ -94,6 +92,54 @@ const FormContent = ({
           className="flex flex-col gap-4"
           autoComplete="off"
         >
+          <FormField
+            control={control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage
+                    id="auth.first_name_label"
+                    defaultMessage="First Name"
+                  />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    data-cy="#first-name"
+                    placeholder="john"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  <FormattedMessage
+                    id="auth.last_name_label"
+                    defaultMessage="Last Name"
+                  />
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    type="text"
+                    data-cy="#last-name"
+                    placeholder="Doe"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={control}
             name="email"
@@ -157,7 +203,7 @@ const FormContent = ({
                 Signing In <Spinner />
               </Span>
             ) : (
-              <FormattedMessage id="auth.sign_in" defaultMessage={"Sign In"} />
+              <FormattedMessage id="auth.sign_up" defaultMessage={"Sign Up"} />
             )}
           </Button>
         </form>
@@ -167,47 +213,19 @@ const FormContent = ({
 };
 const FormFooter = ({
   recaptchaRef,
-  onGoogleSuccess,
-  onGoogleError,
 }: {
   recaptchaRef: React.RefObject<RecaptchaV2Handle | null>;
-  onGoogleSuccess: (credentialResponse: GoogleCredentialResponse) => void;
-  onGoogleError: () => void;
 }) => (
-  <CardFooter className="flex flex-col space-y-6 justify-between">
-    <Div className="flex w-full justify-between">
-      <Para className="text-sm text-gray-400">
-        <FormattedMessage
-          id="auth.dont_have_account"
-          defaultMessage={"Don't have an account?"}
-        />
-        <Link href="/auth/signup" className="underline text-indigo-400">
-          <FormattedMessage
-            id="auth.create_one"
-            defaultMessage={"Create One."}
-          />
-        </Link>
-      </Para>
-      <Para className="text-sm text-gray-400">
-        <Link
-          href="/auth/forgot-password"
-          className="underline text-indigo-400"
-        >
-          <FormattedMessage
-            id="auth.forgot_password"
-            defaultMessage={"Forgot your password?"}
-          />
-        </Link>
-      </Para>
-    </Div>
-    <Separator />
-    <Div className="flex justify-center mt-5">
-      <GoogleLogin
-        onSuccess={onGoogleSuccess}
-        onError={onGoogleError}
-        useOneTap
+  <CardFooter className="flex flex-col justify-between">
+    <Para className="text-sm text-gray-400">
+      <FormattedMessage
+        id="auth.have_account"
+        defaultMessage={"Already have an account?"}
       />
-    </Div>
+      <Link href="/auth/signin" className="underline text-indigo-400">
+        <FormattedMessage id="auth.click_here" defaultMessage={"Click here."} />
+      </Link>
+    </Para>
     <Div className="w-full flex justify-center">
       <RecaptchaV2 ref={recaptchaRef} variant="checkbox" />
     </Div>
@@ -215,16 +233,15 @@ const FormFooter = ({
 );
 
 //  main form
-const SignInForm = () => {
-  const signInMutation = useSignin();
-  const googleSignInMutation = useGoogleSignin();
+const SignUpForm = () => {
+  const signupMutation = useSignup();
   const recaptchaRef = useRef<RecaptchaV2Handle>(null);
 
-  const { redirectDashboard } = useRedirect();
+  const { redirectSignin } = useRedirect();
 
-  const form = useForm<SignInFormValues>({
-    resolver: zodResolver(signInSchema),
-    defaultValues: { email: "", password: "" },
+  const form = useForm<SignUpFormValues>({
+    resolver: zodResolver(signupSchema),
+    defaultValues: { firstName: "", lastName: "", email: "", password: "" },
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
@@ -232,18 +249,16 @@ const SignInForm = () => {
     if (!token) toast.error("Please verify you are not a robot.");
 
     try {
-      const newValues = { ...values, captcha: token ? token : "" };
-      const response = await signInMutation.mutateAsync(newValues);
+      const newValues = { ...values, captcha: token };
+      const response = await signupMutation.mutateAsync(newValues);
 
-      toast.success(response.message || "Login successful!");
-      await new Promise((res) => setTimeout(res, 1000));
+      toast.success(response.message || "registration successful!");
 
-      if (googleSignInMutation.isSuccess) {
+      if (response?.redirect) {
         form.reset();
-        redirectDashboard();
+        redirectSignin();
       } else {
         form.reset();
-        recaptchaRef.current?.reset();
         return;
       }
     } catch (error: any) {
@@ -254,30 +269,6 @@ const SignInForm = () => {
     }
   });
 
-  const onGoogleSuccess = async (
-    credentialResponse: GoogleCredentialResponse
-  ) => {
-    if (!credentialResponse?.credential) return;
-
-    const token = await recaptchaRef.current?.execute();
-    if (!token) toast.error("Please verify you are not a robot.");
-
-    const values = {
-      credential: credentialResponse?.credential,
-      captcha: token ? token : "",
-    };
-    const response = await googleSignInMutation.mutateAsync(values);
-    if (googleSignInMutation.isSuccess) {
-      toast.success(response.message || "Login successful!");
-      await new Promise((res) => setTimeout(res, 1000));
-      redirectDashboard();
-    }
-  };
-
-  const onGoogleError = () => {
-    toast.error("Something went wrong, please try again.");
-  };
-
   return (
     <Card className="w-auto lg:w-full grid">
       <FormHeader />
@@ -287,13 +278,9 @@ const SignInForm = () => {
         isSubmitting={form.formState.isSubmitting}
         form={form}
       />
-      <FormFooter
-        onGoogleSuccess={onGoogleSuccess}
-        onGoogleError={onGoogleError}
-        recaptchaRef={recaptchaRef}
-      />
+      <FormFooter recaptchaRef={recaptchaRef} />
     </Card>
   );
 };
 
-export default SignInForm;
+export default SignUpForm;

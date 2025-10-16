@@ -1,15 +1,26 @@
 {
   "auth": {
     "welcome_back": "Welcome Back",
+    "reset_password_title":"Reset Password",
+    "reset_password_description":"Enter your new password.",
+    "reset_password":"Reset Password",
+    "sign_up": "Sign Up",
+    "click_here": "Click Here",
     "sign_in": "Sign In",
     "sign_in_description": "Please enter your credentials to continue.",
+    "sign_up_description": "Register your account and continue to signin.",
+    "account_recovery": "Account Recovery",
+    "account_recovery_description": "Enter the email associated with your account to recover it.",
+    "first_name_label": "First Name",
+    "last_name_label": "Last Name",
     "email_label": "Email",
     "password_label": "Password",
     "submit_button": "Sign In",
     "create_one": "Create One",
     "forgot_password": "Forgot your password?",
     "dont_have_account": "Don’t have an account?",
-    "sign_up": "Sign Up"
+    "have_account": "Already have an account?",
+    "find_my_account": "Find my account"
   },
   "offerings": {
     "title": "What We Offer",

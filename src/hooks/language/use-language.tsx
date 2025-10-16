@@ -70,11 +70,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     setLanguage,
     flag: flagMap[language],
   };
-
-  // ✅ Debugging step — check the loaded messages
-  console.log("Loaded language:", language);
-  console.log("Flattened messages:", messages[language]);
-
+  
   return (
     <LanguageContext.Provider value={value}>
       <IntlProvider locale={language} messages={messages[language]}>

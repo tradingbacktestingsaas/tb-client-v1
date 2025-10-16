@@ -1,5 +1,4 @@
 import axios from "axios";
-import { getCsrfToken } from "@/lib/retrieve_csrf";
 import qs from "qs";
 
 const VERSION = "v1";
@@ -14,20 +13,6 @@ const api = axios.create({
     "Content-Type": "application/json",
   },
 });
-
-// Optional: request interceptor for CSRF token
-api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem("access_token");
-    if (token) config.headers.Authorization = `Bearer ${token}`;
-
-    const csrf = getCsrfToken();
-    if (csrf) config.headers["X-CSRF-Token"] = csrf;
-
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
 
 api.interceptors.response.use(
   (response) => response,

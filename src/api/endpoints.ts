@@ -1,16 +1,20 @@
+function withPagination(base: string, page: number, limit: number) {
+  return `${base}&page=${page}&limit=${limit}`;
+}
+
 export const apiEndpoints = {
   auth: {
     signin: "/auth/login",
-    google: "/auth/google-signin",
+    google: "/auth/google-login",
     logout: "/auth/logout",
-    signup: "/auth/signup",
+    signup: "/auth/register",
     verifyOtp: "/auth/verify-otp",
     resendOtp: "/auth/resend-otp",
     reset_password: "/auth/reset-password",
     change_password: "/auth/change-password",
     forgot_password: "/auth/forgot-password",
-    verifyJWT: "/auth/verify-session",
-    verify: "/auth/verify",
+    verifyJWT: "/auth/verification",
+    verify: "/auth/verification",
   },
   billing: {
     base: "/billing",
@@ -61,6 +65,19 @@ export const apiEndpoints = {
     update: (id: string) => `/strategy/update/${id}`,
     delete: (id: string) => `/strategy/delete/${id}`,
     bulkDelete: (id: string) => `/strategy/bulk-delete/${id}`,
+  },
+  notification: {
+    base: "/notification",
+    getAll: (id: string, type?: string, page?: number, limit?: number) =>
+      withPagination(
+        `/notification/get?userId=${id}&?type=${type}`,
+        page || 0,
+        limit || 8
+      ),
+    read: (id: string) => `/notification/read/${id}`,
+    readAll: (id: string) => `/notification/read-all/${id}`,
+    delete: (id: string) => `/notification/delete/${id}`,
+    deleteAll: `/notification/bulk-delete`,
   },
   dashboard: {
     base: "/dashboard",

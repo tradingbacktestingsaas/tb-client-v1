@@ -36,8 +36,8 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Toaster />
           <LanguageProvider>{children}</LanguageProvider>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
