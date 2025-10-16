@@ -1,58 +1,57 @@
-import DOMPurify from "dompurify";
+// Use this in Next.js so SSR works too:
+import DOMPurify from "isomorphic-dompurify";
 
-type Primitive = string | number | boolean | null | undefined;
-type JsonValue = Primitive | JsonObject | JsonArray;
-interface JsonObject {
+// JSON-like value types
+type JsonPrimitive = string | number | boolean | null;
+export type JsonValue = JsonPrimitive | JsonObject | JsonArray;
+export interface JsonObject {
   [key: string]: JsonValue;
 }
-
-type JsonArray = JsonValue[];
+export type JsonArray = JsonValue[];
 
 /**
- * Recursively sanitizes strings in any deeply nested object or array.
- * Other types are left untouched.
+ * Public API – keeps caller's type T but delegates recursion to a non-generic.
  */
 export function sanitizeDeep<T extends JsonValue>(input: T): T {
-  if (typeof input === "string") {
-    return DOMPurify.sanitize(input) as T;
-  }
-
-  if (Array.isArray(input)) {
-    return input.map((item) => sanitizeDeep(item)) as T;
-  }
-
-  if (typeof input === "object" && input !== null) {
-    const result: Record<string, JsonValue> = {};
-    for (const key in input) {
-      result[key] = sanitizeDeep(input[key]);
-    }
-    return result as T;
-  }
-
-  return input;
+  return sanitizeDeepValue(input) as T;
 }
 
 /**
- * Sanitizes all strings in a flat object.
- * @param {T extends Record<string, string>} input - The object to sanitize.
- * @returns {Record<keyof T, string>} - A new object with the same keys as the input and sanitized string values.
+ * Internal recursive sanitizer that only deals with JsonValue (no generics),
+ * so property access stays correctly typed.
+ */
+function sanitizeDeepValue(value: JsonValue): JsonValue {
+  if (typeof value === "string") {
+    return DOMPurify.sanitize(value);
+  }
+
+  if (Array.isArray(value)) {
+    return value.map(sanitizeDeepValue);
+  }
+
+  if (value !== null && typeof value === "object") {
+    const obj = value as JsonObject;
+    const out: JsonObject = {};
+    for (const [k, v] of Object.entries(obj)) {
+      out[k] = sanitizeDeepValue(v);
+    }
+    return out;
+  }
+
+  // number | boolean | null
+  return value;
+}
+
+/**
+ * Sanitizes all strings in a flat object (Record<string, string>).
+ * Uses a mapped type so keys/values are preserved precisely.
  */
 export const sanitizeFlatStrings = <T extends Record<string, string>>(
   input: T
-): Record<keyof T, string> => {
-  const clean: Partial<Record<keyof T, string>> = {};
-
-  for (const key in input) {
-    clean[key] = DOMPurify.sanitize(input[key]);
+): { [K in keyof T]: string } => {
+  const clean = {} as { [K in keyof T]: string };
+  for (const k of Object.keys(input) as Array<keyof T>) {
+    clean[k] = DOMPurify.sanitize(input[k]);
   }
-
-  return clean as Record<keyof T, string>;
+  return clean;
 };
-
-// export const sanitizeFlatStrings = <T extends Record<string, string>>(input: T): { [K in keyof T]: string } => {
-//   const clean = {} as { [K in keyof T]: string };
-//   for (const key in input) {
-//     clean[key] = DOMPurify.sanitize(input[key]);
-//   }
-//   return clean;
-// };
