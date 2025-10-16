@@ -283,7 +283,7 @@ const SignInForm = () => {
         redirectDashboard();
       } else {
         form.reset();
-        toast.error(response.message || "Failed to signIn with Google.");
+        toast.error(response.message || "Failed to signIn with google.");
         recaptchaRef.current?.reset();
       }
     } catch (e: unknown) {

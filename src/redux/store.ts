@@ -5,7 +5,7 @@ import storage from "redux-persist/lib/storage";
 import userReducer from "./slices/user/user-slice";
 import accountReducer from "./slices/trade-account/trade_account-slice";
 import uiReducer from "./slices/ui/slice";
-import strategyReducer from "./slices/strategy/slice";
+// import strategyReducer from "./slices/strategy/slice";
 import dialogReducer from "./slices/dialog/dialog-slice";
 import notificationReducer from "./slices/notification/slice";
 
@@ -21,7 +21,7 @@ const persistedUserReducer = persistReducer(persistConfig, userReducer);
 const rootReducer = combineReducers({
   user: persistedUserReducer,
   trade_account: accountReducer,
-  strategy: strategyReducer,
+  // strategy: strategyReducer,
   dialog: dialogReducer,
   ui: uiReducer,
   notification: notificationReducer,
