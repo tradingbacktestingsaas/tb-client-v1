@@ -48,7 +48,6 @@ export const apiEndpoints = {
   news: {
     base: "/news",
     get: "/news/get",
-    stats: "/trade/get-stats",
   },
   trade_account: {
     register: "/trade-account/register",

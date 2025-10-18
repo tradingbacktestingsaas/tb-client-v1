@@ -25,9 +25,8 @@ export default function MainLayout({
   const path = usePathname();
   const isAuthPath = path.startsWith("/auth");
   const isPlansRoute = path.startsWith("/plans");
-  const isRoute = path.startsWith("/");
 
-  if (isAuthPath || isPlansRoute || isRoute) {
+  if (isAuthPath || isPlansRoute ) {
     return (
       <StoreProvider>
         <SocketBridge userId="f6a59e30-a62c-4d9b-8cac-52ee1a1becb1">
@@ -56,7 +55,7 @@ export default function MainLayout({
               <SidebarTrigger className="-ml-1" />
               <MemoizedAppSidebar />
             </header>
-            <Div className="flex flex-1 flex-col gap-4 p-4">{children}</Div>
+            <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>
           </SidebarInset>
         </SidebarProvider>
       </ReactQueryClientProvider>

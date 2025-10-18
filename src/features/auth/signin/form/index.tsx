@@ -38,6 +38,7 @@ import { GoogleCredentialResponse, GoogleLogin } from "@react-oauth/google";
 import RecaptchaV2, { RecaptchaV2Handle } from "@/lib/recaptcha/recaptchaV2";
 import { Separator } from "@/components/ui/separator";
 import { getErrorMessage } from "@/lib/error_handler/error";
+import { loginSuccess } from "@/redux/slices/user/user-slice";
 
 type SignInFormValues = z.infer<typeof signInSchema>;
 
@@ -239,11 +240,11 @@ const SignInForm = () => {
         ...values,
         captcha: token,
       });
-
       if (signInMutation.isSuccess) {
         toast.success(response.message || "Login successful!");
         await new Promise((res) => setTimeout(res, 1000));
         form.reset();
+        loginSuccess(response?.data);
         redirectDashboard();
       } else {
         form.reset();
@@ -251,7 +252,10 @@ const SignInForm = () => {
         recaptchaRef.current?.reset();
       }
     } catch (e: unknown) {
-      const { message } = getErrorMessage( e,"Something went wrong. Try again.");
+      const { message } = getErrorMessage(
+        e,
+        "Something went wrong. Try again."
+      );
       console.error("❌ Submit error:", e);
       toast.error(message);
     } finally {
@@ -276,10 +280,10 @@ const SignInForm = () => {
         credential: credentialResponse.credential,
         captcha: token,
       });
-
       if (googleSignInMutation.isSuccess) {
         toast.success(response.message || "Google login successful!");
         form.reset();
+        loginSuccess(response?.data);
         redirectDashboard();
       } else {
         form.reset();
