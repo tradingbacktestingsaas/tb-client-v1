@@ -1,4 +1,4 @@
-const page = () => {
+const DashboardPage = () => {
   return <div></div>;
 };
-export default page;
+export default DashboardPage;

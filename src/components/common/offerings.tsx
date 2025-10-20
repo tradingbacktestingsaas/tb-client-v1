@@ -12,10 +12,6 @@ import {
 } from "lucide-react";
 import { FormattedMessage } from "react-intl";
 import { Div, Span } from "../ui/tags";
-// import Image from "next/image";
-// import dark_logo from "../../../public/assets/logo/dark.png";
-// import light_logo from "../../../public/assets/logo/light.png";
-// import { useTheme } from "next-themes";
 
 const OfferCard = ({
   titleId,

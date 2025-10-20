@@ -30,7 +30,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { Div, H5 } from "@/components/ui/tags";
 import { updateUserSchema } from "./validation";
 import { useState } from "react";
-import { useUserUpdate } from "../../hooks/mutations";
+import { useUserUpdate } from "../../hooks/use-profile";
 import { useUserInfo } from "@/helpers/use-user";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error_handler/error";
