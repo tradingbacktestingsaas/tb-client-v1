@@ -29,12 +29,12 @@ export const apiEndpoints = {
     cancelSubscription: "/billing/cancel",
   },
   users: {
-    base: "/user",
-    me: "/user/me",
-    change_password: (id: string) => `/user/change-password/${id}`,
-    update: (id: string) => `/user/update/${id}`,
-    avatar: (id: string) => `/user/avatar/upload/${id}`,
-    one: (id: string) => `/user/${id}`,
+    base: "/users",
+    me: "/users/me",
+    change_password: (id: string) => `/users/change-password/${id}`,
+    update: (id: string) => `/users/update/${id}`,
+    avatar: (id: string) => `/users/upload-avatar/${id}`,
+    one: (id: string) => `/users/${id}`,
   },
   trades: {
     create: "/trade/register",

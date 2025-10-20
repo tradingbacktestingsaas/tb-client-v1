@@ -5,19 +5,19 @@ interface DialogData {
 }
 
 interface DialogState {
-  isOpen: boolean;
-  formType: "trade" | "account" | "strategy" | null;
-  mode: "add" | "edit";
-  size: "sm" | "md" | "lg" | "xl";
-  data: DialogData | null;
+  dialogs: {
+    [key: string]: {
+      isOpen: boolean;
+      formType: "trade" | "account" | "strategy" | "change-password" | null;
+      mode: "add" | "edit";
+      size: "sm" | "md" | "lg" | "xl";
+      data: DialogData | null;
+    };
+  };
 }
 
 const initialState: DialogState = {
-  isOpen: false,
-  formType: null,
-  mode: "add",
-  size: "md",
-  data: null,
+  dialogs: {},
 };
 
 const dialogSlice = createSlice({
@@ -27,24 +27,51 @@ const dialogSlice = createSlice({
     openDialog: (
       state,
       action: PayloadAction<{
-        formType: DialogState["formType"];
-        mode?: DialogState["mode"];
-        size?: DialogState["size"];
+        key: string;
+        formType: "trade" | "account" | "strategy" | "change-password" | null;
+        mode?: "add" | "edit";
+        size?: "sm" | "md" | "lg" | "xl";
         data?: DialogData;
       }>
     ) => {
-      state.isOpen = true;
-      state.formType = action.payload.formType;
-      state.size = "md";
-      state.mode = action.payload.mode ?? "add";
-      state.data = action.payload.data ?? null;
+      // Close all dialogs first (only one open at a time)
+      Object.keys(state.dialogs).forEach((key) => {
+        state.dialogs[key].isOpen = false;
+      });
+
+      const { key, formType, mode, size, data } = action.payload;
+
+      // Open or initialize the specified dialog
+      state.dialogs[key] = {
+        isOpen: true,
+        formType: formType ?? null,
+        mode: mode ?? "add",
+        size: size ?? "md",
+        data: data ?? null,
+      };
     },
-    closeDialog: (state) => {
-      state.isOpen = false;
-      state.data = null;
+    closeDialog: (state, action: PayloadAction<string>) => {
+      const key = action.payload;
+      if (state.dialogs[key]) {
+        state.dialogs[key].isOpen = false;
+      }
+    },
+    toggleDialog: (state, action: PayloadAction<string>) => {
+      const key = action.payload;
+      if (!state.dialogs[key]) {
+        state.dialogs[key] = {
+          isOpen: true,
+          formType: null,
+          mode: "add",
+          size: "md",
+          data: null,
+        };
+      } else {
+        state.dialogs[key].isOpen = !state.dialogs[key].isOpen;
+      }
     },
   },
 });
 
-export const { openDialog, closeDialog } = dialogSlice.actions;
+export const { openDialog, closeDialog, toggleDialog } = dialogSlice.actions;
 export default dialogSlice.reducer;

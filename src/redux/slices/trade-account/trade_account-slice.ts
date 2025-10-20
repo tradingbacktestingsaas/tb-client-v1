@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface AccountState {
-  current: string | null;
+  current: { accountId: string | null; tradesyncId: string | null } | null;
   accounts: string[] | null;
   error: string | null;
   isLoading: boolean;
@@ -22,12 +22,12 @@ const accountSlice = createSlice({
     setSelectedAccount: (
       state,
       action: PayloadAction<{
-        id: string;
+        current: { accountId: string; tradesyncId: string | null };
         isLoading: boolean;
         accounts: string[];
       }>
     ) => {
-      state.current = action.payload.id;
+      state.current = action.payload.current;
       state.accounts = action.payload.accounts;
       state.isLoading = action.payload.isLoading;
       state.error = null;
@@ -44,8 +44,11 @@ const accountSlice = createSlice({
         state.isAuthenticated = isAuthenticated;
     },
 
-    activeAccount(state, action: PayloadAction<{ id: string }>) {
-      state.current = action.payload.id;
+    activeAccount(
+      state,
+      action: PayloadAction<{ accountId: string; tradesyncId: string | null }>
+    ) {
+      state.current = action.payload;
       state.error = null;
       state.isLoading = false;
       state.isAuthenticated = true;

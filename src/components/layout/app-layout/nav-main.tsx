@@ -18,16 +18,19 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar";
+import { FormattedMessage } from "react-intl";
 
 export function NavMain({
   items,
 }: {
   items: {
+    id: string;
     title: string;
     url: string;
     icon: LucideIcon;
     isActive?: boolean;
     items?: {
+      id: string;
       title: string;
       url: string;
     }[];
@@ -43,7 +46,7 @@ export function NavMain({
               <SidebarMenuButton asChild tooltip={item.title}>
                 <a href={item.url}>
                   <item.icon />
-                  <span>{item.title}</span>
+                  <FormattedMessage id={item.id} />
                 </a>
               </SidebarMenuButton>
               {item.items?.length ? (
@@ -60,7 +63,7 @@ export function NavMain({
                         <SidebarMenuSubItem key={subItem.title}>
                           <SidebarMenuSubButton asChild>
                             <a href={subItem.url}>
-                              <span>{subItem.title}</span>
+                              <FormattedMessage id={subItem.id} />
                             </a>
                           </SidebarMenuSubButton>
                         </SidebarMenuSubItem>
