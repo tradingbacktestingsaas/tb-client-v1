@@ -3,6 +3,7 @@ import React, { memo } from "react";
 interface CommonPageProps {
   children?: React.ReactNode;
   className?: string;
+  onClick?: () => void;
 }
 
 // Base components
@@ -12,7 +13,11 @@ const SectionBase = ({ children, className = "" }: CommonPageProps) => (
   </section>
 );
 
-const DivBase = ({ children, className = "" }: CommonPageProps) => (
+const DivBase = ({
+  children,
+  className = "",
+  onClick = null,
+}: CommonPageProps) => (
   <div suppressHydrationWarning className={`${className}`}>
     {children}
   </div>
@@ -60,6 +65,12 @@ const H4Base = ({ children, className = "" }: CommonPageProps) => (
   </h3>
 );
 
+const H5Base = ({ children, className = "" }: CommonPageProps) => (
+  <h5 suppressHydrationWarning className={`${className}`}>
+    {children}
+  </h5>
+);
+
 const TitleBase = ({ children, className = "" }: CommonPageProps) => (
   <title suppressHydrationWarning className={`${className}`}>
     {children}
@@ -83,4 +94,5 @@ export const H1 = memo(H1Base);
 export const H2 = memo(H2Base);
 export const H3 = memo(H3Base);
 export const H4 = memo(H4Base);
+export const H5 = memo(H5Base);
 export const Para = memo(ParaBase);

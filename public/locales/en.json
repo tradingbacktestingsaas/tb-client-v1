@@ -1,9 +1,9 @@
 {
   "auth": {
     "welcome_back": "Welcome Back",
-    "reset_password_title":"Reset Password",
-    "reset_password_description":"Enter your new password.",
-    "reset_password":"Reset Password",
+    "reset_password_title": "Reset Password",
+    "reset_password_description": "Enter your new password.",
+    "reset_password": "Reset Password",
     "sign_up": "Sign Up",
     "click_here": "Click Here",
     "sign_in": "Sign In",
@@ -37,6 +37,70 @@
       "desc05": "Calculate lot sizes, pip values, and risk percentages based on your account balance and strategy.",
       "title06": "Performance Analytics",
       "desc06": "Analyze your trade history, spot patterns, and generate detailed performance reports."
+    }
+  },
+  "profile": {
+    "account": {
+      "title": "Account Information",
+      "desc": "Manage your general account information"
+    },
+    "language": {
+      "title": "Language",
+      "language_select_title": "Select Language",
+      "language_select_description": "Select your preffered language."
+    },
+    "password": {
+      "title": "Password & Security",
+      "password_security_note": "Make sure that your password is secure. Do not change if not necessary.",
+      "change_password": "Change Password"
+    },
+    "avatar": {
+      "title": "Profile Picture",
+      "profile_picture_desc": "Upload your profile picture",
+      "upload": "Upload"
+    }
+  },
+  "menu": {
+    "platform": "Platform",
+    "dashboard": "Dashboard",
+    "operations": "Operations",
+    "strategy": "Strategy",
+    "tradingJournal": "Trading Journal",
+    "tools": "Tools",
+    "plans": "Plans",
+    "billing": "Billing",
+    "tradeAccount": "Trade Account",
+    "settings": {
+      "title": "Settings",
+      "billing": "Billing",
+      "tradeAccount": "Trade Account"
+    }
+  },
+  "form": {
+    "change_password": {
+      "title": "Change Password",
+      "desc": "Make sure to change your password to a stronger",
+      "button": "Change",
+      "loading": "Changing..."
+    },
+    "update_profile": {
+      "title": "Basic Information",
+      "labels": {
+        "firstName": "First Name",
+        "lastName": "Last Name",
+        "email": "Email Address"
+      },
+      "buttons": {
+        "save_changes": "Save Changes",
+        "loading": "Saving..."
+      }
+    }
+  },
+  "component": {
+    "upgrade_stripe": {
+      "upgradeTo": "Upgrade To",
+      "title": "Upgrade Now!",
+      "desc": "Unlock exclusive features and benefits with our premium plan. Enjoy an enhanced user experience, priority support, and more."
     }
   }
 }

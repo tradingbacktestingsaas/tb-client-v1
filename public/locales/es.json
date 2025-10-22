@@ -35,5 +35,64 @@
       "title06": "Analítica de rendimiento",
       "desc06": "Analiza tu historial de operaciones, identifica patrones y genera informes detallados de rendimiento."
     }
+  },
+  "profile": {
+    "account": {
+      "title": "Información de la cuenta",
+      "desc": "Administra la información general de tu cuenta"
+    },
+    "language": {
+      "title": "Idioma",
+      "language_select_title": "Seleccionar idioma",
+      "language_select_description": "Selecciona tu idioma preferido."
+    },
+    "password": {
+      "title": "Contraseña y seguridad",
+      "password_security_note": "Asegúrate de que tu contraseña sea segura. No la cambies si no es necesario.",
+      "change_password": "Cambiar contraseña"
+    },
+    "avatar": {
+      "title": "Foto de perfil",
+      "profile_picture_desc": "Sube tu foto de perfil",
+      "upload": "Subir"
+    }
+  },
+  "menu": {
+    "platform": "Plataforma",
+    "dashboard": "Tablero",
+    "operations": "Operaciones",
+    "strategy": "Estrategia",
+    "tradingJournal": "Diario de Trading",
+    "tools": "Herramientas",
+    "plans": "Planes",
+    "settings": {
+      "title": "Configuraciones",
+      "billing": "Facturación",
+      "tradeAccount": "Cuenta de Trading"
+    }
+  },
+  "form": {
+    "change_password": {
+      "title": "Cambiar Contraseña",
+      "desc": "Por tu seguridad, te recomendamos actualizar tu contraseña con regularidad y elegir una que sea segura.",
+      "button": "Cambiar",
+      "loading": "Cambiando..."
+    },
+    "update_profile": {
+      "title": "Información Básica",
+      "labels": {
+        "firstName": "Nombre",
+        "lastName": "Apellido",
+        "email": "Correo Electrónico"
+      },
+      "buttons": { "save_changes": "Guardar Cambios", "loading": "Ahorro.." }
+    }
+  },
+  "component": {
+    "upgrade_stripe": {
+      "upgradeTo": "Actualizar a",
+      "title": "¡Actualiza ahora!",
+      "desc": "Desbloquea funciones y beneficios exclusivos con nuestro plan premium. Disfruta de una experiencia mejorada, soporte prioritario y mucho más."
+    }
   }
 }

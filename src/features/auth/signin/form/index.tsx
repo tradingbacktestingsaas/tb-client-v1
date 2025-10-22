@@ -38,6 +38,8 @@ import { GoogleCredentialResponse, GoogleLogin } from "@react-oauth/google";
 import RecaptchaV2, { RecaptchaV2Handle } from "@/lib/recaptcha/recaptchaV2";
 import { Separator } from "@/components/ui/separator";
 import { getErrorMessage } from "@/lib/error_handler/error";
+import { loginSuccess } from "@/redux/slices/user/user-slice";
+import { useAppDispatch } from "@/redux/hook";
 
 type SignInFormValues = z.infer<typeof signInSchema>;
 
@@ -131,7 +133,7 @@ const FormContent = ({
                   />
                 </FormLabel>
                 <FormControl>
-                  <div className="relative">
+                  <Div className="relative">
                     <Input
                       data-cy="#password"
                       type={showPassword ? "text" : "password"}
@@ -145,7 +147,7 @@ const FormContent = ({
                     >
                       {showPassword ? "Hide" : "Show"}
                     </button>
-                  </div>
+                  </Div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -216,7 +218,8 @@ const FormFooter = ({
 );
 
 const SignInForm = () => {
-  const signInMutation = useSignin(); // (react-query)
+  const disptach = useAppDispatch();
+  const signInMutation = useSignin();
   const googleSignInMutation = useGoogleSignin();
   const recaptchaRef = useRef<RecaptchaV2Handle>(null);
   const { redirectDashboard } = useRedirect();
@@ -235,23 +238,36 @@ const SignInForm = () => {
     }
 
     try {
-      const response = await signInMutation.mutateAsync({
-        ...values,
-        captcha: token,
-      });
-
-      if (signInMutation.isSuccess) {
-        toast.success(response.message || "Login successful!");
-        await new Promise((res) => setTimeout(res, 1000));
-        form.reset();
-        redirectDashboard();
-      } else {
-        form.reset();
-        toast.error(response.message || "Login successful!");
-        recaptchaRef.current?.reset();
-      }
+      await signInMutation.mutateAsync(
+        {
+          ...values,
+          captcha: token,
+        },
+        {
+          onSuccess: (data) => {
+            disptach(loginSuccess(data?.data));
+            form.reset();
+          },
+          onError: (e) => {
+            const { message } = getErrorMessage(
+              e,
+              "Something went wrong. Try again."
+            );
+            console.error("❌ Submit error:", e);
+            toast.error(message);
+            form.reset();
+          },
+          onSettled: (data) => {
+            toast.info(data?.message || "Try again!");
+            form.reset();
+          },
+        }
+      );
     } catch (e: unknown) {
-      const { message } = getErrorMessage( e,"Something went wrong. Try again.");
+      const { message } = getErrorMessage(
+        e,
+        "Something went wrong. Try again."
+      );
       console.error("❌ Submit error:", e);
       toast.error(message);
     } finally {
@@ -276,10 +292,10 @@ const SignInForm = () => {
         credential: credentialResponse.credential,
         captcha: token,
       });
-
       if (googleSignInMutation.isSuccess) {
         toast.success(response.message || "Google login successful!");
         form.reset();
+        disptach(loginSuccess(response.data));
         redirectDashboard();
       } else {
         form.reset();

@@ -14,30 +14,34 @@ import ReactQueryClientProvider from "@/provider/react-query";
 import StoreProvider from "@/redux/store-provider";
 import { Div } from "@/components/ui/tags";
 import SocketBridge from "@/lib/socket/socket-bridget";
-
-const MemoizedAppSidebar = React.memo(AppSidebar);
+import AppHeader from "./app-header";
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 
 export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pubKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  const stripePromise = loadStripe(pubKey);
   const path = usePathname();
   const isAuthPath = path.startsWith("/auth");
   const isPlansRoute = path.startsWith("/plans");
-  const isRoute = path.startsWith("/");
 
-  if (isAuthPath || isPlansRoute || isRoute) {
+  if (isAuthPath || isPlansRoute) {
     return (
       <StoreProvider>
         <SocketBridge userId="f6a59e30-a62c-4d9b-8cac-52ee1a1becb1">
-          <GoogleOAuthProvider
-            clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}
-          >
-            <ReactQueryClientProvider>
-              <Div className="w-full h-full">{children}</Div>
-            </ReactQueryClientProvider>
-          </GoogleOAuthProvider>
+          <Elements stripe={stripePromise}>
+            <GoogleOAuthProvider
+              clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID as string}
+            >
+              <ReactQueryClientProvider>
+                <Div className="w-full h-full">{children}</Div>
+              </ReactQueryClientProvider>
+            </GoogleOAuthProvider>
+          </Elements>
         </SocketBridge>
       </StoreProvider>
     );
@@ -45,21 +49,21 @@ export default function MainLayout({
 
   return (
     <StoreProvider>
-      <ReactQueryClientProvider>
-        <SidebarProvider>
-          <AppSidebar />
-          <SidebarInset>
-            <header
-              suppressHydrationWarning
-              className="bg-card sticky z-50 top-0 flex h-12 py-1 shrink-0 items-center gap-2 border-b px-4"
-            >
-              <SidebarTrigger className="-ml-1" />
-              <MemoizedAppSidebar />
-            </header>
-            <Div className="flex flex-1 flex-col gap-4 p-4">{children}</Div>
-          </SidebarInset>
-        </SidebarProvider>
-      </ReactQueryClientProvider>
+      <SocketBridge userId="f6a59e30-a62c-4d9b-8cac-52ee1a1becb1">
+        <Elements stripe={stripePromise}>
+          <ReactQueryClientProvider>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <AppHeader />
+                <main className="flex flex-1 flex-col gap-4 p-4">
+                  {children}
+                </main>
+              </SidebarInset>
+            </SidebarProvider>
+          </ReactQueryClientProvider>
+        </Elements>
+      </SocketBridge>
     </StoreProvider>
   );
 }

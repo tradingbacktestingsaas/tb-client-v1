@@ -35,8 +35,8 @@ function formatTs(ts?: number) {
 }
 
 export default function NotificationsBell() {
-  const userId = "f6a59e30-a62c-4d9b-8cac-52ee1a1becb1"; // or from Redux/Auth
   const dispatch = useAppDispatch();
+  const userId = "f6a59e30-a62c-4d9b-8cac-52ee1a1becb1"; // or from Redux/Auth
   const { items, unread, ids } = useNotifications(userId);
   const markAllReadNotifications = useMarkAllRead();
   const bulkDeleteNotifications = useBulkDeleteNotifications();
@@ -72,10 +72,10 @@ export default function NotificationsBell() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="relative rounded-2xl">
+        <Button variant="outline" className="relative rounded-lg">
           <Bell className="h-4 w-4" />
           {unread > 0 && (
-            <Span className="absolute -top-1 -right-1 text-[10px] leading-none px-1.5 py-0.5 rounded-full bg-foreground text-background">
+            <Span className="absolute -top-1 -right-1 text-[10px] leading-none px-1.5 py-0.5 rounded-md bg-foreground text-background">
               {unread}
             </Span>
           )}
