@@ -60,6 +60,7 @@
       "upload": "Upload"
     }
   },
+
   "menu": {
     "platform": "Platform",
     "dashboard": "Dashboard",
@@ -74,6 +75,17 @@
       "title": "Settings",
       "billing": "Billing",
       "tradeAccount": "Trade Account"
+    }
+  },
+  "notifications": {
+    "component": {
+      "is_read": "New",
+      "title": "Notifications",
+      "description": "Stay updated with the latest alerts, offers, and messages.",
+      "mark_all_read": "Mark all as read",
+      "clear_all": "Clear all",
+      "no_noti": "No Notifications",
+      "end_noti": "You’ve reached the end."
     }
   },
   "form": {

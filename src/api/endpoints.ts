@@ -1,5 +1,5 @@
-function withPagination(base: string, page: number, limit: number) {
-  return `${base}&page=${page}&limit=${limit}`;
+function withPagination(base: string, offset: number, limit: number) {
+  return `${base}&offset=${offset}&limit=${limit}`;
 }
 
 export const apiEndpoints = {
@@ -67,16 +67,27 @@ export const apiEndpoints = {
   },
   notification: {
     base: "/notification",
-    getAll: (id: string, type?: string, page?: number, limit?: number) =>
+    getAll: ({
+      id,
+      offset,
+      limit,
+      type,
+    }: {
+      id: string;
+      type?: string;
+      offset?: number;
+      limit?: number;
+    }) =>
       withPagination(
-        `/notification/get?userId=${id}&?type=${type}`,
-        page || 0,
+        `/notification/get?userId=${id}&?type=${type || ""}`,
+        offset || 0,
         limit || 8
       ),
     read: (id: string) => `/notification/read/${id}`,
     readAll: (id: string) => `/notification/read-all/${id}`,
     delete: (id: string) => `/notification/delete/${id}`,
-    deleteAll: `/notification/bulk-delete`,
+    bulkDelete: `/notification/bulk-delete`,
+    deleteAll: `/notification/delete-all`,
   },
   dashboard: {
     base: "/dashboard",

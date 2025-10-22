@@ -27,8 +27,13 @@ export const mapTypeToLevel = (type?: string): Level => {
   }
 };
 
-type State = { items: Notification[]; unread: number; ids: string[] };
-const initialState: State = { items: [], unread: 0, ids: [] };
+type State = {
+  items: Notification[];
+  unread: number;
+  ids: string[];
+  isLoading: boolean;
+};
+const initialState: State = { items: [], unread: 0, ids: [], isLoading: true };
 
 const slice = createSlice({
   name: "notifications",
@@ -43,6 +48,7 @@ const slice = createSlice({
       s.items = a.payload;
       s.unread = s.items.filter((n) => !n.is_read).length;
       s.ids = s.items.map((n) => n.id);
+      s.isLoading = false;
     },
     notificationReceived: (s, a: PayloadAction<Notification>) => {
       s.items.unshift({
@@ -70,12 +76,13 @@ const slice = createSlice({
         return n;
       });
       s.unread = Math.max(0, s.unread - changed);
-      s.ids = s.items.map((n) => n.id); 
+      s.ids = s.items.map((n) => n.id);
     },
     clearAll: (s) => {
       s.items = [];
       s.unread = 0;
       s.ids = [];
+      s.isLoading = false;
     },
   },
 });

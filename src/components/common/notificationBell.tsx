@@ -7,9 +7,10 @@ import { useAppDispatch } from "@/redux/hook";
 import { markAllRead, clearAll } from "@/redux/slices/notification/slice";
 import {
   useBulkDeleteNotifications,
+  useClearAllNotifications,
   useMarkAllRead,
   useNotifications,
-} from "@/hooks/notifications/use-notification";
+} from "@/features/notifications/hooks/use-notification";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -24,6 +25,8 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Div, Span } from "../ui/tags";
+import { useUserInfo } from "@/helpers/use-user";
+import { Spinner } from "../ui/spinner";
 
 function formatTs(ts?: number) {
   if (!ts) return "";
@@ -36,12 +39,17 @@ function formatTs(ts?: number) {
 
 export default function NotificationsBell() {
   const dispatch = useAppDispatch();
-  const userId = "f6a59e30-a62c-4d9b-8cac-52ee1a1becb1"; // or from Redux/Auth
-  const { items, unread, ids } = useNotifications(userId);
+  const { id } = useUserInfo();
+  const [open, setOpen] = React.useState(false);
+  const {
+    items,
+    unread,
+    isLoading: isLoadingNotifications,
+  } = useNotifications(id, open);
   const markAllReadNotifications = useMarkAllRead();
-  const bulkDeleteNotifications = useBulkDeleteNotifications();
+  const clearAllNotifications = useClearAllNotifications();
   const isLoading =
-    markAllReadNotifications.isPending || bulkDeleteNotifications.isPending;
+    markAllReadNotifications.isPending || clearAllNotifications.isPending;
 
   const grouped = React.useMemo(() => {
     const g: Record<string, typeof items> = {
@@ -57,21 +65,21 @@ export default function NotificationsBell() {
   }, [items]);
 
   const handleDeleteAll = async () =>
-    await bulkDeleteNotifications.mutateAsync(
-      { userId, ids },
+    await clearAllNotifications.mutateAsync(
+      { userId: id },
       {
         onSuccess: () => dispatch(clearAll()),
       }
     );
 
   const handleMarkAllRead = async () =>
-    await markAllReadNotifications.mutateAsync(userId, {
+    await markAllReadNotifications.mutateAsync(id, {
       onSuccess: () => dispatch(markAllRead()),
     });
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <DropdownMenu open={open} onOpenChange={() => setOpen((p) => !p)}>
+      <DropdownMenuTrigger onClick={() => setOpen((p) => !p)} asChild>
         <Button variant="outline" className="relative rounded-lg">
           <Bell className="h-4 w-4" />
           {unread > 0 && (
@@ -110,7 +118,13 @@ export default function NotificationsBell() {
 
         {items.length === 0 ? (
           <Div className="px-3 py-6 text-sm text-muted-foreground">
-            No notifications
+            {isLoadingNotifications ? (
+              <Div className="flex justify-center">
+                <Spinner />
+              </Div>
+            ) : (
+              "You have no notifications."
+            )}
           </Div>
         ) : (
           <ScrollArea className="max-h-96">

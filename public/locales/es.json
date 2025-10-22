@@ -57,6 +57,17 @@
       "upload": "Subir"
     }
   },
+  "notifications": {
+    "component": {
+      "is_read": "Nuevo",
+      "title": "Notificaciones",
+      "description": "Mantente al día con las últimas alertas, ofertas y mensajes.",
+      "mark_all_read": "Marcar todo como leído",
+      "clear_all": "Borrar todo",
+      "no_noti": "Sin notificaciones",
+      "end_noti": "Has llegado al final."
+    }
+  },
   "menu": {
     "platform": "Plataforma",
     "dashboard": "Tablero",

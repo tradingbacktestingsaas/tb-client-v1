@@ -18,67 +18,75 @@ const DivBase = ({
   className = "",
   onClick = null,
 }: CommonPageProps) => (
-  <div suppressHydrationWarning className={`${className}`}>
+  <div onClick={onClick} suppressHydrationWarning className={`${className}`}>
     {children}
   </div>
 );
 
-const SpanBase = ({ children, className = "" }: CommonPageProps) => (
-  <span suppressHydrationWarning className={`${className}`}>
+const SpanBase = ({
+  children,
+  className = "",
+  onClick = null,
+}: CommonPageProps) => (
+  <span onClick={onClick} className={`${className}`}>
     {children}
   </span>
 );
 
-const UlBase = ({ children, className = "" }: CommonPageProps) => (
-  <ul suppressHydrationWarning className={`${className}`}>
+const UlBase = ({
+  children,
+  className = "",
+  onClick = null,
+}: CommonPageProps) => (
+  <ul onClick={onClick} className={`${className}`}>
     {children}
   </ul>
 );
 
-const LiBase = ({ children, className = "" }: CommonPageProps) => (
-  <li suppressHydrationWarning className={`${className}`}>
+const LiBase = ({
+  children,
+  className = "",
+  onClick = null,
+}: CommonPageProps) => (
+  <li onClick={onClick} className={`${className}`}>
     {children}
   </li>
 );
 
 const H1Base = ({ children, className = "" }: CommonPageProps) => (
-  <h1 suppressHydrationWarning className={`${className}`}>
-    {children}
-  </h1>
+  <h1 className={`${className}`}>{children}</h1>
 );
 
 const H2Base = ({ children, className = "" }: CommonPageProps) => (
-  <h2 suppressHydrationWarning className={`${className}`}>
-    {children}
-  </h2>
+  <h2 className={`${className}`}>{children}</h2>
 );
 
 const H3Base = ({ children, className = "" }: CommonPageProps) => (
-  <h3 suppressHydrationWarning className={`${className}`}>
+  <h3 className={`${className}`}>
     {children}
   </h3>
 );
 
 const H4Base = ({ children, className = "" }: CommonPageProps) => (
-  <h3 suppressHydrationWarning className={`${className}`}>
+  <h3 className={`${className}`}>
     {children}
   </h3>
 );
 
 const H5Base = ({ children, className = "" }: CommonPageProps) => (
-  <h5 suppressHydrationWarning className={`${className}`}>
+  <h5 className={`${className}`}>
     {children}
   </h5>
 );
 
 const TitleBase = ({ children, className = "" }: CommonPageProps) => (
-  <title suppressHydrationWarning className={`${className}`}>
+  <title className={`${className}`}>
     {children}
   </title>
 );
 
 const ParaBase = ({ children, className = "" }: CommonPageProps) => (
-  <h2 suppressHydrationWarning className={`${className}`}>
+  <h2 className={`${className}`}>
     {children}
   </h2>
 );

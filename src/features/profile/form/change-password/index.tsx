@@ -5,10 +5,6 @@ import { useForm, Control, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FormattedMessage } from "react-intl";
-import { useTheme } from "next-themes";
-import Image from "next/image";
-import dark_logo from "../../../../../public/assets/logo/dark.png";
-import light_logo from "../../../../../public/assets/logo/light.png";
 import {
   Dialog,
   DialogContent,
@@ -27,40 +23,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Div, H1, Para, Span } from "@/components/ui/tags";
+import { Div, Span } from "@/components/ui/tags";
 import { changePassSchema } from "./validation";
 import { useDialogState } from "@/helpers/use-dialog";
 import { closeDialog } from "@/redux/slices/dialog/dialog-slice";
 import { useState } from "react";
-import { useChangePassword } from "../../hooks/mutations";
+import { useChangePassword } from "../../hooks/use-profile";
 import { useUserInfo } from "@/helpers/use-user";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error_handler/error";
 
 type ChangePassFormValues = z.infer<typeof changePassSchema>;
-
-const FormHeader = () => {
-  const { theme } = useTheme();
-  return (
-    <DialogHeader className="flex justify-between items-center">
-      <Div className="space-y-1">
-        <DialogTitle>
-          <H1 className="text-4xl text-md">
-            <FormattedMessage
-              id="form.change_password.title"
-              defaultMessage="Change Password"
-            />
-          </H1>
-        </DialogTitle>
-        <DialogDescription className="text-sm">
-          <Para>
-            <FormattedMessage id="form.change_password.desc" />
-          </Para>
-        </DialogDescription>
-      </Div>
-    </DialogHeader>
-  );
-};
 
 const FormContent = ({
   control,
@@ -77,7 +50,19 @@ const FormContent = ({
 
   return (
     <DialogContent>
-      <FormHeader />
+      <DialogHeader className="flex justify-between items-center">
+        <Div className="space-y-1">
+          <DialogTitle>
+            <FormattedMessage
+              id="form.change_password.title"
+              defaultMessage="Change Password"
+            />
+          </DialogTitle>
+          <DialogDescription className="text-sm">
+            <FormattedMessage id="form.change_password.desc" />
+          </DialogDescription>
+        </Div>
+      </DialogHeader>
       <Form {...form}>
         <form
           onSubmit={onSubmit}

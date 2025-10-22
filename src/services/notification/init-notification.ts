@@ -10,7 +10,9 @@ import { apiEndpoints } from "@/api/endpoints";
 
 export async function initNotifications(dispatch: AppDispatch, userId: string) {
   try {
-    const { data } = await api.get(apiEndpoints.notification.getAll(userId));
+    const { data} = await api.get(
+      apiEndpoints.notification.getAll({ id: userId })
+    );
 
     if (data?.data) {
       dispatch(setNotifications(data.data));
@@ -25,7 +27,6 @@ export async function initNotifications(dispatch: AppDispatch, userId: string) {
     socket?.on("event", (payload) => {
       dispatch(addNotification(payload));
     });
-
   } catch (error) {
     console.error("❌ initNotifications failed:", error);
   }
