@@ -52,7 +52,7 @@ export const apiEndpoints = {
   trade_account: {
     register: "/trade-account/register",
     base: "/trade-account",
-    get: "/trade-account/get",
+    get: (userId) => `/trade-account/get?userId=${userId}`,
     active: "/trade-account/active",
     switch: "/trade-account/switch",
   },

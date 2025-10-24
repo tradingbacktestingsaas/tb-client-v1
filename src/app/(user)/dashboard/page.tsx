@@ -1,4 +1,6 @@
+import DashboardLayout from "@/features/dashboard/dashboard-layout";
+
 const DashboardPage = () => {
-  return <div></div>;
+  return <DashboardLayout />;
 };
 export default DashboardPage;

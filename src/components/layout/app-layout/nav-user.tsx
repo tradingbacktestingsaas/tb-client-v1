@@ -70,11 +70,13 @@ export function NavUser({
             <DropdownMenuLabel className="p-0 font-normal">
               <Div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={user.avatar_url} alt={user.firstName} />
+                  <AvatarImage src={user?.avatar_url} alt={user?.firstName} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <Div className="grid flex-1 text-left text-sm leading-tight">
-                  <Span className="truncate font-medium">{user?.firstName + " " + user?.lastName}</Span>
+                  <Span className="truncate font-medium">
+                    {user?.firstName + " " + user?.lastName}
+                  </Span>
                   <Span className="truncate text-xs">{user?.email}</Span>
                 </Div>
               </Div>
