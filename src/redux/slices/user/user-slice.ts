@@ -8,7 +8,7 @@ interface User {
   role: string;
   avatar_url: string;
   plan: string;
-  activeTradeAccountId?: {} | null;
+  activeTradeAccountId?: string | null;
   blocked?: boolean;
 }
 
@@ -66,7 +66,7 @@ const userSlice = createSlice({
      * @param {PayloadAction<string>} action The action containing the accountId to switch to.
      */
     updateLastActiveAccount(state, action: PayloadAction<User>) {
-      state.user.activeTradeAccountId = action.payload;
+      state.user.activeTradeAccountId = action.payload.activeTradeAccountId;
     },
     /**
      * Sets the user state to null, sets the error state to the provided error message, and sets isAuthenticated to false.

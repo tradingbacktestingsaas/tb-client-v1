@@ -39,6 +39,70 @@
       "desc06": "Analyze your trade history, spot patterns, and generate detailed performance reports."
     }
   },
+  "dashboard": {
+    "news": {
+      "title": "Forex News Highlights",
+      "noNews": "No news found for the selected date.",
+      "table": {
+        "title": "Title",
+        "date": "Date",
+        "summary": "Summary",
+        "sentiment": "Sentiment",
+        "impact": "Impact",
+        "visit": "Visit"
+      },
+
+      "page": "Page",
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "metrics": {
+      "card": {
+        "riskReward": {
+          "title": "Risk/Reward Ratio",
+          "description": "Average risk/reward ratio of trades"
+        },
+        "profitFactor": {
+          "title": "Profit Factor",
+          "description": "Total profit factor from all trades"
+        },
+        "winRate": {
+          "title": "Win Rate",
+          "description": "Percentage of winning trades"
+        },
+        "totalLoss": {
+          "title": "Total Loss",
+          "description": "Total loss from all trades"
+        },
+        "totalProfit": {
+          "title": "Total Profit",
+          "description": "Total profit from all trades"
+        },
+        "totalTrades": {
+          "title": "Total Trades",
+          "description": "Total number of trades executed"
+        }
+      }
+    },
+    "quickStats": {
+      "mostTradedPair": {
+        "label": "Most Traded Pair",
+        "description": "Highest number of trades"
+      },
+      "totalTrades": {
+        "label": "Most Trades",
+        "description": "In current month"
+      },
+      "avgProfit": {
+        "label": "Avg Profit / Trade",
+        "description": "Average per winning trade"
+      },
+      "totalNetProfit": {
+        "label": "Total Net Profit",
+        "description": "Net profit this month"
+      }
+    }
+  },
   "profile": {
     "account": {
       "title": "Account Information",

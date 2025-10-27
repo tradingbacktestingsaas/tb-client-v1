@@ -7,6 +7,7 @@ import accountReducer from "./slices/trade-account/trade_account-slice";
 // import strategyReducer from "./slices/strategy/slice";
 import dialogReducer from "./slices/dialog/dialog-slice";
 import notificationReducer from "./slices/notification/slice";
+import sheetReducer from "./slices/sheet/slice";
 
 // Persist config for redux-persist
 const persistConfig = {
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
   user: persistedUserReducer,
   trade_account: accountReducer,
   // strategy: strategyReducer,
+  sheet: sheetReducer,
   dialog: dialogReducer,
   notification: notificationReducer,
 });

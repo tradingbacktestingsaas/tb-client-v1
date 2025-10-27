@@ -16,6 +16,24 @@ export const apiEndpoints = {
     verifyJWT: "/auth/verification",
     verify: "/auth/verification",
   },
+  analytics: {
+    base: "/analytics",
+    get: (id: string) => `/analytics/get/${id}`,
+  },
+  plans: {
+    base: "/plans",
+    get: "/plans/get",
+    create: "/plans/create",
+    update: (id: string) => `/plans/update/${id}`,
+    delete: (id: string) => `/plans/delete/${id}`,
+  },
+  subscriptions: {
+    base: "/subscriptions",
+    create: "/subscription/subscribe ",
+    free: "/subscription/create-free-subscription",
+    update: (id: string) => `/subscriptions/update/${id}`,
+    delete: (id: string) => `/subscriptions/delete/${id}`,
+  },
   billing: {
     base: "/billing",
     createCheckoutSession: "/billing/choose-plan",
@@ -37,9 +55,9 @@ export const apiEndpoints = {
     one: (id: string) => `/users/${id}`,
   },
   trades: {
-    create: "/trade/register",
-    update: (id: string) => `/trade/update/${id}`,
-    delete: (id: string) => `/trade/delete/${id}`,
+    create: "/trade/create",
+    update: `/trade/update`,
+    delete: `/trade/delete`,
     bulkDelete: "/trade/bulk-delete",
     base: "/trade",
     get: "/trade/get",

@@ -16,7 +16,6 @@ import { updateLastActiveAccount } from "@/redux/slices/user/user-slice";
 import { useUserInfo } from "@/helpers/use-user";
 import { useState } from "react";
 import { Div } from "@/components/ui/tags";
-import { UserPlan } from "@/types/user-type";
 
 const AccountSwitcher = () => {
   const dispatch = useAppDispatch();

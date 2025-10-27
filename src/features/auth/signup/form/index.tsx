@@ -36,6 +36,7 @@ import { useRedirect } from "@/utils/redirect";
 import useSignup from "../hook/use-signup";
 import RecaptchaV2, { RecaptchaV2Handle } from "@/lib/recaptcha/recaptchaV2";
 import { getErrorMessage } from "@/lib/error_handler/error";
+import { useRouter } from "next/navigation";
 
 type SignUpFormValues = z.infer<typeof signupSchema>;
 
@@ -237,8 +238,7 @@ const FormFooter = ({
 const SignUpForm = () => {
   const signupMutation = useSignup();
   const recaptchaRef = useRef<RecaptchaV2Handle>(null);
-
-  const { redirectSignin } = useRedirect();
+  const router = useRouter();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signupSchema),
@@ -256,7 +256,7 @@ const SignUpForm = () => {
       if (signupMutation.isSuccess) {
         toast.success(response.message || "Registration successful!");
         form.reset();
-        redirectSignin();
+        router.push("/auth/signin");
       } else {
         toast.error(response.message || "Registration failed!");
         form.reset();

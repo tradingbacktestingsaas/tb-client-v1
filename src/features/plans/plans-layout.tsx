@@ -1,0 +1,119 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { useStripe, useElements } from "@stripe/react-stripe-js";
+import { useUserInfo } from "@/helpers/use-user";
+import { useGetPlans } from "@/features/plans/hooks/queries";
+import {
+  createFreeSubMutation,
+  createPaidSubMutation,
+} from "@/features/plans/hooks/mutations";
+
+import PlansHeader from "./component/plans-header";
+import PlansGrid from "./component/plans-grid";
+import PaymentDialog from "./component/payment-dialog";
+import CouponSection from "./component/coupon-section";
+
+export default function PlansLayout() {
+  const { theme } = useTheme();
+  const router = useRouter();
+  const { user } = useUserInfo();
+  const stripe = useStripe();
+  const elements = useElements();
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
+  const [paying, setPaying] = useState(false);
+  const [cardError, setCardError] = useState<string | null>(null);
+  const [cycle, setCycle] = useState<"month" | "year">("month");
+
+  const freePlanMutation = createFreeSubMutation();
+  const paidPlanMutation = createPaidSubMutation();
+  const { data, isLoading } = useGetPlans();
+
+  const handleSubscribe = async () => {
+    if (!stripe || !elements || !selectedPlan) return;
+    setCardError(null);
+    setPaying(true);
+
+    try {
+      const card = elements.getElement("card");
+      const { error, paymentMethod } = await stripe.createPaymentMethod({
+        type: "card",
+        card,
+        billing_details: {
+          name: `${user.firstName} ${user.lastName}`,
+          email: user.email,
+        },
+      });
+      if (error) {
+        setCardError(error.message || "Card error");
+        return;
+      }
+
+      await paidPlanMutation.mutateAsync({
+        paymentMethodId: paymentMethod.id,
+        plan_id: selectedPlan.id,
+        user_id: user.id,
+      });
+
+      setModalOpen(false);
+      setSelectedPlan(null);
+    } catch (err: any) {
+      setCardError(err?.message || "Payment error");
+    } finally {
+      setPaying(false);
+    }
+  };
+
+  return (
+    <div className="flex h-screen w-full items-center justify-center">
+      <div className="flex items-center justify-center h-full w-full overflow-hidden">
+        <div className="max-w-5xl mx-auto px-4">
+          <PlansHeader
+            billingCycle={cycle}
+            onToggle={(cycle) => setCycle(cycle)}
+          />
+
+          <PlansGrid
+            plans={data?.data || []}
+            billingCycle={cycle}
+            loading={isLoading}
+            onSelectPlan={(plan) => {
+              if (plan.code === "FREE") {
+                freePlanMutation.mutate(
+                  {
+                    user_id: user?.id,
+                    plan_id: plan?.id,
+                  },
+                  {
+                    onSuccess: () => {
+                      router.push("/dashboard");
+                    },
+                  }
+                );
+              } else {
+                setSelectedPlan(plan);
+                setModalOpen(true);
+              }
+            }}
+          />
+          <PaymentDialog
+            open={modalOpen}
+            onOpenChange={setModalOpen}
+            selectedPlan={selectedPlan}
+            paying={paying}
+            cardError={cardError}
+            handleSubscribe={handleSubscribe}
+          />
+          {/* <CouponSection /> */}
+          <p className="mt-4 text-xs text-muted-foreground text-center">
+            Prices in USD. Taxes may apply. You can change or cancel anytime.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}

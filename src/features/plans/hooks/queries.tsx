@@ -2,14 +2,21 @@ import api from "@/api/axios";
 import { apiEndpoints } from "@/api/endpoints";
 import { useQuery } from "@tanstack/react-query";
 
-export const useGetNews = () => {
+export const useGetPlans = () => {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["news"],
+    queryKey: ["plans"],
     queryFn: async () => {
-      const res = await api.get(apiEndpoints.news.get);
+      const res = await api.get(apiEndpoints.plans.get);
       return res.data;
     },
     retry: false,
     refetchOnWindowFocus: false,
   });
+
+  return {
+    data,
+    isLoading,
+    isError,
+    error,
+  };
 };

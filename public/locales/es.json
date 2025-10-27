@@ -57,6 +57,69 @@
       "upload": "Subir"
     }
   },
+  "dashboard": {
+    "news": {
+      "title": "Noticias Destacadas de Forex",
+      "noNews": "No se encontraron noticias para la fecha seleccionada.",
+      "table": {
+        "title": "Título",
+        "date": "Fecha",
+        "summary": "Resumen",
+        "sentiment": "Sentimiento",
+        "impact": "Impacto",
+        "visit": "Visitar"
+      },
+      "page": "Página",
+      "previous": "Anterior",
+      "next": "Siguiente"
+    },
+    "metrics": {
+      "card": {
+        "riskReward": {
+          "title": "Relación Riesgo/Beneficio",
+          "description": "Promedio de la relación riesgo/beneficio de las operaciones"
+        },
+        "profitFactor": {
+          "title": "Factor de Beneficio",
+          "description": "Factor de beneficio total de todas las operaciones"
+        },
+        "winRate": {
+          "title": "Tasa de Éxito",
+          "description": "Porcentaje de operaciones ganadoras"
+        },
+        "totalLoss": {
+          "title": "Pérdida Total",
+          "description": "Pérdida total de todas las operaciones"
+        },
+        "totalProfit": {
+          "title": "Ganancia Total",
+          "description": "Ganancia total de todas las operaciones"
+        },
+        "totalTrades": {
+          "title": "Operaciones Totales",
+          "description": "Número total de operaciones ejecutadas"
+        }
+      }
+    },
+    "quickStats": {
+      "mostTradedPair": {
+        "label": "Par Más Operado",
+        "description": "Mayor número de operaciones"
+      },
+      "totalTrades": {
+        "label": "Más Operaciones",
+        "description": "En el mes actual"
+      },
+      "avgProfit": {
+        "label": "Ganancia Prom / Operación",
+        "description": "Promedio por operación ganadora"
+      },
+      "totalNetProfit": {
+        "label": "Ganancia Neta Total",
+        "description": "Ganancia neta este mes"
+      }
+    }
+  },
   "notifications": {
     "component": {
       "is_read": "Nuevo",

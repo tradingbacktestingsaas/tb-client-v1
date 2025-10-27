@@ -40,6 +40,7 @@ import { Separator } from "@/components/ui/separator";
 import { getErrorMessage } from "@/lib/error_handler/error";
 import { loginSuccess } from "@/redux/slices/user/user-slice";
 import { useAppDispatch } from "@/redux/hook";
+import { useRouter } from "next/navigation";
 
 type SignInFormValues = z.infer<typeof signInSchema>;
 
@@ -220,6 +221,7 @@ const FormFooter = ({
 const SignInForm = () => {
   const disptach = useAppDispatch();
   const signInMutation = useSignin();
+  const router = useRouter();
   const googleSignInMutation = useGoogleSignin();
   const recaptchaRef = useRef<RecaptchaV2Handle>(null);
   const { redirectDashboard } = useRedirect();
@@ -246,6 +248,7 @@ const SignInForm = () => {
         {
           onSuccess: (data) => {
             disptach(loginSuccess(data?.data));
+            router.push("/dashboard");
             form.reset();
           },
           onError: (e) => {

@@ -33,6 +33,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { FormattedMessage } from "react-intl";
 import { useRedirect } from "@/utils/redirect";
 import { getErrorMessage } from "@/lib/error_handler/error";
+import { useRouter } from "next/navigation";
 
 type ResetPasswordValues = z.infer<typeof resetPasswordSchema>;
 
@@ -147,11 +148,10 @@ const FormContent = ({
 //  main form
 const ResetPasswordForm = () => {
   const resetPassMutation = useResetPassword();
-  const { redirectSignin } = useRedirect();
   const url = new URL(window.location.href);
   const params = new URLSearchParams(url.search);
   const token = params.get("token");
-
+  const router = useRouter();
   const form = useForm<ResetPasswordValues>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: { password: "" },
@@ -164,7 +164,7 @@ const ResetPasswordForm = () => {
       if (resetPassMutation.isSuccess) {
         toast.success(response.message || "Reset Password Successful!");
         form.reset();
-        redirectSignin();
+        router.push("/auth/signin");
       } else {
         toast.error(response.message || "Reset Password Failed!");
         form.reset();
