@@ -15,7 +15,7 @@ const ALWAYS_PUBLIC = [
 ];
 
 // Prefixes that require auth
-const PROTECTED_PREFIXES = ["/dashboard"];
+const PROTECTED_PREFIXES = ["/dashboard", "/accounts", "/operations", "/journal","/podium","/tools", "/strategy", "/billings", "/notifications"];
 
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;

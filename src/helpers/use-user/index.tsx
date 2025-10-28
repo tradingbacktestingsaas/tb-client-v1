@@ -4,6 +4,8 @@ import { useAppSelector } from "@/redux/hook";
 
 const useUserInfo = () => {
   const user = useAppSelector((state) => state?.user?.user);
+  console.log(user);
+  
   return {
     user: user,
     id: user?.id,
@@ -14,6 +16,7 @@ const useUserInfo = () => {
     avatar_url: user?.avatar_url,
     role: user?.role,
     blocked: user?.blocked,
+    activeTradeAccountId: user?.activeTradeAccountId,
   };
 };
 
