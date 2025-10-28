@@ -22,7 +22,7 @@ export const upsertAccountSchema = z
     tradesyncId: z.union([z.string(), z.number()]).optional().nullable(),
   })
   .refine(
-    (val) =>
+    (val: any) =>
       val.type === "FREE" ||
       (val.type !== "FREE" &&
         val.investor_password &&

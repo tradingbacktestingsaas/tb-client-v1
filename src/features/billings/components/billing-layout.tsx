@@ -1,11 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const BillingLayout = () => {
-  return (
-    <div>
-      
-    </div>
-  )
-}
+  return <></>;
+};
 
-export default BillingLayout
+export default BillingLayout;
