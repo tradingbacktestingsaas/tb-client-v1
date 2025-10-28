@@ -251,17 +251,18 @@ const SignUpForm = () => {
 
     try {
       const newValues = { ...values, captcha: token ?? "" };
-      const response = await signupMutation.mutateAsync(newValues);
-
-      if (signupMutation.isSuccess) {
-        toast.success(response.message || "Registration successful!");
-        form.reset();
-        router.push("/auth/signin");
-      } else {
-        toast.error(response.message || "Registration failed!");
-        form.reset();
-        return;
-      }
+      await signupMutation.mutateAsync(newValues, {
+        onSuccess: (data) => {
+          toast.success(data.message || "Registration successful!");
+          form.reset();
+          router.push("/auth/signin");
+        },
+        onError: (err) => {
+          const { message } = getErrorMessage(err || "Registration failed");
+          toast.error(message || "Registration failed!");
+          form.reset();
+        },
+      });
     } catch (e: unknown) {
       const { message } = getErrorMessage(e, "Sign-up failed.");
       console.error("❌ Sign-up error:", e);

@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 
 export const useGetMertics = (activeTradeAccountId: string) => {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["metrics", "stats"],
+    queryKey: ["metrics", "stats", activeTradeAccountId],
     queryFn: async () => {
       const res = await api.get(
         apiEndpoints.analytics.get(activeTradeAccountId)

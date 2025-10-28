@@ -4,13 +4,19 @@ import { useQuery } from "@tanstack/react-query";
 interface TradeFilters {
   accountId: string;
   symbol: string;
+  openDate: any;
+  closeDate: any;
 }
 export const useGetTrades = (filters: TradeFilters, page = 0, limit = 8) => {
   const { data, isLoading, isError, error } = useQuery({
-    queryKey: ["trades", filters, page, limit],
+    queryKey: ["trades", filters.accountId, page, limit],
     queryFn: async () => {
       const res = await api.get(
-        `${apiEndpoints.trades.get}/?page=${page}&limit=${limit}&symbol=${filters.symbol}&accountId=${filters.accountId}`,
+        `${apiEndpoints.trades.get}/?page=${page}&limit=${limit}&symbol=${
+          filters.symbol
+        }&accountId=${filters.accountId}&openDate=${
+          filters.openDate || ""
+        }&closeDate=${filters.closeDate || ""}`,
         {
           params: {
             page,

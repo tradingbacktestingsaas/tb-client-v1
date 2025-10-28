@@ -35,6 +35,7 @@ export const useCreateTrade = () => {
 // ✏️ UPDATE
 export const useUpdateTrade = () => {
   return useMutation({
+
     mutationFn: async (payload: any) => {
       const { data } = await api.post(apiEndpoints.trades.update, payload);
       return data;

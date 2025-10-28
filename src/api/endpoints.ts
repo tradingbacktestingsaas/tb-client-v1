@@ -19,6 +19,7 @@ export const apiEndpoints = {
   analytics: {
     base: "/analytics",
     get: (id: string) => `/analytics/get/${id}`,
+    leaderboard: `/analytics/leaderboard`,
   },
   plans: {
     base: "/plans",
@@ -68,20 +69,28 @@ export const apiEndpoints = {
     get: "/news/get",
   },
   trade_account: {
-    register: "/trade-account/register",
+    create: "/trade-account/create",
     base: "/trade-account",
     get: (userId) => `/trade-account/get?userId=${userId}`,
+    delete: (id: string) => `/trade-account/delete/${id}`,
+    update: (id: string) => `/trade-account/update/${id}`,
     active: "/trade-account/active",
+    brokers: "/trade-account/brokers",
     switch: "/trade-account/switch",
   },
+  tradeSync: {
+    get_brokers: `${process.env.TRADE_SYNC_URL}/broker-servers`,
+  },
+
   strategies: {
-    base: "/strategy",
-    get: "/strategy/get",
-    create: "/strategy/create",
-    getOne: (id: string) => `/strategy/get/${id}`,
-    update: (id: string) => `/strategy/update/${id}`,
-    delete: (id: string) => `/strategy/delete/${id}`,
-    bulkDelete: (id: string) => `/strategy/bulk-delete/${id}`,
+    base: "/strategies",
+    get: "/strategies/get",
+    create: "/strategies/create",
+    buy: "/strategies/buy-strategy",
+    getOne: (id: string) => `/strategies/get/${id}`,
+    update: `/strategies/update`,
+    delete: (id: string) => `/strategies/delete/${id}`,
+    bulkDelete: (id: string) => `/strategies/bulk-delete/${id}`,
   },
   notification: {
     base: "/notification",

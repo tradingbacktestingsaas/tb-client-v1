@@ -6,12 +6,15 @@ import { useGetTrades } from "../../../hook/queries";
 import { useEffect, useMemo, useState } from "react";
 import TableSkeleton from "./skeletion";
 import { TradeRaw } from "@/features/dashboard/types/trade-type";
+import { normalizeTrades } from "@/utils/map-trades";
 
 type TradesQuery = {
   page: number; // 1-based for API
   pageSize: number;
   filters: {
     accountId: string;
+    openDate: string;
+    closeDate: string;
     symbol: string; // keep this concrete to avoid 'never[]' widening
   };
 };
@@ -28,7 +31,7 @@ export default function TradesList({
   const [query, setQuery] = useState<TradesQuery>({
     page,
     pageSize: limit,
-    filters: { accountId, symbol: "" },
+    filters: { accountId, symbol: "", openDate: "", closeDate: "" },
   });
 
   const { data, isLoading } = useGetTrades(
@@ -43,6 +46,17 @@ export default function TradesList({
   useEffect(() => {
     if (data?.data) setTradesData(data?.data);
   }, [data]);
+  console.log(data);
+
+  useEffect(() => {
+    if (accountId) {
+      setQuery((prev) => ({
+        ...prev,
+        filters: { ...prev.filters, accountId },
+        page: 0, // optional: reset pagination
+      }));
+    }
+  }, [accountId]);
 
   const columns = useMemo(() => getColumns(), []);
 
@@ -52,7 +66,7 @@ export default function TradesList({
     <div className="p-12">
       <TradesTable
         columns={columns}
-        data={tradesData}
+        data={normalizeTrades(tradesData)}
         query={query}
         setQuery={setQuery}
         totalCount={totalCount}

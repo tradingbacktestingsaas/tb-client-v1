@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useTheme } from "next-themes";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { useUserInfo } from "@/helpers/use-user";
@@ -14,10 +13,13 @@ import {
 import PlansHeader from "./component/plans-header";
 import PlansGrid from "./component/plans-grid";
 import PaymentDialog from "./component/payment-dialog";
-import CouponSection from "./component/coupon-section";
+import { toast } from "sonner";
+import { useAppDispatch } from "@/redux/hook";
+import { updateProfile, upgradeUserPlan } from "@/redux/slices/user/user-slice";
+// import CouponSection from "./component/coupon-section";
 
 export default function PlansLayout() {
-  const { theme } = useTheme();
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const { user } = useUserInfo();
   const stripe = useStripe();
@@ -53,11 +55,24 @@ export default function PlansLayout() {
         return;
       }
 
-      await paidPlanMutation.mutateAsync({
-        paymentMethodId: paymentMethod.id,
-        plan_id: selectedPlan.id,
-        user_id: user.id,
-      });
+      await paidPlanMutation.mutateAsync(
+        {
+          paymentMethodId: paymentMethod.id,
+          plan_id: selectedPlan.id,
+          user_id: user.id,
+        },
+        {
+          onSuccess: (data) => {
+            const updatedUser = data?.data?.user;
+            dispatch(upgradeUserPlan(updatedUser));
+            toast.success("Subscription created!");
+            router.push("/dashboard");
+          },
+          onError: () => {
+            toast.error("Failed to create subscription");
+          },
+        }
+      );
 
       setModalOpen(false);
       setSelectedPlan(null);
@@ -89,7 +104,9 @@ export default function PlansLayout() {
                     plan_id: plan?.id,
                   },
                   {
-                    onSuccess: () => {
+                    onSuccess: (data) => {
+                      const updatedUser = data?.data?.user;
+                      dispatch(upgradeUserPlan(updatedUser));
                       router.push("/dashboard");
                     },
                   }

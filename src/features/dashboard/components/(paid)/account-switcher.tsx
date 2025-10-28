@@ -8,14 +8,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useGetAccounts } from "@/features/account/hooks/queries";
+import { useGetAccounts } from "@/features/accounts/hooks/queries";
 import { Spinner } from "@/components/ui/spinner";
-import { useAccountSwitch } from "@/features/account/hooks/mutations";
+import { useAccountSwitch } from "@/features/accounts/hooks/mutations";
 import { useAppDispatch } from "@/redux/hook";
 import { updateLastActiveAccount } from "@/redux/slices/user/user-slice";
 import { useUserInfo } from "@/helpers/use-user";
 import { useState } from "react";
 import { Div } from "@/components/ui/tags";
+import { queryClient } from "@/provider/react-query";
+import { UserPlan } from "@/types/user-type";
 
 const AccountSwitcher = () => {
   const dispatch = useAppDispatch();
@@ -25,19 +27,44 @@ const AccountSwitcher = () => {
   const selectAccount = useAccountSwitch();
   const { data, isLoading, isError } = useGetAccounts(id, { enabled: open });
 
-  const handleAccountSwitch = (accountId: string) => {
-    selectAccount.mutate(
-      { tradeAccId: accountId, userId: id },
+  const handleAccountSwitch = async (accountId: string) => {
+    const accounts = data?.tradeAccs.find((acc: any) => acc.id === accountId);
+
+    if (!accounts) return;
+
+    await selectAccount.mutateAsync(
       {
-        onSuccess: (data) => {
-          const activeAccId = data?.data?.activeTradeAccountId;
-          dispatch(updateLastActiveAccount(activeAccId));
+        tradeAccId: accounts.id,
+        userId: id,
+        type: accounts.type,
+      },
+      {
+        onSuccess: async (data) => {
+          const activeAccId = data?.data?.id;
+          console.log(data?.data);
+          console.log(activeAccId);
+
+          dispatch(
+            updateLastActiveAccount({ activeTradeAccountId: activeAccId })
+          );
+          await queryClient.refetchQueries({
+            queryKey: ["metrics"],
+            exact: false,
+          });
+          await queryClient.invalidateQueries({
+            queryKey: ["trades"],
+            exact: false,
+          });
+          await queryClient.refetchQueries({
+            queryKey: ["trades", accountId],
+            exact: false,
+          });
         },
       }
     );
   };
 
-  //   if (plan === UserPlan.FREE) return null;
+    if (plan === UserPlan.FREE) return null;
 
   return (
     <Select

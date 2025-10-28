@@ -30,7 +30,6 @@ import { getErrorMessage } from "@/lib/error_handler/error";
 import { useDialogState } from "@/helpers/use-dialog";
 import { closeDialog } from "@/redux/slices/dialog/dialog-slice";
 import { tradeRawSchema } from "./validation";
-import { Section } from "lucide-react";
 import { useCreateTrade, useUpdateTrade } from "../hook/mutations";
 import { useUserInfo } from "@/helpers/use-user";
 import { useEffect } from "react";

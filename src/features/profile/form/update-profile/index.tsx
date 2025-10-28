@@ -5,17 +5,7 @@ import { useForm, Control, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { FormattedMessage } from "react-intl";
-import { useTheme } from "next-themes";
-import Image from "next/image";
-import dark_logo from "../../../../../public/assets/logo/dark.png";
-import light_logo from "../../../../../public/assets/logo/light.png";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 import {
   Form,
   FormControl,

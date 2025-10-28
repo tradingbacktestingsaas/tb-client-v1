@@ -2,6 +2,7 @@ import api from "@/api/axios";
 import { apiEndpoints } from "@/api/endpoints";
 import { sanitizeFlatStrings } from "@/utils/input-sanitizer/sanitizer";
 import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
 
 export const useGetAccounts = (
   userId: string,
@@ -11,6 +12,35 @@ export const useGetAccounts = (
     queryKey: ["accounts"],
     queryFn: async () => {
       const res = await api.get(apiEndpoints.trade_account.get(userId));
+      return res.data;
+    },
+    retry: false,
+    enabled: options.enabled,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
+  });
+
+  return {
+    data,
+    isLoading,
+    isError,
+    error,
+    refetch,
+  };
+};
+
+export const useGetBrokers = (
+  options = { enabled: true },
+  page,
+  limit,
+  application
+) => {
+  const { data, isLoading, isError, error, refetch } = useQuery({
+    queryKey: ["sync"],
+    queryFn: async () => {
+      const res = await api.get(
+        `${apiEndpoints.trade_account.brokers}?page=${page}&limit=${limit}&application=${application}`
+      );
       return res.data;
     },
     retry: false,

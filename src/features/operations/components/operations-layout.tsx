@@ -9,13 +9,7 @@ const OperationsLayout = () => {
   const { activeTradeAccountId, plan } = useUserInfo();
   return (
     <div>
-      {plan === UserPlan.FREE && (
-        <TradesList
-          accountId={activeTradeAccountId as any}
-          page={0}
-          limit={8}
-        />
-      )}
+      <TradesList accountId={activeTradeAccountId as any} page={0} limit={8} />
       <TradesForm />
     </div>
   );

@@ -65,7 +65,7 @@ const userSlice = createSlice({
      * @param {AuthState} state The current state of the auth slice.
      * @param {PayloadAction<string>} action The action containing the accountId to switch to.
      */
-    updateLastActiveAccount(state, action: PayloadAction<User>) {
+    updateLastActiveAccount(state, action: PayloadAction<any>) {
       state.user.activeTradeAccountId = action.payload.activeTradeAccountId;
     },
     /**

@@ -3,12 +3,16 @@
 import * as React from "react";
 import {
   ColumnDef,
-  flexRender,
+  SortingState,
+  ColumnFiltersState,
+  VisibilityState,
   getCoreRowModel,
   getPaginationRowModel,
+  getSortedRowModel,
+  getFilteredRowModel,
+  flexRender,
   useReactTable,
 } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -17,115 +21,121 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import TableFilterHeader from "./search-filter";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
-// Mirror the parent's query type so setQuery lines up perfectly
-type TradesQuery = {
-  page: number; // 1-based
-  pageSize: number;
-  filters: {
-    accountId: string;
-    symbol: string;
-  };
-};
+export type { Trade } from "./columns";
 
-interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
-  query: TradesQuery;
-  setQuery: React.Dispatch<React.SetStateAction<TradesQuery>>;
-  totalCount: number;
-}
-
-export function TradesTable<TData, TValue>({
+export function DataTable<TData, TValue>({
   columns,
   data,
-  query,
-  setQuery,
-  totalCount,
-}: DataTableProps<TData, TValue>) {
-  const totalPages = Math.max(
-    0,
-    Math.ceil(totalCount / Math.max(1, query.pageSize))
+  initialPageSize = 10,
+}: {
+  columns: ColumnDef<TData, TValue>[];
+  data: TData[];
+  initialPageSize?: number;
+}) {
+  const [sorting, setSorting] = React.useState<SortingState>([]);
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
+    []
   );
-  const pageIndex = Math.min(
-    Math.max(0, query.page - 1),
-    Math.max(0, totalPages - 1)
-  ); // clamp
+  const [columnVisibility, setColumnVisibility] =
+    React.useState<VisibilityState>({});
+  const [rowSelection, setRowSelection] = React.useState({});
 
   const table = useReactTable({
     data,
     columns,
+    state: { sorting, columnFilters, columnVisibility, rowSelection },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
     getCoreRowModel: getCoreRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true, // server-side mode
-    pageCount: totalPages, // authoritative page count
-    state: { pagination: { pageIndex, pageSize: query.pageSize } },
-    onPaginationChange: (updater) => {
-      const current = { pageIndex, pageSize: query.pageSize };
-      const next = typeof updater === "function" ? updater(current) : updater;
-
-      if (next.pageSize !== current.pageSize) {
-        setQuery((prev) => ({ ...prev, page: 1, pageSize: next.pageSize }));
-      }
-      if (next.pageIndex !== current.pageIndex) {
-        setQuery((prev) => ({ ...prev, page: next.pageIndex + 1 })); // convert to 1-based
-      }
-    },
+    initialState: { pagination: { pageSize: initialPageSize } },
   });
 
-  const handleNextPage = () => {
-    if (pageIndex < totalPages - 1) {
-      setQuery((prev) => ({ ...prev, page: prev.page + 1 }));
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (pageIndex > 0) {
-      setQuery((prev) => ({ ...prev, page: prev.page - 1 }));
-    }
-  };
-
-  // compact strip: prev, current, next with edges handled
-  const pagesToShow = React.useMemo(() => {
-    if (totalPages <= 1) return totalPages === 1 ? [1] : [];
-    if (totalPages === 2) return [1, 2];
-    const current = pageIndex + 1;
-    if (current === 1) return [1, 2, 3].filter((n) => n <= totalPages);
-    if (current === totalPages)
-      return [totalPages - 2, totalPages - 1, totalPages].filter((n) => n >= 1);
-    return [current - 1, current, current + 1].filter(
-      (n) => n >= 1 && n <= totalPages
-    );
-  }, [pageIndex, totalPages]);
-
-  const handlePageClick = (pageNumber: number) => {
-    if (pageNumber >= 1 && pageNumber <= Math.max(1, totalPages)) {
-      setQuery((prev) => ({ ...prev, page: pageNumber }));
-    }
-  };
-
-  const from = totalCount ? pageIndex * query.pageSize + 1 : 0;
-  const to = totalCount
-    ? Math.min((pageIndex + 1) * query.pageSize, totalCount)
-    : 0;
-
   return (
-    <div>
+    <div className="space-y-3">
+      {/* Toolbar */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-2">
+          <Input
+            placeholder="Filter symbol..."
+            value={
+              (table.getColumn("symbol")?.getFilterValue() as string) ?? ""
+            }
+            onChange={(event) =>
+              table.getColumn("symbol")?.setFilterValue(event.target.value)
+            }
+            className="h-9 w-48"
+          />
+          <Select
+            value={(table.getColumn("state")?.getFilterValue() as string) ?? ""}
+            onValueChange={(v) =>
+              table.getColumn("state")?.setFilterValue(v === "all" ? "" : v)
+            }
+          >
+            <SelectTrigger className="h-9 w-36">
+              <SelectValue placeholder="State" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All states</SelectItem>
+              <SelectItem value="open">Open</SelectItem>
+              <SelectItem value="closed">Closed</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">
+            {table.getFilteredRowModel().rows.length} result(s)
+          </span>
+          <Badge variant="outline">
+            Page {table.getState().pagination.pageIndex + 1}
+          </Badge>
+        </div>
+      </div>
+
+      {/* Table */}
       <div className="rounded-md border">
-        <TableFilterHeader setQuery={setQuery} query={query} />
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
+                  <TableHead
+                    key={header.id}
+                    className={
+                      (header.column.columnDef as any)?.meta?.className
+                    }
+                  >
+                    {header.isPlaceholder ? null : (
+                      <div
+                        className={"select-none cursor-pointer"}
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {flexRender(
                           header.column.columnDef.header,
                           header.getContext()
                         )}
+                        {{ asc: " \u2191", desc: " \u2193" }[
+                          header.column.getIsSorted() as string
+                        ] ?? null}
+                      </div>
+                    )}
                   </TableHead>
                 ))}
               </TableRow>
@@ -134,9 +144,17 @@ export function TradesTable<TData, TValue>({
           <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
+                <TableRow
+                  key={row.id}
+                  data-state={row.getIsSelected() && "selected"}
+                >
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
+                    <TableCell
+                      key={cell.id}
+                      className={
+                        (cell.column.columnDef as any)?.meta?.className
+                      }
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
@@ -149,7 +167,7 @@ export function TradesTable<TData, TValue>({
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
-                  className="h-24 text-center"
+                  className="h-24 text-center text-sm text-muted-foreground"
                 >
                   No results.
                 </TableCell>
@@ -160,85 +178,42 @@ export function TradesTable<TData, TValue>({
       </div>
 
       {/* Pagination */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 py-4">
-        <div className="text-sm text-muted-foreground">
-          {totalCount ? (
-            <span>
-              Showing <span className="font-medium">{from}</span>–
-              <span className="font-medium">{to}</span> of
-              <span className="font-medium"> {totalCount}</span>
-            </span>
-          ) : (
-            <span>—</span>
-          )}
-        </div>
-
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-2">
-          <label className="text-sm">Rows per page</label>
-          <select
-            className="h-9 rounded-md border px-2 text-sm bg-background"
-            value={query.pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.previousPage()}
+            disabled={!table.getCanPreviousPage()}
           >
-            {[10, 20, 50, 100].map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select>
-
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setQuery((prev) => ({ ...prev, page: 1 }))}
-              disabled={pageIndex === 0 || totalPages === 0}
-            >
-              First
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePreviousPage}
-              disabled={pageIndex === 0 || totalPages === 0}
-            >
-              Previous
-            </Button>
-
-            {pagesToShow.map((n) => (
-              <Button
-                key={n}
-                variant={n === pageIndex + 1 ? "default" : "outline"}
-                size="sm"
-                onClick={() => handlePageClick(n)}
-              >
-                {n}
-              </Button>
-            ))}
-
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNextPage}
-              disabled={pageIndex >= totalPages - 1 || totalPages === 0}
-            >
-              Next
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setQuery((prev) => ({ ...prev, page: Math.max(1, totalPages) }))
-              }
-              disabled={pageIndex >= totalPages - 1 || totalPages === 0}
-            >
-              Last
-            </Button>
-
-            <span className="text-sm tabular-nums">
-              Page {totalPages === 0 ? 0 : pageIndex + 1} of {totalPages}
-            </span>
-          </div>
+            <ChevronLeft className="h-4 w-4" /> Prev
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => table.nextPage()}
+            disabled={!table.getCanNextPage()}
+          >
+            Next <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm">Rows per page</span>
+          <Select
+            value={String(table.getState().pagination.pageSize)}
+            onValueChange={(v) => table.setPageSize(Number(v))}
+          >
+            <SelectTrigger className="h-9 w-[90px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent align="end">
+              {[5, 10, 20, 50, 100].map((n) => (
+                <SelectItem key={n} value={String(n)}>
+                  {n}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
       </div>
     </div>
