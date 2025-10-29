@@ -25,7 +25,7 @@ export const useAccountSignin = () =>
     }) =>
       api
         .post(
-          `${apiEndpoints.trade_account.register}`,
+          `${apiEndpoints.trade_account.create}`,
           sanitizeFlatStrings(input)
         )
         .then((res) => res.data),
