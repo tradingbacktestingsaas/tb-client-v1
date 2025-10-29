@@ -54,7 +54,15 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={MAIN_MENU[user?.plan]?.navMain || []} />
+        <NavMain
+          items={
+            MAIN_MENU[user?.plan]?.navMain || [
+              {
+                id: "menu.dashboard",
+              },
+            ]
+          }
+        />
         {/* <NavMenu items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
