@@ -54,7 +54,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        {/* <NavMain
+        <NavMain
           items={
             MAIN_MENU[user?.plan]?.navMain || [
               {
@@ -62,7 +62,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               },
             ]
           }
-        /> */}
+        />
         {/* <NavMenu items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
       <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
