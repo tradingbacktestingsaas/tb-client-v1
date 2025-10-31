@@ -16,6 +16,7 @@ import PaymentDialog from "./component/payment-dialog";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/redux/hook";
 import { updateProfile, upgradeUserPlan } from "@/redux/slices/user/user-slice";
+import { setAccountState } from "@/redux/slices/trade-account/trade_account-slice";
 // import CouponSection from "./component/coupon-section";
 
 export default function PlansLayout() {
@@ -64,7 +65,7 @@ export default function PlansLayout() {
         {
           onSuccess: (data) => {
             const updatedUser = data?.data?.user;
-            dispatch(upgradeUserPlan(updatedUser));
+            dispatch(updateProfile(updatedUser));
             toast.success("Subscription created!");
             router.push("/dashboard");
           },
@@ -106,7 +107,14 @@ export default function PlansLayout() {
                   {
                     onSuccess: (data) => {
                       const updatedUser = data?.data?.user;
-                      dispatch(upgradeUserPlan(updatedUser));
+                      const updatedAccount = data?.data?.tradeAccount;
+                      dispatch(
+                        setAccountState({
+                          current: updatedAccount.id,
+                          type: updatedAccount.type?.toUpperCase(),
+                        })
+                      );
+                      dispatch(updateProfile(updatedUser));
                       router.push("/dashboard");
                     },
                   }

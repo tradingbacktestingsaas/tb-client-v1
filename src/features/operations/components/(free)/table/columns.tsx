@@ -128,12 +128,18 @@ export function getColumns(): ColumnDef<TradeRaw>[] {
     {
       id: "actions",
       header: "Actions",
-      cell: ({ row }) => {
+      enableHiding: true,
+      cell: ({ row, table }) => {
         const dispatch = useDispatch();
         const trade = row.original; // Access the current row data
         const deleteTrade = useDeleteTrade();
+        const isSync =
+          ((table.options.meta as any)?.isSync as boolean) ?? false;
+
         const [open, setOpen] = useState(false);
+
         const handleEdit = () => {
+          if (!isSync) return;
           dispatch(
             openDialog({
               key: "trades",
@@ -156,6 +162,7 @@ export function getColumns(): ColumnDef<TradeRaw>[] {
         };
 
         const handleDelete = async () => {
+          if (!isSync) return;
           try {
             await deleteTrade.mutateAsync(trade.id);
             toast.success("Trade deleted successfully!");
@@ -175,14 +182,19 @@ export function getColumns(): ColumnDef<TradeRaw>[] {
 
               <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
-                <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={() => setOpen(true)}
-                  className="text-red-600"
-                >
-                  Delete
-                </DropdownMenuItem>
+                {!isSync && (
+                  <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
+                )}
+                {!isSync && <DropdownMenuSeparator />}
+
+                {!isSync && (
+                  <DropdownMenuItem
+                    onClick={() => setOpen(true)}
+                    className="text-red-600"
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                )}
               </DropdownMenuContent>
             </DropdownMenu>
 

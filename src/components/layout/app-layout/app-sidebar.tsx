@@ -55,13 +55,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain
-          items={
-            MAIN_MENU[user?.plan]?.navMain || [
-              {
-                id: "menu.dashboard",
-              },
-            ]
-          }
+          items={MAIN_MENU[user?.plan]?.navMain || MAIN_MENU["FREE"].navMain}
         />
         {/* <NavMenu items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>

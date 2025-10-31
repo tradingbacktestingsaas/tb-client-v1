@@ -98,6 +98,12 @@ const STANDARD_MENU = {
       icon: Crown,
     },
     {
+      id: "menu.podium",
+      title: "Podium",
+      url: "/podium",
+      icon: Users2Icon,
+    },
+    {
       id: "menu.settings.title",
       title: "Settings",
       url: "#",
@@ -135,6 +141,12 @@ const ELITE_MENU = {
       title: "Trading Journal",
       url: "/journal",
       icon: Book,
+    },
+    {
+      id: "menu.podium",
+      title: "Podium",
+      url: "/podium",
+      icon: Users2Icon,
     },
     {
       id: "menu.tools",

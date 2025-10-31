@@ -139,11 +139,16 @@
     "tradingJournal": "Diario de Trading",
     "tools": "Herramientas",
     "plans": "Planes",
+    "podium": "Podio",
     "settings": {
       "title": "Configuraciones",
       "billing": "Facturación",
       "tradeAccount": "Cuenta de Trading"
-    }
+    },
+    "account": "Cuenta",
+    "upgrade": "Actualizar",
+    "notifications": "Notificaciones",
+    "logout": "Cerrar Sesión"
   },
   "form": {
     "change_password": {

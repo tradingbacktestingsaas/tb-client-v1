@@ -26,7 +26,7 @@ export function useNotifications(userId?: string, enabled = false) {
 
 export const useNotificationsInfinite = (
   userId?: string,
-  options?: Filters
+  // options?: Filters
 ) => {
   return useInfiniteQuery<
     PaginatedResponse, // TQueryFnData

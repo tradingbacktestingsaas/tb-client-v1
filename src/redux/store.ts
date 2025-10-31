@@ -16,11 +16,12 @@ const persistConfig = {
 };
 
 const persistedUserReducer = persistReducer(persistConfig, userReducer);
+const presistedTradeAccount = persistReducer(persistConfig, accountReducer);
 
 // Root reducer
 const rootReducer = combineReducers({
   user: persistedUserReducer,
-  trade_account: accountReducer,
+  trade_account: presistedTradeAccount,
   // strategy: strategyReducer,
   sheet: sheetReducer,
   dialog: dialogReducer,

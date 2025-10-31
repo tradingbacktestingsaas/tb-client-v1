@@ -14,10 +14,11 @@ import { useAccountSwitch } from "@/features/accounts/hooks/mutations";
 import { useAppDispatch } from "@/redux/hook";
 import { updateLastActiveAccount } from "@/redux/slices/user/user-slice";
 import { useUserInfo } from "@/helpers/use-user";
-import { useState } from "react";
+import { act, useState } from "react";
 import { Div } from "@/components/ui/tags";
 import { queryClient } from "@/provider/react-query";
 import { UserPlan } from "@/types/user-type";
+import { setAccountState } from "@/redux/slices/trade-account/trade_account-slice";
 
 const AccountSwitcher = () => {
   const dispatch = useAppDispatch();
@@ -40,15 +41,22 @@ const AccountSwitcher = () => {
       },
       {
         onSuccess: async (data) => {
-          const activeAccId = data?.data?.id;
-          console.log(data?.data);
-          console.log(activeAccId);
-
+          const activeAcc = data?.data;
           dispatch(
-            updateLastActiveAccount({ activeTradeAccountId: activeAccId })
+            setAccountState({
+              current: activeAcc.id,
+              type: accounts.type.toUpperCase(),
+            })
+          );
+          dispatch(
+            updateLastActiveAccount({ activeTradeAccountId: activeAcc.id })
           );
           await queryClient.refetchQueries({
-            queryKey: ["metrics"],
+            queryKey: ["metrics", "stats"],
+            exact: false,
+          });
+          await queryClient.refetchQueries({
+            queryKey: ["analyses", "monthlies", "dailies"],
             exact: false,
           });
           await queryClient.invalidateQueries({
@@ -64,7 +72,7 @@ const AccountSwitcher = () => {
     );
   };
 
-    if (plan === UserPlan.FREE) return null;
+  if (plan === UserPlan.FREE) return null;
 
   return (
     <Select
