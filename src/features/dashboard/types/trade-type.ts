@@ -16,4 +16,5 @@ export interface TradeRaw {
   note: string | null;
   createdAt: Date | null;
   TradeAccounts: { id: string | null } | null;
+  isSync?: boolean;
 }

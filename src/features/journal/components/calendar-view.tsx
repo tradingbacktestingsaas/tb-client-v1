@@ -56,7 +56,7 @@ function groupTradesByWeek(trades: TradeRaw[]) {
   return buckets;
 }
 
-/* Day cell (keep layout), badges select the day too */
+/* Day cell (keeps layout), badges select the day too */
 const DayCell = (
   props: {
     day: CalendarDay;
@@ -68,29 +68,47 @@ const DayCell = (
   if (!context) throw new Error("TradeContext not found");
   const [trades] = context;
 
-  const matchingTrades = trades.filter((tr) => {
-    const d = asDate(tr.openDate);
-    return !!d && isSameDay(d, props.day.date);
-  });
+  const { className, children, modifiers, day, ...rest } = props;
 
-  const { className, children, ...rest } = props;
+  // Only show badges when the trade date is exactly the cell date
+  // and ensure we don't show badges for outside-month cells that don't match.
+  const cellDate = day?.date;
+  const matchingTrades = React.useMemo(() => {
+    if (!cellDate) return [];
+    return trades.filter((tr) => {
+      const d = asDate(tr.openDate);
+      return !!d && isSameDay(d, cellDate);
+    });
+  }, [trades, cellDate]);
+
   return (
     <td {...rest} className={cn("relative p-0 align-top", className)}>
       {children}
-      <div className="absolute top-5 left-0 right-0 space-y-1 px-1 pointer-events-none">
+      {/* container should allow pointer events for badges and tooltips */}
+      <div className="absolute top-5 left-0 right-0 space-y-1 px-1">
         {matchingTrades.slice(0, 3).map((trade, idx) => (
-          <Tooltip key={idx}>
+          <Tooltip key={trade.id ?? `${cellDate?.toISOString()}-${idx}`}>
             <TooltipTrigger asChild>
               <div
+                role="button"
+                tabIndex={0}
                 className={cn(
-                  "truncate text-[11px] px-1 py-0.5 rounded max-w-full overflow-hidden whitespace-nowrap text-white pointer-events-auto",
-                  trade.profit >= 0 ? "bg-green-500" : "bg-red-500"
+                  "truncate text-[11px] px-1 py-0.5 rounded max-w-full overflow-hidden whitespace-nowrap text-white",
+                  trade.profit >= 0 ? "bg-green-500" : "bg-red-500",
+                  "pointer-events-auto cursor-pointer"
                 )}
                 onClick={() =>
                   window.dispatchEvent(
-                    new CustomEvent("dateSelected", { detail: props.day.date })
+                    new CustomEvent("dateSelected", { detail: cellDate })
                   )
                 }
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    window.dispatchEvent(
+                      new CustomEvent("dateSelected", { detail: cellDate })
+                    );
+                  }
+                }}
               >
                 {trade.symbol}
               </div>
@@ -182,9 +200,9 @@ const SelectedDateTrades = ({
             <div className="text-sm font-medium text-muted-foreground border-b pb-1">
               Trades on {format(selectedDate, "MMMM d, yyyy")}
             </div>
-            {selectedTrades.map((trade, i) => (
+            {selectedTrades.map((trade) => (
               <div
-                key={`sel-${i}`}
+                key={trade.id ?? `${trade.symbol}-${trade.openDate}`}
                 className={cn(
                   "p-3 rounded-lg border !bg-card",
                   trade.profit >= 0 ? "border-green-500" : "border-red-500"
@@ -228,9 +246,9 @@ const SelectedDateTrades = ({
             <div className="text-sm font-medium text-muted-foreground border-b pb-1">
               Week of {format(parseISO(wk), "MMMM d, yyyy")}
             </div>
-            {grouped[wk].map((trade, i) => (
+            {grouped[wk].map((trade) => (
               <div
-                key={`${wk}-${i}`}
+                key={trade.id ?? `${wk}-${trade.symbol}-${trade.openDate}`}
                 className={cn(
                   "p-3 rounded-lg border !bg-card",
                   trade.profit >= 0 ? "border-green-500" : "border-red-500"
@@ -346,14 +364,23 @@ function TradeCalendarWidget({
   React.useEffect(() => {
     setMonth(startOfMonth(openDate));
   }, [openDate]);
+
   React.useEffect(() => {
     if (selected) setMonth(startOfMonth(selected)); // jump when clicking a day
   }, [selected]);
 
+  // reset page when filtered trades change
   React.useEffect(() => setWeekPage(1), [rangedTrades]);
 
+  // reset week page when user selects a date to ensure selected week's visible
+  React.useEffect(() => setWeekPage(1), [selected]);
+
   React.useEffect(() => {
-    const handler = (event: CustomEvent) => setSelected(event.detail);
+    const handler = (event: CustomEvent) => {
+      // defensive: ensure event.detail is a Date
+      const d = event?.detail;
+      if (d && d instanceof Date) setSelected(d);
+    };
     window.addEventListener("dateSelected", handler as EventListener);
     return () =>
       window.removeEventListener("dateSelected", handler as EventListener);
@@ -368,8 +395,6 @@ function TradeCalendarWidget({
               showOutsideDays={showOutsideDays}
               month={month} // 👈 controlled month
               onMonthChange={setMonth} // keep internal nav working
-              // fromDate={openDate}        // optionally lock nav to range
-              // toDate={closeDate}
               className={cn(
                 "bg-card h-96 md:h-full lg:h-full group/calendar border rounded-lg p-3 [--cell-size:--spacing(8)]",
                 String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
@@ -555,6 +580,7 @@ function CalendarDayButton({
         className
       )}
       onClick={handleClick}
+      aria-pressed={Boolean(modifiers.selected)}
       {...props}
     >
       <span className="text-[15px] font-semibold">{format(day.date, "d")}</span>

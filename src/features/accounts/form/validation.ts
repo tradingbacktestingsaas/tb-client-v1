@@ -19,6 +19,7 @@ export const upsertAccountSchema = z
       .optional()
       .transform((v) => v ?? ""), // keep empty string when omitted
     type: AccountTypeEnum,
+    broker_name: z.string().optional().nullable(),
     tradesyncId: z.union([z.string(), z.number()]).optional().nullable(),
   })
   .refine(

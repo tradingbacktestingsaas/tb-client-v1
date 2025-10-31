@@ -1,7 +1,12 @@
 import React from "react";
+import Orders from "./orders";
 
 const BillingLayout = () => {
-  return <></>;
+  return (
+    <div>
+      <Orders />
+    </div>
+  );
 };
 
 export default BillingLayout;

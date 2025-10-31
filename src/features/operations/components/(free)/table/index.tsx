@@ -68,6 +68,7 @@ export default function TradesList({
         columns={columns}
         data={normalizeTrades(tradesData)}
         query={query}
+        isSync={data?.sync === true}
         setQuery={setQuery}
         totalCount={totalCount}
       />

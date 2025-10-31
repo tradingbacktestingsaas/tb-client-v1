@@ -32,6 +32,7 @@ type TradesQuery = {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  isSync: boolean;
   query: TradesQuery;
   setQuery: React.Dispatch<React.SetStateAction<TradesQuery>>;
   totalCount: number;
@@ -42,6 +43,7 @@ export function TradesTable<TData, TValue>({
   data,
   query,
   setQuery,
+  isSync,
   totalCount,
 }: DataTableProps<TData, TValue>) {
   const totalPages = Math.max(
@@ -60,6 +62,7 @@ export function TradesTable<TData, TValue>({
     getPaginationRowModel: getPaginationRowModel(),
     manualPagination: true, // server-side mode
     pageCount: totalPages, // authoritative page count
+    meta: { isSync: isSync } as any,
     state: { pagination: { pageIndex, pageSize: query.pageSize } },
     onPaginationChange: (updater) => {
       const current = { pageIndex, pageSize: query.pageSize };
@@ -113,7 +116,7 @@ export function TradesTable<TData, TValue>({
   return (
     <div>
       <div className="rounded-md border">
-        <TableFilterHeader setQuery={setQuery} query={query} />
+        <TableFilterHeader isSync={isSync} setQuery={setQuery} query={query} />
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (

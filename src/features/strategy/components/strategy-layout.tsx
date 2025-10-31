@@ -100,26 +100,33 @@ const PageLayout = () => {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: string) => {
     deleteMutation.mutateAsync(id, {
       onSuccess: () => {
-        toast.success("Delete successfully!");
+        toast.success("Deleted successfully!");
         queryClient.invalidateQueries({ queryKey: ["strategies"] });
       },
       onError: () => toast.error("Failed to delete"),
     });
   };
 
+  // 👇 Add default flag to each strategy
+  const strategiesWithFlag =
+    data?.data?.map((strat) => ({
+      ...strat,
+      is_purchased: strat.is_purchased ?? false, // fallback to false if not defined
+    })) || [];
+
   return (
     <Fragment>
       <div className="space-y-8">
-        <StrategyHeader  setQueries={setQueries} />
+        <StrategyHeader setQueries={setQueries} />
 
         {isLoading && !data?.data?.length ? (
           <StrategySkeleton />
         ) : (
           <VirtuosoGrid
-            data={data?.data || []}
+            data={strategiesWithFlag}
             endReached={loadMore}
             overscan={200}
             components={{
