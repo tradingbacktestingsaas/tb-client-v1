@@ -12,6 +12,7 @@ export type SignUpType = {
   email: string;
   password: string;
   captcha: string;
+  type: string;
 };
 
 export type resetPasswordType = {

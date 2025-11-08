@@ -18,6 +18,7 @@ export const apiEndpoints = {
   },
   analytics: {
     base: "/analytics",
+    full: "/analytics/get",
     get: (id: string) => `/analytics/get/${id}`,
     leaderboard: `/analytics/leaderboard`,
   },
@@ -30,13 +31,16 @@ export const apiEndpoints = {
   },
   subscriptions: {
     base: "/subscriptions",
+    get: "/subscriptions/get",
     create: "/subscription/subscribe ",
+    checkout: "/subscription/create-checkout ",
     free: "/subscription/create-free-subscription",
     update: (id: string) => `/subscriptions/update/${id}`,
     delete: (id: string) => `/subscriptions/delete/${id}`,
   },
   billing: {
     base: "/billing",
+    get: "/orders/get",
     createCheckoutSession: "/billing/choose-plan",
     delete: (id: string) => `/billing/delete/${id}`,
     toggle_renewCycle: "/billing/toggle-renew-cycle",
@@ -53,12 +57,12 @@ export const apiEndpoints = {
     change_password: (id: string) => `/users/change-password/${id}`,
     update: (id: string) => `/users/update/${id}`,
     avatar: (id: string) => `/users/upload-avatar/${id}`,
-    one: (id: string) => `/users/${id}`,
+    one: (id: string) => `/users/get/${id}`,
   },
   trades: {
     create: "/trade/create",
     update: `/trade/update`,
-    delete: `/trade/delete`,
+    delete: (id: string) => `/trade/delete/${id}`,
     bulkDelete: "/trade/bulk-delete",
     base: "/trade",
     get: "/trade/get",
@@ -76,6 +80,7 @@ export const apiEndpoints = {
     update: (id: string) => `/trade-account/update/${id}`,
     active: "/trade-account/active",
     brokers: "/trade-account/brokers",
+    // broker_servers: "/trade-account/brokers",
     switch: "/trade-account/switch",
   },
   tradeSync: {

@@ -28,6 +28,7 @@ export const useGetTrades = (filters: TradeFilters, page = 0, limit = 8) => {
       return res.data;
     },
     retry: false,
+    enabled: !!filters.accountId,
     refetchOnWindowFocus: false,
   });
 

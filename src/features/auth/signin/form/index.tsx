@@ -299,7 +299,7 @@ const SignInForm = () => {
         toast.success(response.message || "Google login successful!");
         form.reset();
         disptach(loginSuccess(response.data));
-        redirectDashboard();
+        router.push("/dashboard");
       } else {
         form.reset();
         toast.error(response.message || "Failed to signIn with google.");

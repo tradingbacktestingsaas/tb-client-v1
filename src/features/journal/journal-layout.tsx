@@ -28,16 +28,11 @@ import {
 import { useUserInfo } from "@/helpers/use-user";
 import { normalizeTrades } from "@/utils/map-trades";
 
-const DEFAULT_OPEN = new Date(
-  new Date().getFullYear(),
-  new Date().getMonth(),
-  1
-);
-const DEFAULT_CLOSE = new Date(); // today
 const LIMIT = 10;
 
 const JournalLayout = () => {
-  const { activeTradeAccountId } = useUserInfo();
+  const { tradeAccounts } = useUserInfo();
+  const accountId = tradeAccounts[0]?.id;
   const [page, setPage] = useState(1);
 
   // ✅ use real defaults (avoid nulls -> "Invalid date")
@@ -93,22 +88,21 @@ const JournalLayout = () => {
     setRange(ns, isAfter(ne, today) ? today : ne);
   };
 
-  useEffect(() => setPage(1), [activeTradeAccountId]);
+  useEffect(() => setPage(1), [accountId]);
 
   const offset = (page - 1) * LIMIT;
   const { data, isLoading, isError, error } = useGetTrades(
-    { accountId: activeTradeAccountId || "", symbol: "", openDate, closeDate },
+    { accountId: accountId || "", symbol: "", openDate, closeDate },
     offset,
     LIMIT
-  );  
-  
+  );
 
   if (isLoading) return <LayoutSkeleton />;
   if (isError) return <div>Error: {(error as Error).message}</div>;
 
   const trades = data?.data ?? data?.trades ?? [];
-  const mapped = normalizeTrades(trades)
-    
+  const mapped = normalizeTrades(trades);
+
   const total: number =
     data?.pagination?.total ??
     data?.meta?.total ??
@@ -118,8 +112,7 @@ const JournalLayout = () => {
     0;
   const totalPages = total > 0 ? Math.ceil(total / LIMIT) : 0;
   const showPager = totalPages > 1 || trades.length === LIMIT || page > 1;
- 
-  
+
   const safeFmt = (d?: Date) =>
     d && isValidDate(d) ? format(d, "MMM d, yyyy") : "—";
 

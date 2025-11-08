@@ -1,7 +1,7 @@
 import api from "@/api/axios";
 import { apiEndpoints } from "@/api/endpoints";
 import { sanitizeFlatStrings } from "@/utils/input-sanitizer/sanitizer";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export const useGetAccounts = (
@@ -30,16 +30,19 @@ export const useGetAccounts = (
 };
 
 export const useGetBrokers = (
-  options = { enabled: true },
-  page,
-  limit,
-  application
+  page: number,
+  limit: number,
+  application: string,
+  search: string = "",
+  options = { enabled: true }
 ) => {
-  const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: ["sync"],
+  return useQuery({
+    queryKey: ["brokers", page, limit, application, search],
     queryFn: async () => {
       const res = await api.get(
-        `${apiEndpoints.trade_account.brokers}?page=${page}&limit=${limit}&application=${application}`
+        `${
+          apiEndpoints.trade_account.brokers
+        }?application=${application.toLowerCase()}&search=${search}&page=${page}&limit=${limit}`
       );
       return res.data;
     },
@@ -48,12 +51,23 @@ export const useGetBrokers = (
     refetchOnWindowFocus: false,
     staleTime: 1000 * 60 * 5,
   });
-
-  return {
-    data,
-    isLoading,
-    isError,
-    error,
-    refetch,
-  };
 };
+
+// 🧩 NEW HOOK — Get servers for a selected broker
+// export const useGetBrokerServers = (
+//   brokerId: string,
+//   options = { enabled: false }
+// ) => {
+//   return useQuery({
+//     queryKey: ["brokerServers", brokerId],
+//     queryFn: async () => {
+//       const res = await api.get(
+//         `${apiEndpoints.trade_account.broker_servers}?accountId=${brokerId}`
+//       );
+//       return res.data;
+//     },
+//     retry: false,
+//     enabled: options.enabled && !!brokerId,
+//     refetchOnWindowFocus: false,
+//   });
+// };

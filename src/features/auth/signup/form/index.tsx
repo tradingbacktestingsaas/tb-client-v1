@@ -37,6 +37,7 @@ import useSignup from "../hook/use-signup";
 import RecaptchaV2, { RecaptchaV2Handle } from "@/lib/recaptcha/recaptchaV2";
 import { getErrorMessage } from "@/lib/error_handler/error";
 import { useRouter } from "next/navigation";
+import { Checkbox } from "@/components/ui/checkbox";
 
 type SignUpFormValues = z.infer<typeof signupSchema>;
 
@@ -215,42 +216,66 @@ const FormContent = ({
 };
 const FormFooter = ({
   recaptchaRef,
+  setIsStudent,
+  isStudent,
 }: {
   recaptchaRef: React.RefObject<RecaptchaV2Handle | null>;
+  setIsStudent: (value: boolean) => void;
+  isStudent: boolean;
 }) => (
   <CardFooter className="flex flex-col justify-between">
-    <Para className="text-sm text-gray-400">
+    <p className="text-sm flex+ justify-between w-full">
       <FormattedMessage
-        id="auth.have_account"
-        defaultMessage={"Already have an account?"}
+        id="auth.student"
+        defaultMessage={"Are you a student of tradingbacktesting?"}
       />
-      <Link href="/auth/signin" className="underline text-indigo-400">
-        <FormattedMessage id="auth.click_here" defaultMessage={"Click here."} />
-      </Link>
-    </Para>
-    <Div className="w-full flex justify-center">
+      <Checkbox onChange={() => setIsStudent(!isStudent)} />
+    </p>
+    <div className="flex justify-between w-full mt-3">
+      <p className="text-sm text-gray-400">
+        <FormattedMessage
+          id="auth.have_account"
+          defaultMessage={"Already have an account?"}
+        />
+        <Link href="/auth/signin" className="underline text-indigo-400">
+          <FormattedMessage
+            id="auth.click_here"
+            defaultMessage={"Click here."}
+          />
+        </Link>
+      </p>
+    </div>
+
+    <div className="w-full flex justify-center mt-4">
       <RecaptchaV2 ref={recaptchaRef} variant="checkbox" />
-    </Div>
+    </div>
   </CardFooter>
 );
 
 //  main form
 const SignUpForm = () => {
+  const [isStudent, setIsStudent] = useState(true);
   const signupMutation = useSignup();
   const recaptchaRef = useRef<RecaptchaV2Handle>(null);
   const router = useRouter();
 
   const form = useForm<SignUpFormValues>({
     resolver: zodResolver(signupSchema),
-    defaultValues: { firstName: "", lastName: "", email: "", password: "" },
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      type: "",
+    },
   });
 
   const onSubmit = form.handleSubmit(async (values) => {
     const token = await recaptchaRef.current?.execute();
     if (!token) toast.error("Please verify you are not a robot.");
-
+    const type = isStudent ? "student" : null;
     try {
-      const newValues = { ...values, captcha: token ?? "" };
+      const newValues = { ...values, captcha: token ?? "", type: type };
       await signupMutation.mutateAsync(newValues, {
         onSuccess: (data) => {
           toast.success(data.message || "Registration successful!");
@@ -279,7 +304,11 @@ const SignUpForm = () => {
         isSubmitting={form.formState.isSubmitting}
         form={form}
       />
-      <FormFooter recaptchaRef={recaptchaRef} />
+      <FormFooter
+        recaptchaRef={recaptchaRef}
+        setIsStudent={setIsStudent}
+        isStudent={isStudent}
+      />
     </Card>
   );
 };

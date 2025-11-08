@@ -54,7 +54,7 @@ export default function StrategyCard({
             <Badge
               className={cn(
                 getBadgeColor(strategy),
-                "w-18 px-8 py-1 shadow-md text-sm"
+                "w-18 px-8 py-1 shadow-md text-xs"
               )}
             >
               {type.toUpperCase()}
@@ -73,12 +73,12 @@ export default function StrategyCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="h-full">
-        {type === "PERSONAL" && (
+        {type === "PERSONAL" || type === "ELITE" && (
           <ul className="px-4 list-disc list-inside text-sm text-gray-500 space-y-1">
             {comment}
           </ul>
         )}
-        {(type === "ELITE" || type === "ADDON") && (
+        {(type === "ADDON") && (
           <ul className="px-4 list-disc blur list-inside text-sm text-gray-500 space-y-1">
             <p>
               Lorem ipsum dolor, sit amet consectetur adipisicing elit.
@@ -97,7 +97,7 @@ export default function StrategyCard({
               onClick={() => onClick(strategy, true)}
               className={cn(
                 getBadgeColor(strategy),
-                "w-22 px-8 py-2 shadow-md text-sm w-fit text-sm  "
+                "w-22 px-6 py-2 shadow-md text-sm w-fit text-sm  "
               )}
             >
               Buy

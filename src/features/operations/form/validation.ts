@@ -16,7 +16,6 @@ const tradeRawSchema = z.object({
   openDate: z.string(),
   closeDate: z.string().nullable(),
   status: z.string().nullable(),
-  strategyTag: z.string().nullable(),
 
   slippage: z.coerce.number().nullable(),
   note: z.string().nullable(),

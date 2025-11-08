@@ -17,10 +17,11 @@ type TradesQuery = {
 
 type Props = {
   query: TradesQuery;
+  isSync: boolean;
   setQuery: React.Dispatch<React.SetStateAction<TradesQuery>>;
 };
 
-const TableFilterHeader: React.FC<Props> = ({ query, setQuery }) => {
+const TableFilterHeader: React.FC<Props> = ({ query, setQuery, isSync }) => {
   const [symbol, setSymbol] = React.useState("");
   const dispatch = useDispatch();
   const applySearch = React.useCallback(() => {
@@ -35,30 +36,36 @@ const TableFilterHeader: React.FC<Props> = ({ query, setQuery }) => {
     }));
   }, [symbol, setQuery]);
 
+  if (isSync) return null;
+
   return (
     <div className="flex items-center justify-between p-4">
       <span className="flex items-center space-x-2">
         <span className="absolute pl-2 pointer-events-none">
           <Search />
         </span>
-        <Input
-          className="w-fit pl-10"
-          placeholder="Search by Symbol (e.g. BTCUSDT)"
-          value={symbol}
-          onChange={(e) => setSymbol(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") applySearch();
-          }}
-          aria-label="Search by symbol"
-        />
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={applySearch}
-          aria-label="Apply symbol search"
-        >
-          Apply
-        </Button>
+        {!isSync && (
+          <Input
+            className="w-fit pl-10"
+            placeholder="Search by Symbol (e.g. BTCUSDT)"
+            value={symbol}
+            onChange={(e) => setSymbol(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") applySearch();
+            }}
+            aria-label="Search by symbol"
+          />
+        )}
+        {!isSync && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={applySearch}
+            aria-label="Apply symbol search"
+          >
+            Apply
+          </Button>
+        )}
         {query.filters.symbol != "" && (
           <Button
             variant="ghost"
@@ -79,21 +86,23 @@ const TableFilterHeader: React.FC<Props> = ({ query, setQuery }) => {
       </span>
 
       <span>
-        <Button
-          onClick={() =>
-            dispatch(
-              openDialog({
-                key: "trades",
-                mode: "add",
-                data: null,
-                formType: "trade",
-              })
-            )
-          }
-          variant="outline"
-        >
-          Add <Plus />
-        </Button>
+        {!isSync && (
+          <Button
+            onClick={() =>
+              dispatch(
+                openDialog({
+                  key: "trades",
+                  mode: "add",
+                  data: null,
+                  formType: "trade",
+                })
+              )
+            }
+            variant="outline"
+          >
+            Add <Plus />
+          </Button>
+        )}
       </span>
     </div>
   );

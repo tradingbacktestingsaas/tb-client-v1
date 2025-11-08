@@ -33,6 +33,8 @@ import { tradeRawSchema } from "./validation";
 import { useCreateTrade, useUpdateTrade } from "../hook/mutations";
 import { useUserInfo } from "@/helpers/use-user";
 import { useEffect } from "react";
+import { queryClient } from "@/provider/react-query";
+import { Textarea } from "@/components/ui/textarea";
 
 type TradeFormValues = z.infer<typeof tradeRawSchema>;
 
@@ -275,24 +277,6 @@ const FormContent = ({
                   </FormItem>
                 )}
               />
-
-              {/* Strategy Tag */}
-              <FormField
-                control={control}
-                name="strategyTag"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Strategy Tag</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Scalping / Trend" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <div className="grid grid-cols-2 gap-4  ">
-              {/* Slippage */}
               <FormField
                 control={control}
                 name="slippage"
@@ -311,7 +295,8 @@ const FormContent = ({
                   </FormItem>
                 )}
               />
-
+            </div>
+            <div className="grid grid-cols-1 gap-4  ">
               {/* Note */}
               <FormField
                 control={control}
@@ -320,7 +305,12 @@ const FormContent = ({
                   <FormItem>
                     <FormLabel>Note</FormLabel>
                     <FormControl>
-                      <Input placeholder="Optional note" {...field} />
+                      <Textarea
+                        rows={50}
+                        className="max-h-[30px] overflow-auto resize-y"
+                        placeholder="Optional note"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -364,7 +354,8 @@ const TradesForm = () => {
   const dispatch = useDispatch();
   const createMutation = useCreateTrade();
   const updateMutation = useUpdateTrade();
-  const { activeTradeAccountId } = useUserInfo();
+  const { tradeAccounts } = useUserInfo();
+  const accountId = tradeAccounts[0]?.id;
   const { isOpen, mode, data } = useDialogState("trades");
 
   const form = useForm<z.infer<typeof tradeRawSchema>>({
@@ -382,7 +373,6 @@ const TradesForm = () => {
       openDate: "",
       closeDate: null,
       status: null,
-      strategyTag: null,
       slippage: null,
       note: null,
     },
@@ -406,7 +396,6 @@ const TradesForm = () => {
         openDate: null,
         closeDate: null,
         status: null,
-        strategyTag: null,
         slippage: null,
         note: null,
       });
@@ -417,9 +406,11 @@ const TradesForm = () => {
     try {
       if (mode === "edit") {
         await updateMutation.mutateAsync(values);
+        queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
       } else {
-        const payload = { ...values, accountId: activeTradeAccountId };
+        const payload = { ...values, accountId: accountId };
         createMutation.mutate(payload);
+        queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
       }
       dispatch(closeDialog("trades"));
     } catch (e) {

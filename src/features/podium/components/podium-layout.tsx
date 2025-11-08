@@ -1,28 +1,28 @@
-"use client"
+"use client";
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { useGetLeaderboard } from "../hooks/queries";
+import { Spinner } from "@/components/ui/spinner";
 
 const PodiumLayout = () => {
   const { data, isLoading } = useGetLeaderboard();
   const rankColors = ["text-yellow-200", "text-green-400", "text-pearl-600"];
 
-
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-white text-lg">
-        Loading leaderboard...
+      <div className="min-h-screen flex items-center justify-center  text-lg">
+        <Spinner fontSize={22} className="h-12 w-12" />
       </div>
     );
   }
 
   if (!data.analytics?.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-900 text-slate-300 text-lg">
-        No leaderboard data available.
+      <div className="min-h-screen flex items-center justify-center  text-lg">
+        <Spinner fontSize={22} className="w-12" />
       </div>
     );
   }

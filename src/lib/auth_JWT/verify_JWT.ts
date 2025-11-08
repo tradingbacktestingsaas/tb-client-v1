@@ -13,7 +13,6 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8080";
  * @throws {Error} If the JWT is invalid
  */
 export const verifyJWTServer = async (accessToken: string) => {
-  console.log(accessToken, "CLIENT: COOKIE CHECK");
   const res = await fetch(
     `${BASE_URL}/${PRIVACY}/api/${VERSION}${apiEndpoints.auth.verifyJWT}`,
     {
