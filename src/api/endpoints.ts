@@ -31,7 +31,9 @@ export const apiEndpoints = {
   },
   subscriptions: {
     base: "/subscriptions",
+    get: "/subscriptions/get",
     create: "/subscription/subscribe ",
+    checkout: "/subscription/create-checkout ",
     free: "/subscription/create-free-subscription",
     update: (id: string) => `/subscriptions/update/${id}`,
     delete: (id: string) => `/subscriptions/delete/${id}`,
@@ -60,7 +62,7 @@ export const apiEndpoints = {
   trades: {
     create: "/trade/create",
     update: `/trade/update`,
-    delete: `/trade/delete`,
+    delete: (id: string) => `/trade/delete/${id}`,
     bulkDelete: "/trade/bulk-delete",
     base: "/trade",
     get: "/trade/get",

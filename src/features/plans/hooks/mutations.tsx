@@ -31,16 +31,19 @@ export const createPaidSubMutation = () =>
     mutationFn: async ({
       user_id,
       plan_id,
-      paymentMethodId,
+      interval,
+      coupon,
     }: {
       user_id: string;
       plan_id: string;
-      paymentMethodId: string;
+      interval: string;
+      coupon: string;
     }) => {
-      const { data } = await api.post(apiEndpoints.subscriptions.create, {
-        user_id,
-        plan_id,
-        paymentMethodId,
+      const { data } = await api.post(apiEndpoints.subscriptions.checkout, {
+        userId: user_id,
+        planId: plan_id,
+        interval,
+        coupon,
       });
       return data;
     },

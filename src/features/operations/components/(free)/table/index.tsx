@@ -4,7 +4,7 @@ import { getColumns } from "./columns";
 import { TradesTable } from "./data-table";
 import { useGetTrades } from "../../../hook/queries";
 import { useEffect, useMemo, useState } from "react";
-import TableSkeleton from "./skeletion";
+import { TableSkeleton } from "./skeletion";
 import { TradeRaw } from "@/features/dashboard/types/trade-type";
 import { normalizeTrades } from "@/utils/map-trades";
 
@@ -41,32 +41,14 @@ export default function TradesList({
   );
 
   const totalCount = data?.pagination.total;
-
-  const [tradesData, setTradesData] = useState<TradeRaw[]>([]);
-  useEffect(() => {
-    if (data?.data) setTradesData(data?.data);
-  }, [data]);
-  console.log(data);
-
-  useEffect(() => {
-    if (accountId) {
-      setQuery((prev) => ({
-        ...prev,
-        filters: { ...prev.filters, accountId },
-        page: 0, // optional: reset pagination
-      }));
-    }
-  }, [accountId]);
-
   const columns = useMemo(() => getColumns(), []);
-
-  if (isLoading) return <TableSkeleton />;
 
   return (
     <div className="p-12">
       <TradesTable
+        isLoading={isLoading}
         columns={columns}
-        data={normalizeTrades(tradesData)}
+        data={normalizeTrades(data?.data)}
         query={query}
         isSync={data?.sync === true}
         setQuery={setQuery}

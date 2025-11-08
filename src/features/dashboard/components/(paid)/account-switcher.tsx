@@ -12,7 +12,6 @@ import { useGetAccounts } from "@/features/accounts/hooks/queries";
 import { Spinner } from "@/components/ui/spinner";
 import { useAccountSwitch } from "@/features/accounts/hooks/mutations";
 import { useAppDispatch } from "@/redux/hook";
-import { updateLastActiveAccount } from "@/redux/slices/user/user-slice";
 import { useUserInfo } from "@/helpers/use-user";
 import { act, useState } from "react";
 import { Div } from "@/components/ui/tags";
@@ -23,10 +22,10 @@ import { setAccountState } from "@/redux/slices/trade-account/trade_account-slic
 const AccountSwitcher = () => {
   const dispatch = useAppDispatch();
   const [open, setOpen] = useState(false);
-  const { id } = useUserInfo();
-  const { plan } = useUserInfo();
+  const { id, subscriptions } = useUserInfo();
   const selectAccount = useAccountSwitch();
   const { data, isLoading, isError } = useGetAccounts(id, { enabled: open });
+  const plan = subscriptions?.plan?.code;
 
   const handleAccountSwitch = async (accountId: string) => {
     const accounts = data?.tradeAccs.find((acc: any) => acc.id === accountId);
@@ -47,9 +46,6 @@ const AccountSwitcher = () => {
               current: activeAcc.id,
               type: accounts.type.toUpperCase(),
             })
-          );
-          dispatch(
-            updateLastActiveAccount({ activeTradeAccountId: activeAcc.id })
           );
           await queryClient.refetchQueries({
             queryKey: ["metrics", "stats"],
@@ -106,7 +102,7 @@ const AccountSwitcher = () => {
                 value={account.id}
                 className="capitalize"
               >
-                {account.accountId} {account.tradesyncId && `(SYNCED)`}
+                {account.account_no} {account.tradesyncId && `(SYNCED)`}
               </SelectItem>
             ))}
           </SelectGroup>

@@ -62,7 +62,7 @@ const ConnectAccount = () => {
             onDelete={null}
             defaultValues={{
               id: uuidv4(),
-              accountId: null,
+              account_no: null,
               broker_server: null,
               investor_password: null,
               type: null,

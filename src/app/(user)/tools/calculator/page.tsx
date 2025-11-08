@@ -20,6 +20,7 @@ const forexPairs = [
   "USD/CAD",
   "USD/CHF",
   "NZD/USD",
+  "XAU/USD",
 ];
 
 const cryptos = [
@@ -55,7 +56,7 @@ export default function PositionSizeCalculator() {
 
   return (
     <div className="max-w-4xl mx-auto py-10">
-      <Card className="shadow-xl border border-gray-700 bg-gradient-to-br from-gray-900 to-gray-800 text-white">
+      <Card className="shadow-xl bg-card">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold">
             Position Size Calculator

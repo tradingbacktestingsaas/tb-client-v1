@@ -5,10 +5,11 @@ import { useUserInfo } from "@/helpers/use-user";
 import TradesForm from "../form";
 
 const OperationsLayout = () => {
-  const { activeTradeAccountId } = useUserInfo();
+  const { tradeAccounts } = useUserInfo();
+  const accountId = tradeAccounts[0]?.id;
   return (
     <div>
-      <TradesList accountId={activeTradeAccountId as any} page={0} limit={8} />
+      <TradesList accountId={accountId as any} page={0} limit={8} />
       <TradesForm />
     </div>
   );

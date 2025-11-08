@@ -35,7 +35,6 @@ export const useCreateTrade = () => {
 // ✏️ UPDATE
 export const useUpdateTrade = () => {
   return useMutation({
-
     mutationFn: async (payload: any) => {
       const { data } = await api.post(apiEndpoints.trades.update, payload);
       return data;
@@ -56,10 +55,7 @@ export const useUpdateTrade = () => {
 export const useDeleteTrade = () => {
   return useMutation({
     mutationFn: async (id: string) => {
-      const payload = { id: id };
-      const { data } = await api.delete(apiEndpoints.trades.delete, {
-        data: payload,
-      });
+      const { data } = await api.delete(apiEndpoints.trades.delete(id));
       return data;
     },
     onSuccess: () => {

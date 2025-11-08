@@ -18,8 +18,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import TableFilterHeader from "./search-filter";
+import { Spinner } from "@/components/ui/spinner";
 
-// Mirror the parent's query type so setQuery lines up perfectly
 type TradesQuery = {
   page: number; // 1-based
   pageSize: number;
@@ -36,6 +36,7 @@ interface DataTableProps<TData, TValue> {
   query: TradesQuery;
   setQuery: React.Dispatch<React.SetStateAction<TradesQuery>>;
   totalCount: number;
+  isLoading: boolean;
 }
 
 export function TradesTable<TData, TValue>({
@@ -45,6 +46,7 @@ export function TradesTable<TData, TValue>({
   setQuery,
   isSync,
   totalCount,
+  isLoading,
 }: DataTableProps<TData, TValue>) {
   const totalPages = Math.max(
     0,
@@ -60,9 +62,9 @@ export function TradesTable<TData, TValue>({
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    manualPagination: true, // server-side mode
-    pageCount: totalPages, // authoritative page count
-    meta: { isSync: isSync } as any,
+    manualPagination: true,
+    pageCount: totalPages,
+    meta: { isSync } as any,
     state: { pagination: { pageIndex, pageSize: query.pageSize } },
     onPaginationChange: (updater) => {
       const current = { pageIndex, pageSize: query.pageSize };
@@ -72,7 +74,7 @@ export function TradesTable<TData, TValue>({
         setQuery((prev) => ({ ...prev, page: 1, pageSize: next.pageSize }));
       }
       if (next.pageIndex !== current.pageIndex) {
-        setQuery((prev) => ({ ...prev, page: next.pageIndex + 1 })); // convert to 1-based
+        setQuery((prev) => ({ ...prev, page: next.pageIndex + 1 }));
       }
     },
   });
@@ -89,7 +91,6 @@ export function TradesTable<TData, TValue>({
     }
   };
 
-  // compact strip: prev, current, next with edges handled
   const pagesToShow = React.useMemo(() => {
     if (totalPages <= 1) return totalPages === 1 ? [1] : [];
     if (totalPages === 2) return [1, 2];
@@ -115,51 +116,67 @@ export function TradesTable<TData, TValue>({
 
   return (
     <div>
-      <div className="rounded-md border">
+      <div className="relative rounded-md border overflow-hidden">
         <TableFilterHeader isSync={isSync} setQuery={setQuery} query={query} />
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id}>
-                    {header.isPlaceholder
-                      ? null
-                      : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                  </TableHead>
-                ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow key={row.id}>
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+
+        {/* Table + Loading Overlay */}
+        <div className="relative min-h-[300px]">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead key={header.id}>
+                      {header.isPlaceholder
+                        ? null
+                        : flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                    </TableHead>
                   ))}
                 </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
+              ))}
+            </TableHeader>
+
+            {!isLoading && (
+              <TableBody>
+                {table.getRowModel().rows?.length ? (
+                  table.getRowModel().rows.map((row) => (
+                    <TableRow key={row.id}>
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={columns.length}
+                      className="h-24 text-center"
+                    >
+                      No results.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
             )}
-          </TableBody>
-        </Table>
+          </Table>
+
+          {isLoading && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 backdrop-blur-sm z-10">
+              <Spinner className="h-6 w-6 text-primary mb-2" />
+              <span className="text-sm text-muted-foreground">
+                Loading data...
+              </span>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Pagination */}
@@ -177,7 +194,6 @@ export function TradesTable<TData, TValue>({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* <label className="text-sm">Rows per page</label> */}
           <select
             className="h-9 rounded-md border px-2 text-sm bg-background"
             value={query.pageSize}

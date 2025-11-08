@@ -25,6 +25,8 @@ function mapTrade(trade) {
     openPrice: trade.openPrice || trade.open_price || 0,
     closePrice: trade.closePrice || trade.close_price || 0,
     profit: trade.profit || 0,
+    id: trade.id || trade._id,
+    note: trade.note || trade.comment,
     status: trade.status || (trade.state === "closed" ? "closed" : "open"),
     slippage: 0.2,
     accountId: trade.accountId || trade.account_id?.toString() || "",

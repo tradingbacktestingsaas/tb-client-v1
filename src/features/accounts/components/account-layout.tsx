@@ -32,7 +32,7 @@ const normalizeAccounts = (data: any): any => {
   if (!Array.isArray(rows)) return [];
   return rows.map((r: any) => ({
     id: String(r.id ?? r._id ?? r.accountId ?? crypto.randomUUID()),
-    accountId: r.accountId ?? null,
+    account_no: r.account_no ?? null,
     broker_server: r.broker_server ?? r.brokerServer ?? null,
     investor_password: r.investor_password ?? r.investorPassword ?? null,
     type: (r.type ?? "FREE") as any,
@@ -179,7 +179,7 @@ const AccountLayout = () => {
             onDelete={null}
             defaultValues={{
               id: uuidv4(),
-              accountId: null,
+              account_no: null,
               broker_server: null,
               investor_password: null,
               type: null,

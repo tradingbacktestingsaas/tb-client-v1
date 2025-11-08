@@ -25,15 +25,20 @@ import { updateProfile } from "@/redux/slices/user/user-slice";
 import { setAccountState } from "@/redux/slices/trade-account/trade_account-slice";
 
 const DashboardLayout = () => {
-  const { id, activeTradeAccountId } = useUserInfo();
-  const { user, account, isLoading } = useGetUser(id);
-
   const dispatch = useDispatch();
-  const { data, isLoading: metricsLoading } =
-    useGetMertics(activeTradeAccountId);
+  const { id } = useUserInfo();
+  const { user, isLoading } = useGetUser(id);
+  const plan = user?.subscriptions?.plan?.code;
+  const accountId = user?.tradeAccounts[0]?.id;
+  const accountType = user?.tradeAccounts[0]?.type || "";
+  const isFreePlan = plan === UserPlan.FREE;
+  const isStandardPlan = plan === UserPlan.ELITE;
+  const isPremiumPlan = plan === UserPlan.STANDARD;
+
+  const { data, isLoading: metricsLoading } = useGetMertics(accountId);
   const { data: charts, isLoading: charLoading } = useGetTrades(
     {
-      accountId: activeTradeAccountId,
+      accountId: accountId,
       symbol: "",
       openDate: "",
       closeDate: "",
@@ -41,25 +46,25 @@ const DashboardLayout = () => {
     0,
     8
   );
-
+    
   useEffect(() => {
     if (user) {
       dispatch(updateProfile(user));
       dispatch(
         setAccountState({
-          current: account?.id,
-          type: account?.type,
+          current: accountId,
+          type: accountType.toUpperCase(),
         })
       );
     }
-  }, [user, account]);
+  }, [user]);
 
   if (metricsLoading || charLoading || isLoading) return <DashboardSkeleton />;
 
   if (!data && !charts)
     return (
       <>
-        {user?.plan === UserPlan.FREE ? (
+        {isFreePlan ? (
           <DashboardEmpty
             onAction={() => {
               dispatch(
@@ -98,7 +103,7 @@ const DashboardLayout = () => {
       </>
     );
 
-  if (user?.plan === UserPlan.ELITE || user?.plan === UserPlan.STANDARD) {
+  if (isStandardPlan || isPremiumPlan) {
     return (
       <div className="p-12  space-y-12 ">
         <TradeAnalyticsOverview data={data?.analytics} />
@@ -112,7 +117,7 @@ const DashboardLayout = () => {
     );
   }
 
-  if (user?.plan === UserPlan.FREE) {
+  if (isFreePlan) {
     return (
       <div className="flex flex-col w-full space-y-12  p-12">
         {/* first section (account-switcher) */}

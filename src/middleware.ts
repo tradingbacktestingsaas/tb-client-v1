@@ -15,7 +15,17 @@ const ALWAYS_PUBLIC = [
 ];
 
 // Prefixes that require auth
-const PROTECTED_PREFIXES = ["/dashboard", "/accounts", "/operations", "/journal","/podium","/tools", "/strategy", "/billings", "/notifications"];
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/accounts",
+  "/operations",
+  "/journal",
+  "/podium",
+  "/tools",
+  "/strategy",
+  "/billings",
+  "/notifications",
+];
 
 export async function middleware(req: NextRequest) {
   const { pathname, search } = req.nextUrl;
@@ -54,9 +64,8 @@ export async function middleware(req: NextRequest) {
   if (!session?.success) {
     return redirectTo(req, "/auth/signin", pathname + search);
   }
-
   // 6) Valid session but missing plan -> plans (avoid redirect if already there)
-  const plan = session?.data?.plan ?? null;
+  const plan = session?.data?.subscriptions ?? null;
   if (plan === null && pathname !== "/plans") {
     return redirectTo(req, "/plans", pathname + search);
   }

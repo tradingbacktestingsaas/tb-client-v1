@@ -68,7 +68,7 @@ export default function AccountForm({
     resolver: zodResolver(upsertAccountSchema),
     defaultValues: {
       id: defaultValues.id ?? "",
-      accountId: defaultValues.accountId ?? "",
+      account_no: defaultValues.account_no ?? "",
       broker_server: defaultValues.broker_server ?? "",
       investor_password: defaultValues.investor_password ?? "",
       type: (defaultValues.type as "MT4" | "MT5" | "FREE") ?? null,
@@ -136,7 +136,7 @@ export default function AccountForm({
           {/* Account ID */}
           <FormField
             control={form.control}
-            name="accountId"
+            name="account_no"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Account ID</FormLabel>

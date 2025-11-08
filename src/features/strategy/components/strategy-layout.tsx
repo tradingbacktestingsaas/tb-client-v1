@@ -19,10 +19,11 @@ import { useBuyStrategy, useDeleteStrategy } from "../hooks/mutations";
 import { queryClient } from "@/provider/react-query";
 
 const PageLayout = () => {
+  const [page, setPage] = useState(1);
   const pageSize = 10;
   const { id, firstName, lastName, email } = useUserInfo();
   const [queries, setQueries] = useState<StrategyQueries>({
-    page: 1,
+    page: page,
     limit: pageSize,
     filters: { type: "", userId: id, byUserId: "" },
   });
@@ -41,6 +42,10 @@ const PageLayout = () => {
   const { data, isLoading, isFetching } = useGetStrategies(queries);
   const deleteMutation = useDeleteStrategy();
 
+  const strategies = data?.data || [];
+  const total = data?.pagination?.total || 0;
+  const hasMore = strategies.length < total ? true : false;
+
   const onSelect = (strategy: StrategyData, state: boolean) => {
     setSelectedStrategy(strategy);
     setModalOpen(state);
@@ -48,10 +53,10 @@ const PageLayout = () => {
 
   // Load more when reaching bottom
   const loadMore = useCallback(() => {
-    if (!isFetching && data?.data?.length === pageSize) {
-      setQueries((prev) => ({ ...prev, page: prev.page + 1 }));
+    if (!isFetching && hasMore) {
+      setPage((prev) => prev + 1);
     }
-  }, [data, isFetching]);
+  }, [isFetching, hasMore]);
 
   const handleSubscribe = async () => {
     if (!stripe || !elements || !selectedStrategy) return;
@@ -126,7 +131,7 @@ const PageLayout = () => {
           <StrategySkeleton />
         ) : (
           <VirtuosoGrid
-            data={strategiesWithFlag}
+            data={strategies}
             endReached={loadMore}
             overscan={200}
             components={{

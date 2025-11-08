@@ -41,9 +41,9 @@ export default function ForexNewsCards() {
         data={news}
         style={{ height: 600 }}
         itemContent={(index, newsItem) => (
-          <div className="p-4 mb-4 border rounded-xl shadow-sm bg-white dark:bg-gray-900 dark:border-gray-700 hover:shadow-lg transition-all">
+          <div className="p-4 mb-4 border rounded-xl shadow-sm bg-card hover:shadow-lg transition-all">
             <div className="flex justify-between items-start mb-2">
-              <h3 className="text-lg font-semibold">{newsItem.title}</h3>
+              <h3 className="text-md font-semibold">{newsItem.title}</h3>
               <span className="text-sm text-gray-500 dark:text-gray-400">
                 {format(new Date(newsItem.pubDate), "dd/MM/yyyy")}
               </span>

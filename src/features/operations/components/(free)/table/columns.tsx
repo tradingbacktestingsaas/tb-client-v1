@@ -29,6 +29,8 @@ import { MoreHorizontal } from "lucide-react";
 import { useDeleteTrade } from "@/features/operations/hook/mutations";
 import { toast } from "sonner";
 import { useState } from "react";
+import { getErrorMessage } from "@/lib/error_handler/error";
+import { queryClient } from "@/provider/react-query";
 
 // // Define the shape of your data (from your Trades entity)
 // export type Trade = {
@@ -135,11 +137,11 @@ export function getColumns(): ColumnDef<TradeRaw>[] {
         const deleteTrade = useDeleteTrade();
         const isSync =
           ((table.options.meta as any)?.isSync as boolean) ?? false;
-
+        
         const [open, setOpen] = useState(false);
 
         const handleEdit = () => {
-          if (!isSync) return;
+          if (isSync) return;
           dispatch(
             openDialog({
               key: "trades",
@@ -161,11 +163,10 @@ export function getColumns(): ColumnDef<TradeRaw>[] {
           );
         };
 
-        const handleDelete = async () => {
-          if (!isSync) return;
+        const handleDelete = async (id) => {
+          if (isSync) return;
           try {
-            await deleteTrade.mutateAsync(trade.id);
-            toast.success("Trade deleted successfully!");
+            await deleteTrade.mutateAsync(id);
           } catch (err) {
             toast.error("Failed to delete trade!");
           }
@@ -211,7 +212,7 @@ export function getColumns(): ColumnDef<TradeRaw>[] {
                 <AlertDialogFooter>
                   <AlertDialogCancel>Cancel</AlertDialogCancel>
                   <AlertDialogAction
-                    onClick={handleDelete}
+                    onClick={() => handleDelete(trade.id)}
                     disabled={deleteTrade.isPending}
                     className="bg-red-600 hover:bg-red-700"
                   >
