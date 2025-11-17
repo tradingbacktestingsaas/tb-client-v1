@@ -7,13 +7,7 @@ interface User {
   lastName: string;
   role: string;
   avatar_url: string;
-  plan: {
-    code: string;
-    name: string;
-    id: string;
-    price_cents: string;
-    features: { [key: string]: boolean };
-  };
+  plan: string;
   subscriptions: any;
   tradeAccounts: any[];
   blocked?: boolean;
