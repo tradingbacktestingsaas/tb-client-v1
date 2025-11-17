@@ -4,7 +4,7 @@ import { useAppSelector } from "@/redux/hook";
 
 const useUserInfo = () => {
   const user = useAppSelector((state) => state?.user?.user);
-
+  if (!user) return {};
   return {
     user: user,
     id: user?.id,

@@ -22,6 +22,7 @@ import { MAIN_MENU } from "./menu-data";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUserInfo();
+  const currentPlan: any = user.plan;
   const { theme } = useTheme();
   return (
     <Sidebar variant="inset" {...props}>
@@ -55,7 +56,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain
-          items={MAIN_MENU[user?.plan]?.navMain || MAIN_MENU["FREE"].navMain}
+          items={MAIN_MENU[currentPlan]?.navMain || MAIN_MENU["FREE"].navMain}
         />
         {/* <NavMenu items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
