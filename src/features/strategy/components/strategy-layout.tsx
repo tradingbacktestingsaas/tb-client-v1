@@ -1,11 +1,10 @@
 "use client";
 
-import { Fragment, useCallback, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { VirtuosoGrid } from "react-virtuoso";
-import { useGetStrategies } from "../hooks/queries";
+import { useGetPurchasedStrategies, useGetStrategies } from "../hooks/queries";
 import { StrategyData, StrategyQueries } from "../type";
 
-// Components
 import StrategyCard from "./card";
 import StrategyHeader from "./tab-menu";
 import StrategySkeleton from "./skeleton";
@@ -21,13 +20,28 @@ import { queryClient } from "@/provider/react-query";
 const PageLayout = () => {
   const [page, setPage] = useState(1);
   const pageSize = 10;
+
   const { id, firstName, lastName, email } = useUserInfo();
+
   const [queries, setQueries] = useState<StrategyQueries>({
     page: page,
     limit: pageSize,
     filters: { type: "", userId: id, byUserId: "" },
   });
+  const {
+    data: purchasedStrategies,
+    isFetching: isFetchingPurchasedStrategies,
+    isLoading: isLoadingPurchasedStrategies,
+  } = useGetPurchasedStrategies("", id);
 
+  const {
+    data: strategies,
+    isLoading: isLoadingStrategies,
+    isFetching: isFetchingStrategies,
+  } = useGetStrategies(queries);
+
+  const isLoading = isLoadingPurchasedStrategies || isLoadingStrategies;
+  const isFetching = isFetchingPurchasedStrategies || isFetchingStrategies;
   const stripe = useStripe();
   const elements = useElements();
 
@@ -39,27 +53,41 @@ const PageLayout = () => {
   const [modalOpen, setModalOpen] = useState(false);
 
   const buyStratMutation = useBuyStrategy();
-  const { data, isLoading, isFetching } = useGetStrategies(queries);
   const deleteMutation = useDeleteStrategy();
 
-  const strategies = data?.data || [];
-  const total = data?.pagination?.total || 0;
-  const hasMore = strategies.length < total ? true : false;
+  const rawStrategies = strategies?.data || [];
+  const strategiesPurchased = purchasedStrategies?.data || [];
+  const total = strategies?.pagination?.total || 0;
+
+  const mergedStrategies = useMemo(() => {
+    const purchasedIds = new Set(strategiesPurchased.map((s) => s.strategyId));
+
+    return rawStrategies.map((strat) => ({
+      ...strat,
+      is_purchase: purchasedIds.has(strat.id),
+    }));
+  }, [rawStrategies, strategiesPurchased]);
+
+  /** ------------------------------------------------------------------------
+   *  FIX: Convert is_purchased into proper boolean & use this as the REAL list
+   * -------------------------------------------------------------------------*/
+  const hasMore = rawStrategies.length < total;
 
   const onSelect = (strategy: StrategyData, state: boolean) => {
     setSelectedStrategy(strategy);
     setModalOpen(state);
   };
 
-  // Load more when reaching bottom
   const loadMore = useCallback(() => {
-    if (!isFetching && hasMore) {
-      setPage((prev) => prev + 1);
-    }
-  }, [isFetching, hasMore]);
+    if (!strategies && hasMore) setPage((prev) => prev + 1);
+  }, [strategies, hasMore]);
 
+  /** ------------------------------------------------------------------------
+   *  Handle Stripe Payment
+   * -------------------------------------------------------------------------*/
   const handleSubscribe = async () => {
     if (!stripe || !elements || !selectedStrategy) return;
+
     setCardError(null);
     setPaying(true);
 
@@ -77,7 +105,7 @@ const PageLayout = () => {
       });
 
       if (error) {
-        setCardError(error.message || "Card error");
+        setCardError(error.message || "Payment failed");
         return;
       }
 
@@ -91,8 +119,11 @@ const PageLayout = () => {
           onSuccess: () => {
             toast.success("Payment completed!");
             queryClient.invalidateQueries({ queryKey: ["strategies"] });
+            queryClient.invalidateQueries({
+              queryKey: ["purchasedStrategies"],
+            });
           },
-          onError: () => toast.error("Failed to create payment"),
+          onError: () => toast.error("Payment failed"),
         }
       );
 
@@ -105,33 +136,30 @@ const PageLayout = () => {
     }
   };
 
+  /** ------------------------------------------------------------------------
+   *  Handle Delete
+   * -------------------------------------------------------------------------*/
   const handleDelete = async (id: string) => {
     deleteMutation.mutateAsync(id, {
       onSuccess: () => {
-        toast.success("Deleted successfully!");
+        toast.success("Deleted successfully");
         queryClient.invalidateQueries({ queryKey: ["strategies"] });
       },
-      onError: () => toast.error("Failed to delete"),
+      onError: () => toast.error("Delete failed"),
     });
   };
-
-  // 👇 Add default flag to each strategy
-  const strategiesWithFlag =
-    data?.data?.map((strat) => ({
-      ...strat,
-      is_purchased: strat.is_purchased ?? false, // fallback to false if not defined
-    })) || [];
 
   return (
     <Fragment>
       <div className="space-y-8">
         <StrategyHeader setQueries={setQueries} />
 
-        {isLoading && !data?.data?.length ? (
+        {isLoading && !mergedStrategies.length ? (
           <StrategySkeleton />
         ) : (
           <VirtuosoGrid
-            data={strategies}
+            /** ---------------- FIX: use normalized array ---------------- */
+            data={mergedStrategies}
             endReached={loadMore}
             overscan={200}
             components={{
@@ -149,7 +177,7 @@ const PageLayout = () => {
                     deleteMutation.isPending || buyStratMutation.isPending
                   }
                   onDelete={handleDelete}
-                  strategy={strategy}
+                  strategy={strategy} // ← FIXED (no index mismatch)
                   onClick={onSelect}
                 />
               </div>
@@ -160,10 +188,9 @@ const PageLayout = () => {
         )}
       </div>
 
-      {/* Strategy Form Dialog */}
+      {/* Dialogs */}
       <StrategyFormDialog />
 
-      {/* Payment Dialog */}
       <PaymentDialog
         open={modalOpen}
         onOpenChange={setModalOpen}

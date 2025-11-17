@@ -1,50 +1,63 @@
 import { configureStore, combineReducers } from "@reduxjs/toolkit";
-import { persistStore, persistReducer, Persistor } from "redux-persist";
+import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-// Reducers
+
 import userReducer from "./slices/user/user-slice";
 import accountReducer from "./slices/trade-account/trade_account-slice";
-// import strategyReducer from "./slices/strategy/slice";
 import dialogReducer from "./slices/dialog/dialog-slice";
 import notificationReducer from "./slices/notification/slice";
 import sheetReducer from "./slices/sheet/slice";
 
-// Persist config for redux-persist
-const persistConfig = {
-  key: "root",
+// UNIQUE persist configs
+const userPersistConfig = {
+  key: "user",
   storage,
 };
 
-const persistedUserReducer = persistReducer(persistConfig, userReducer);
-const presistedTradeAccount = persistReducer(persistConfig, accountReducer);
+const tradeAccountPersistConfig = {
+  key: "trade_account",
+  storage,
+};
+
+// Persist ONLY these slices
+const persistedUser = persistReducer(userPersistConfig, userReducer);
+const persistedAccount = persistReducer(
+  tradeAccountPersistConfig,
+  accountReducer
+);
 
 // Root reducer
 const rootReducer = combineReducers({
-  user: persistedUserReducer,
-  trade_account: presistedTradeAccount,
-  // strategy: strategyReducer,
+  user: persistedUser,
+  trade_account: persistedAccount,
   sheet: sheetReducer,
   dialog: dialogReducer,
   notification: notificationReducer,
 });
 
-// Configuring the Redux store
+// Store
 const store = configureStore({
   reducer: rootReducer,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ["persist/PERSIST"],
+        ignoredActions: [
+          "persist/PERSIST",
+          "persist/REHYDRATE",
+          "persist/FLUSH",
+          "persist/PAUSE",
+          "persist/PURGE",
+          "persist/REGISTER",
+        ],
       },
+      ignoredPaths: ["_persist"],
     }),
   devTools: process.env.NODE_ENV !== "production",
 });
 
-const persistor = persistStore(store);
+export const persistor = persistStore(store);
 
-// Explicitly define types for store and persistor
-export { store, persistor };
 export type RootState = ReturnType<typeof store.getState>;
-export type AppStore = typeof store; // Type for store
-export type AppPersistor = Persistor; // Type for persistor
-export type AppDispatch = typeof store.dispatch; // This gets the dispatch type from the store
+export type AppDispatch = typeof store.dispatch;
+
+export { store };

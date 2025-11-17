@@ -75,6 +75,8 @@ export const apiEndpoints = {
   trade_account: {
     create: "/trade-account/create",
     base: "/trade-account",
+    status: (id: string) => `/trade-account/status/${id}`,
+    getOne: `/trade-account/get-one`,
     get: (userId) => `/trade-account/get?userId=${userId}`,
     delete: (id: string) => `/trade-account/delete/${id}`,
     update: (id: string) => `/trade-account/update/${id}`,
@@ -92,6 +94,7 @@ export const apiEndpoints = {
     get: "/strategies/get",
     create: "/strategies/create",
     buy: "/strategies/buy-strategy",
+    purchasedStrategies: `/strategies/purchased`,
     getOne: (id: string) => `/strategies/get/${id}`,
     update: `/strategies/update`,
     delete: (id: string) => `/strategies/delete/${id}`,
@@ -124,5 +127,13 @@ export const apiEndpoints = {
   dashboard: {
     base: "/dashboard",
     stats: (id: string) => `/dashboard/stats/?accountId=${id}`,
+  },
+  coupon: {
+    validate: "/coupons/validate",
+    create: "/coupons/create",
+    delete: (id: string) => `/coupons/delete/${id}`,
+    update: (id: string) => `/coupons/update/${id}`,
+    get: "/coupons/get",
+    bulkDelete: "/coupons/bulk-delete",
   },
 };

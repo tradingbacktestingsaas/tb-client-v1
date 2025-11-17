@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useStripe, useElements } from "@stripe/react-stripe-js";
 import { useUserInfo } from "@/helpers/use-user";
 import { useGetPlans } from "@/features/plans/hooks/queries";
 import {
@@ -12,31 +11,30 @@ import {
 
 import PlansHeader from "./component/plans-header";
 import PlansGrid from "./component/plans-grid";
-import PaymentDialog from "./component/payment-dialog";
 import { toast } from "sonner";
-import { useAppDispatch } from "@/redux/hook";
-import { updateProfile, upgradeUserPlan } from "@/redux/slices/user/user-slice";
-import { setAccountState } from "@/redux/slices/trade-account/trade_account-slice";
 import { useGetUser } from "../users/hooks";
-// import CouponSection from "./component/coupon-section";
+import CouponSection from "./component/coupon-section";
+import { getErrorMessage } from "@/lib/error_handler/error";
+import { useAppDispatch } from "@/redux/hook";
+import { updateProfile } from "@/redux/slices/user/user-slice";
 
 export default function PlansLayout() {
-  const dispatch = useAppDispatch();
   const router = useRouter();
   const { user } = useUserInfo();
-  const stripe = useStripe();
-  const elements = useElements();
+  // const stripe = useStripe();
+  // const elements = useElements();
 
-  const [modalOpen, setModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
-  const [paying, setPaying] = useState(false);
-  const [cardError, setCardError] = useState<string | null>(null);
+  // const [modalOpen, setModalOpen] = useState(false);
+  // const [selectedPlan, setSelectedPlan] = useState<any | null>(null);
+  // const [paying, setPaying] = useState(false);
+  // const [cardError, setCardError] = useState<string | null>(null);
   const [cycle, setCycle] = useState<"month" | "year">("month");
-
+  const [coupon, setCoupon] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
   const freePlanMutation = createFreeSubMutation();
   const paidPlanMutation = createPaidSubMutation();
   const { data, isLoading } = useGetPlans();
-  const { user: userData } = useGetUser(user?.id);
+  const { user: userData, refetch } = useGetUser(user?.id);
   const currentPlan = userData?.subscriptions?.plan?.id || {};
 
   // const handleSubscribe = async () => {
@@ -97,11 +95,15 @@ export default function PlansLayout() {
       },
       {
         onSuccess: (data) => {
-          toast.success("Redirected to checkout!");
-          router.push(data.redirect);
+          toast.success(data?.message || "Redirected to checkout!");
+          router.push(data?.redirect);
         },
-        onError: () => {
-          toast.error("Failed to create subscription");
+        onError: (err) => {
+          const message = getErrorMessage(
+            err,
+            "Failed to create subscription"
+          ).message;
+          toast.error(message || "Failed to create subscription");
         },
       }
     );
@@ -117,11 +119,12 @@ export default function PlansLayout() {
           />
 
           <PlansGrid
+            setCoupon={setCoupon}
             plans={data?.data || []}
             currentPlan={currentPlan}
             billingCycle={cycle}
             loading={isLoading}
-            onSelectPlan={(plan) => {
+            onSelectPlan={(plan, coupon) => {
               if (plan.code === "FREE") {
                 freePlanMutation.mutate(
                   {
@@ -129,13 +132,28 @@ export default function PlansLayout() {
                     plan_id: plan?.id,
                   },
                   {
-                    onSuccess: () => {
-                      router.push("/dashboard");
+                    onSuccess: async (data) => {
+                      if (data && data.success) {
+                        toast.success(
+                          data?.message || "Subscribed to free plan!"
+                        );
+                        const result = await refetch();
+                        const user = result?.data?.user;
+                        dispatch(updateProfile(user));
+                        router.push("/dashboard");
+                      }
+                    },
+                    onError: (err) => {
+                      const message = getErrorMessage(
+                        err,
+                        "Failed to create subscription"
+                      ).message;
+                      toast.error(message || "Failed to create subscription");
                     },
                   }
                 );
               } else {
-                handleSubscribe(plan.id, user?.id, cycle, null);
+                handleSubscribe(plan.id, user?.id, cycle, coupon);
               }
             }}
           />
@@ -147,7 +165,7 @@ export default function PlansLayout() {
             cardError={cardError}
             handleSubscribe={handleSubscribe}
           /> */}
-          {/* <CouponSection /> */}
+
           <p className="mt-4 text-xs text-muted-foreground text-center">
             Prices in USD. Taxes may apply. You can change or cancel anytime.
           </p>

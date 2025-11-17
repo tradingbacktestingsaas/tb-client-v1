@@ -34,7 +34,7 @@ const StrategyFormDialog = () => {
         queryClient.invalidateQueries({ queryKey: ["strategies"] });
         toast.success("Strategy updated");
       } else {
-        console.log(formData,"FORM");
+        console.log(formData, "FORM");
         await createMutation.mutateAsync(formData);
         queryClient.invalidateQueries({ queryKey: ["strategies"] });
         toast.success("Strategy created");

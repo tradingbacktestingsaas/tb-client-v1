@@ -71,3 +71,20 @@ export const useGetBrokers = (
 //     refetchOnWindowFocus: false,
 //   });
 // };
+
+export const useGetAccountStatus = (
+  id: string,
+  options = { enabled: false }
+) => {
+  return useQuery({
+    queryKey: ["account", id],
+    queryFn: async () => {
+      const res = await api.get(apiEndpoints.trade_account.status(id));
+      return res.data;
+    },
+    retry: false,
+    enabled: options.enabled,
+    refetchOnWindowFocus: false,
+    staleTime: 1000 * 60 * 5,
+  });
+};

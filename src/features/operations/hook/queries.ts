@@ -8,7 +8,7 @@ interface TradeFilters {
   closeDate: any;
 }
 export const useGetTrades = (filters: TradeFilters, page = 0, limit = 8) => {
-  const { data, isLoading, isError, error } = useQuery({
+  const { data, isLoading, isFetching, isError, error } = useQuery({
     queryKey: ["trades", filters.accountId, page, limit],
     queryFn: async () => {
       const res = await api.get(
@@ -32,7 +32,7 @@ export const useGetTrades = (filters: TradeFilters, page = 0, limit = 8) => {
     refetchOnWindowFocus: false,
   });
 
-  return { data, isLoading, isError, error };
+  return { data, isLoading, isFetching, isError, error };
 };
 
 export const useGetTradeById = () => {};

@@ -3,7 +3,7 @@ import { apiEndpoints } from "@/api/endpoints";
 import { useQuery } from "@tanstack/react-query";
 
 export const useGetUser = (id) => {
-  const { data, isLoading, isError, error, refetch } = useQuery({
+  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey: ["user", id],
 
     queryFn: async () => {
@@ -22,6 +22,7 @@ export const useGetUser = (id) => {
     user,
     isLoading,
     isError,
+    isFetching,
     error,
     refetch,
   };

@@ -98,8 +98,11 @@ const dialogSlice = createSlice({
         }
       }
     },
+    resetDialogs: (state) => {
+      state.dialogs = {};
+    },
   },
 });
 
-export const { openDialog, closeDialog, toggleDialog } = dialogSlice.actions;
+export const { openDialog, closeDialog, toggleDialog, resetDialogs } = dialogSlice.actions;
 export default dialogSlice.reducer;

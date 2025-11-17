@@ -22,10 +22,12 @@ import Image from "next/image";
 
 import mt4 from "../../../../public/assets/options_icon/mt4.png";
 import mt5 from "../../../../public/assets/options_icon/mt5.png";
+import { queryClient } from "@/provider/react-query";
 
 type Props = {
   defaultValues: Partial<UpsertAccountValues>;
   onSave: (values: UpsertAccountValues) => Promise<void> | void;
+  refetch?: () => void;
   onDelete?: (id: string) => Promise<void> | void;
   isSaving?: boolean;
   isDeleting?: boolean;
@@ -36,12 +38,16 @@ export default function AccountCard({
   defaultValues,
   onSave,
   onDelete,
+  refetch,
   isDeleting,
   isSaving,
   className,
 }: Props) {
   const [editing, setEditing] = React.useState(false);
-  const [type, setType] = React.useState(defaultValues.type);
+  const [type, setType] = React.useState(defaultValues.type || null);
+  const [status, setStatus] = React.useState(
+    defaultValues.status ?? "DISCONNECTED"
+  );
   const showChooseModal = type === null;
 
   type AccountType = z.infer<typeof AccountTypeEnum>;
@@ -51,6 +57,13 @@ export default function AccountCard({
       : type === "MT4"
       ? "bg-sky-100 text-sky-800"
       : "bg-violet-100 text-violet-800";
+
+  const statusBadge =
+    status === "connection_ok"
+      ? "bg-emerald-100 text-emerald-800"
+      : status === "attempt_failed"
+      ? "bg-red-100 text-red-800"
+      : "bg-yellow-100 text-yellow-800";
 
   const handleSelect = (type: AccountType) => {
     defaultValues.type = type;
@@ -78,6 +91,7 @@ export default function AccountCard({
                       variant={type === type ? "ghost" : "outline"}
                       size="icon"
                       className="w-fit h-full"
+                      disabled={isDeleting || isSaving}
                       onClick={() => handleSelect(type)}
                     >
                       <Image
@@ -95,6 +109,7 @@ export default function AccountCard({
                       variant={type === type ? "ghost" : "outline"}
                       size="icon"
                       className="w-fit h-full"
+                      disabled={isDeleting || isSaving}
                       onClick={() => handleSelect(type)}
                     >
                       <Image
@@ -139,6 +154,14 @@ export default function AccountCard({
             >
               {type}
             </Badge>
+            <Badge
+              className={cn(
+                "rounded-full px-2 py-0.5 text-[11px] font-medium",
+                statusBadge
+              )}
+            >
+              {status}
+            </Badge>
             <Button
               hidden={
                 defaultValues?.type === "FREE" ||
@@ -162,6 +185,7 @@ export default function AccountCard({
             onSave={onSave}
             onDelete={onDelete}
             isSaving={isSaving}
+            isDeleting={isDeleting}
             editing={editing}
             setEditing={setEditing}
           />

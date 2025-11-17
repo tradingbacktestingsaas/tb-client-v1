@@ -6,10 +6,7 @@ export const AccountTypeEnum = z.enum(["FREE", "MT4", "MT5"]);
 export const upsertAccountSchema = z
   .object({
     id: z.string().optional(), // may be absent for "create"
-    account_no: z
-      .string({ error: "Account ID is required" })
-      .min(1, "Account ID is required")
-      .max(100, "Account ID is too long"),
+    account_no: z.union([z.string(), z.number()]),
     broker_server: z
       .string({ error: "Broker server is required" })
       .min(1, "Broker server is required")
@@ -19,7 +16,8 @@ export const upsertAccountSchema = z
       .optional()
       .transform((v) => v ?? ""), // keep empty string when omitted
     type: AccountTypeEnum,
-    broker_name: z.string().optional().nullable(),
+    broker_server_id: z.string().optional().nullable(),
+    status: z.string().optional().nullable(),
     tradesyncId: z.union([z.string(), z.number()]).optional().nullable(),
   })
   .refine(

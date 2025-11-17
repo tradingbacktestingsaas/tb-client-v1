@@ -27,12 +27,12 @@ import {
 } from "lucide-react";
 import { useUserInfo } from "@/helpers/use-user";
 import { normalizeTrades } from "@/utils/map-trades";
+import { useTradeAccountInfo } from "@/helpers/use-taccount";
 
 const LIMIT = 10;
 
 const JournalLayout = () => {
-  const { tradeAccounts } = useUserInfo();
-  const accountId = tradeAccounts[0]?.id;
+  const activeAcc = useTradeAccountInfo()?.id
   const [page, setPage] = useState(1);
 
   // ✅ use real defaults (avoid nulls -> "Invalid date")
@@ -88,11 +88,11 @@ const JournalLayout = () => {
     setRange(ns, isAfter(ne, today) ? today : ne);
   };
 
-  useEffect(() => setPage(1), [accountId]);
+  useEffect(() => setPage(1), [activeAcc]);
 
   const offset = (page - 1) * LIMIT;
   const { data, isLoading, isError, error } = useGetTrades(
-    { accountId: accountId || "", symbol: "", openDate, closeDate },
+    { accountId: activeAcc || "", symbol: "", openDate, closeDate },
     offset,
     LIMIT
   );

@@ -120,7 +120,7 @@ export function TradesTable<TData, TValue>({
         <TableFilterHeader isSync={isSync} setQuery={setQuery} query={query} />
 
         {/* Table + Loading Overlay */}
-        <div className="relative min-h-[300px]">
+        <div className="relative min-h-[600px]">
           <Table>
             <TableHeader>
               {table.getHeaderGroups().map((headerGroup) => (

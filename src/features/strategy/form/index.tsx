@@ -97,7 +97,7 @@ export function StrategyForm({
                 </FormItem>
               )}
             />
-            {user?.role != "admin" && (
+            {user?.role === "admin" && (
               <FormField
                 control={form.control}
                 name="type"
@@ -121,33 +121,58 @@ export function StrategyForm({
                 )}
               />
             )}
+            {user?.role === "user" && (mode === "add" || mode === "edit") && (
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                      <Select {...field} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="DRAFT">DRAFT</SelectItem>
+                          <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
+                          <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
           </div>
 
           {/* Two-column row: Status + Currency */}
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              control={form.control}
-              name="status"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Status</FormLabel>
-                  <FormControl>
-                    <Select {...field} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Select status" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="DRAFT">DRAFT</SelectItem>
-                        <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
-                        <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            {user?.role === "admin" && (
+          {user?.role === "admin" && (
+            <div className="grid grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Status</FormLabel>
+                    <FormControl>
+                      <Select {...field} onValueChange={field.onChange}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="DRAFT">DRAFT</SelectItem>
+                          <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
+                          <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
               <FormField
                 control={form.control}
                 name="currency"
@@ -171,8 +196,8 @@ export function StrategyForm({
                   </FormItem>
                 )}
               />
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Two-column row: Premium + Price */}
           {user?.role === "admin" && (
@@ -226,9 +251,13 @@ export function StrategyForm({
             name="comment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Description</FormLabel>
+                <FormLabel>Comment</FormLabel>
                 <FormControl>
-                  <Textarea placeholder="Strategy description" {...field} />
+                  <Textarea
+                    className="h-[300px]"
+                    placeholder="Strategy description"
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
