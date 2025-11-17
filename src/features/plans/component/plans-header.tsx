@@ -46,9 +46,9 @@ export default function PlansHeader({ billingCycle, onToggle }) {
         {/* Toggle Switch */}
         <div className="flex items-center bg-secondary/10 rounded-full p-1">
           <button
-            onClick={() => onToggle("monthly")}
+            onClick={() => onToggle("month")}
             className={`px-4 py-1 rounded-full text-sm transition-all ${
-              billingCycle === "monthly"
+              billingCycle === "month"
                 ? "bg-background shadow-sm text-foreground"
                 : "text-muted-foreground"
             }`}
@@ -56,9 +56,9 @@ export default function PlansHeader({ billingCycle, onToggle }) {
             Monthly
           </button>
           <button
-            onClick={() => onToggle("yearly")}
+            onClick={() => onToggle("year")}
             className={`px-4 py-1 rounded-full text-sm transition-all ${
-              billingCycle === "yearly"
+              billingCycle === "year"
                 ? "bg-background shadow-sm text-foreground"
                 : "text-muted-foreground"
             }`}

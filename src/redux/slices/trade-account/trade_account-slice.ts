@@ -12,9 +12,9 @@ interface AccountState {
 
 const initialState: AccountState = {
   current: null,
-  account: {},
+  account: null,
   error: null,
-  isLoading: true,
+  isLoading: false,
   isAuthenticated: false,
 };
 
@@ -65,7 +65,7 @@ const accountSlice = createSlice({
     },
     logoutAccount(state) {
       state.current = null;
-      state.account = [];
+      state.account = null;
       state.error = null;
       state.isLoading = false;
       state.isAuthenticated = false;

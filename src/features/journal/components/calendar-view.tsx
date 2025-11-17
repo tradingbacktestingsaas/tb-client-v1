@@ -169,6 +169,9 @@ const SelectedDateTrades = ({
   const wins = selectedTrades.filter((t) => t.profit > 0).length;
   const losses = selectedTrades.filter((t) => t.profit < 0).length;
 
+  // ✅ Total profit of all trades
+  const totalProfit = trades.reduce((s, t) => s + t.profit, 0);
+
   return (
     <Card className="w-full">
       <CardHeader>
@@ -194,7 +197,7 @@ const SelectedDateTrades = ({
       </CardHeader>
 
       <CardContent className="space-y-6 max-h-[650px] overflow-y-auto">
-        {/* 👇 Per-day list (only when a day is selected) */}
+        {/* Per-day list */}
         {selectedDate && selectedTrades.length > 0 && (
           <div className="space-y-3">
             <div className="text-sm font-medium text-muted-foreground border-b pb-1">
@@ -240,7 +243,7 @@ const SelectedDateTrades = ({
           </div>
         )}
 
-        {/* Weekly grouped list (paginated) */}
+        {/* Weekly grouped list */}
         {pageWeekKeys.map((wk) => (
           <div key={wk} className="space-y-3">
             <div className="text-sm font-medium text-muted-foreground border-b pb-1">
@@ -291,6 +294,7 @@ const SelectedDateTrades = ({
           </div>
         ))}
 
+        {/* Pagination */}
         {totalPages > 1 && (
           <div className="flex justify-center gap-3 items-center pt-2">
             <Button
@@ -312,6 +316,16 @@ const SelectedDateTrades = ({
             </Button>
           </div>
         )}
+
+        {/* ✅ Total profit at the end */}
+        <div className="pt-4 border-t mt-4 text-right font-bold text-lg">
+          Total Profit:{" "}
+          <span
+            className={totalProfit >= 0 ? "text-green-600" : "text-red-600"}
+          >
+            ${totalProfit.toFixed(2)}
+          </span>
+        </div>
       </CardContent>
     </Card>
   );

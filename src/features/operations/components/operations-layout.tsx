@@ -3,10 +3,11 @@ import React from "react";
 import TradesList from "./(free)/table";
 import { useUserInfo } from "@/helpers/use-user";
 import TradesForm from "../form";
+import { useTradeAccountInfo } from "@/helpers/use-taccount";
 
 const OperationsLayout = () => {
-  const { tradeAccounts } = useUserInfo();
-  const accountId = tradeAccounts[0]?.id;
+  const accountId = useTradeAccountInfo()?.id;
+  
   return (
     <div>
       <TradesList accountId={accountId as any} page={0} limit={8} />

@@ -52,3 +52,25 @@ export const createPaidSubMutation = () =>
       throw error;
     },
   });
+
+export const useValidateCoupon = () => {
+  return useMutation({
+    mutationKey: ["validate-coupon"],
+    mutationFn: async ({
+      code,
+      plan_code,
+    }: {
+      code: string;
+      plan_code: string;
+    }) => {
+      const { data } = await api.post(apiEndpoints.coupon.validate, {
+        code,
+        plan_code,
+      });
+      return data;
+    },
+    onError: (error) => {
+      console.error("Coupon validation error:", error);
+    },
+  });
+};

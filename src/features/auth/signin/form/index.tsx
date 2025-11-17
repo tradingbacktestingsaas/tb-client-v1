@@ -41,6 +41,7 @@ import { getErrorMessage } from "@/lib/error_handler/error";
 import { loginSuccess } from "@/redux/slices/user/user-slice";
 import { useAppDispatch } from "@/redux/hook";
 import { useRouter } from "next/navigation";
+import { persistor } from "@/redux/store";
 
 type SignInFormValues = z.infer<typeof signInSchema>;
 
@@ -240,32 +241,47 @@ const SignInForm = () => {
     }
 
     try {
-      await signInMutation.mutateAsync(
-        {
-          ...values,
-          captcha: token,
-        },
-        {
-          onSuccess: (data) => {
-            disptach(loginSuccess(data?.data));
-            router.push("/dashboard");
-            form.reset();
-          },
-          onError: (e) => {
-            const { message } = getErrorMessage(
-              e,
-              "Something went wrong. Try again."
-            );
-            console.error("❌ Submit error:", e);
-            toast.error(message);
-            form.reset();
-          },
-          onSettled: (data) => {
-            toast.info(data?.message || "Try again!");
-            form.reset();
-          },
-        }
-      );
+      const data = await signInMutation.mutateAsync({
+        ...values,
+        captcha: token,
+      });
+
+      // Extract and validate user data - handle different response structures
+      let userData = null;
+      
+      // Try different possible response structures
+      if (data?.data?.user) {
+        userData = data.data.user;
+      } else if (data?.data && (data.data.id || data.data.email)) {
+        userData = data.data;
+      } else if (data?.user && (data.user.id || data.user.email)) {
+        userData = data.user;
+      } else if (data && (data.id || data.email)) {
+        userData = data;
+      }
+
+      // Validate user data has required fields
+      if (!userData || (!userData.id && !userData.email)) {
+        console.error("Invalid user data structure:", data);
+        toast.error("Invalid response from server. Please try again.");
+        recaptchaRef.current?.reset();
+        return;
+      }
+
+      // Dispatch user data to Redux
+      disptach(loginSuccess(userData));
+      
+      console.log("✅ User logged in successfully:", { userId: userData.id, email: userData.email });
+
+      // Flush persistor to ensure state is saved before navigation
+      await persistor.flush();
+
+      // Small delay to ensure Redux state is persisted
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Navigate to dashboard
+      router.push("/dashboard");
+      form.reset();
     } catch (e: unknown) {
       const { message } = getErrorMessage(
         e,
@@ -273,6 +289,7 @@ const SignInForm = () => {
       );
       console.error("❌ Submit error:", e);
       toast.error(message);
+      form.reset();
     } finally {
       recaptchaRef.current?.reset();
     }
@@ -295,20 +312,50 @@ const SignInForm = () => {
         credential: credentialResponse.credential,
         captcha: token,
       });
-      if (googleSignInMutation.isSuccess) {
-        toast.success(response.message || "Google login successful!");
-        form.reset();
-        disptach(loginSuccess(response.data));
-        router.push("/dashboard");
-      } else {
-        form.reset();
-        toast.error(response.message || "Failed to signIn with google.");
-        recaptchaRef.current?.reset();
+
+      // Extract and validate user data - handle different response structures
+      let userData = null;
+      
+      // Try different possible response structures
+      if (response?.data?.user) {
+        userData = response.data.user;
+      } else if (response?.data && (response.data.id || response.data.email)) {
+        userData = response.data;
+      } else if (response?.user && (response.user.id || response.user.email)) {
+        userData = response.user;
+      } else if (response && (response.id || response.email)) {
+        userData = response;
       }
+
+      // Validate user data has required fields
+      if (!userData || (!userData.id && !userData.email)) {
+        console.error("Invalid user data structure from Google signin:", response);
+        toast.error("Invalid response from Google sign-in. Please try again.");
+        recaptchaRef.current?.reset();
+        return;
+      }
+
+      toast.success(response.message || "Google login successful!");
+      
+      // Dispatch user data to Redux
+      disptach(loginSuccess(userData));
+      
+      console.log("✅ User logged in successfully via Google:", { userId: userData.id, email: userData.email });
+
+      // Flush persistor to ensure state is saved before navigation
+      await persistor.flush();
+
+      // Small delay to ensure Redux state is persisted
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      // Navigate to dashboard
+      router.push("/dashboard");
+      form.reset();
     } catch (e: unknown) {
       const { message } = getErrorMessage(e, "Google sign-in failed.");
       console.error("❌ Google sign-in error:", e);
       toast.error(message);
+      form.reset();
     } finally {
       recaptchaRef.current?.reset();
     }

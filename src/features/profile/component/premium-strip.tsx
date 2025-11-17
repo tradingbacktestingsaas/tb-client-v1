@@ -9,10 +9,11 @@ import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { Div, H1, Para, Span } from "@/components/ui/tags";
 import { FormattedMessage } from "react-intl";
+import { useUserInfo } from "@/helpers/use-user";
 
 const PremiumStrip = () => {
   const router = useRouter();
-  const user = useSelector((state: RootState) => state.user.user);
+  const { user } = useUserInfo();
 
   return (
     <Div>

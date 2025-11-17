@@ -155,7 +155,7 @@ export default function TradeAnalyticsOverview({
               <Calendar className="size-3" />
               Started: {formatDate(d.started_at)}
             </Badge>
-            <AccountSwitcher />
+            {/* <AccountSwitcher /> */}
           </div>
         </div>
 
@@ -419,11 +419,6 @@ function EmptyState() {
         This account has no trades, deposits or withdrawals recorded. Once you
         start trading, your analytics will appear here.
       </p>
-      <div className="mt-4 flex gap-2">
-        <Button variant="outline" size="sm">
-          Connect Broker
-        </Button>
-      </div>
     </div>
   );
 }

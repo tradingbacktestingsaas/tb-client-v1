@@ -70,8 +70,11 @@ const sheetSlice = createSlice({
         state.sheets[key].isOpen = !state.sheets[key].isOpen;
       }
     },
+    resetSheets: (state) => {
+      state.sheets = {};
+    },
   },
 });
 
-export const { openSheet, closeSheet, toggleSheet } = sheetSlice.actions;
+export const { openSheet, closeSheet, toggleSheet, resetSheets } = sheetSlice.actions;
 export default sheetSlice.reducer;

@@ -33,3 +33,26 @@ export const useGetStrategies = (queries: StrategiesQueryParams) => {
     isFetching,
   };
 };
+
+export const useGetPurchasedStrategies = (id: string, user_id: string) => {
+  const { data, isLoading, isError, error, isFetching } = useQuery({
+    queryKey: ["purchasedStrategies"],
+    queryFn: async () => {
+      const res = await api.get(apiEndpoints.strategies.purchasedStrategies, {
+        params: { id, user_id },
+      });
+      return res.data;
+    },
+    enabled: !!user_id,
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  return {
+    data,
+    isLoading,
+    isError,
+    error,
+    isFetching,
+  };
+};

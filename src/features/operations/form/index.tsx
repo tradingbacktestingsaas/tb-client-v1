@@ -35,6 +35,7 @@ import { useUserInfo } from "@/helpers/use-user";
 import { useEffect } from "react";
 import { queryClient } from "@/provider/react-query";
 import { Textarea } from "@/components/ui/textarea";
+import { useTradeAccountInfo } from "@/helpers/use-taccount";
 
 type TradeFormValues = z.infer<typeof tradeRawSchema>;
 
@@ -355,7 +356,7 @@ const TradesForm = () => {
   const createMutation = useCreateTrade();
   const updateMutation = useUpdateTrade();
   const { tradeAccounts } = useUserInfo();
-  const accountId = tradeAccounts[0]?.id;
+  const accountId = useTradeAccountInfo()?.id;
   const { isOpen, mode, data } = useDialogState("trades");
 
   const form = useForm<z.infer<typeof tradeRawSchema>>({

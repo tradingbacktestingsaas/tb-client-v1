@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { openDialog } from "@/redux/slices/dialog/dialog-slice";
 import { Plus, Search } from "lucide-react";
 import { useDispatch } from "react-redux";
+import { useUserInfo } from "@/helpers/use-user";
 type TradesQuery = {
   page: number; // 1-based
   pageSize: number;
@@ -23,6 +24,8 @@ type Props = {
 
 const TableFilterHeader: React.FC<Props> = ({ query, setQuery, isSync }) => {
   const [symbol, setSymbol] = React.useState("");
+  const { tradeAccounts } = useUserInfo();
+  const isFREE = tradeAccounts[0]?.type === "FREE";
   const dispatch = useDispatch();
   const applySearch = React.useCallback(() => {
     const cleaned = symbol.trim();
@@ -86,7 +89,7 @@ const TableFilterHeader: React.FC<Props> = ({ query, setQuery, isSync }) => {
       </span>
 
       <span>
-        {!isSync && (
+        {!isSync && isFREE && (
           <Button
             onClick={() =>
               dispatch(

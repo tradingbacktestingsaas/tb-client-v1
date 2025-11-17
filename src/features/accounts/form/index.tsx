@@ -73,7 +73,7 @@ export default function AccountForm({
       investor_password: defaultValues.investor_password ?? "",
       type: (defaultValues.type as "MT4" | "MT5" | "FREE") ?? null,
       tradesyncId: defaultValues.tradesyncId ?? null,
-      broker_name: defaultValues?.broker_name ?? null,
+      broker_server_id: defaultValues?.broker_server_id ?? null,
     },
   });
 
@@ -151,7 +151,7 @@ export default function AccountForm({
           {/* Broker Server */}
           <FormField
             control={form.control}
-            name="broker_server"
+            name="broker_server_id"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Broker Server</FormLabel>
@@ -159,15 +159,18 @@ export default function AccountForm({
                   <Select
                     disabled={type === "FREE" || !editing}
                     onValueChange={(value) => {
-                      field.onChange(value);
                       const selectedBroker = allBrokers.find(
                         (b) => String(b.id) === String(value)
-                      );  
+                      );
+
                       if (selectedBroker) {
-                        console.log(selectedBroker)
-                        form.setValue("broker_name", selectedBroker.name);
+                        form.setValue("broker_server", selectedBroker.name);
+                        form.setValue(
+                          "broker_server_id",
+                          String(selectedBroker.id)
+                        );
                       } else {
-                        form.setValue("broker_name", "");
+                        form.setValue("broker_server", "");
                       }
                     }}
                     value={field.value}
@@ -180,9 +183,13 @@ export default function AccountForm({
                               children:
                                 brokers.find(
                                   (s) => String(s.id) === String(field.value)
-                                )?.name ?? "No Broker...",
+                                )?.name ??
+                                defaultValues.broker_server ??
+                                "No Broker",
                             }
-                          : {})}
+                          : {
+                              children: "Select broker server...",
+                            })}
                       />
                     </SelectTrigger>
                     <SelectContent className="p-0">
@@ -262,7 +269,7 @@ export default function AccountForm({
           />
 
           {/* Type */}
-          <FormField
+          {/* <FormField
             control={form.control}
             name="type"
             render={({ field }) => (
@@ -289,7 +296,7 @@ export default function AccountForm({
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
           {/* Investor Password */}
           <FormField
@@ -369,7 +376,11 @@ export default function AccountForm({
               <span />
             )}
 
-            <Button type="submit" variant="success" disabled={isSaving}>
+            <Button
+              type="submit"
+              variant="success"
+              disabled={isSaving || isDeleting}
+            >
               {isSaving ? "Saving..." : "Save changes"}
             </Button>
           </div>
