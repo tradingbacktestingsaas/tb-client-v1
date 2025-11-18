@@ -36,6 +36,14 @@
       "desc06": "Analiza tu historial de operaciones, identifica patrones y genera informes detallados de rendimiento."
     }
   },
+  "operations": {
+    "title": "Operaciones",
+    "header": {
+      "clear": "Borrar",
+      "search": "Buscar",
+      "add": "Agregar"
+    }
+  },
   "profile": {
     "account": {
       "title": "Información de la cuenta",
@@ -121,6 +129,7 @@
     }
   },
   "notifications": {
+    "title": "Notificaciones",
     "component": {
       "is_read": "Nuevo",
       "title": "Notificaciones",
@@ -145,10 +154,213 @@
       "billing": "Facturación",
       "tradeAccount": "Cuenta de Trading"
     },
-    "account": "Cuenta",
-    "upgrade": "Actualizar",
-    "notifications": "Notificaciones",
+    "profile": "Perfil",
     "logout": "Cerrar Sesión"
+  },
+  "strategy": {
+    "title": "Estrategias",
+    "badge": {
+      "ELITE": "ELITE",
+      "ADDON": "ADDON",
+      "PERSONAL": "PERSONAL"
+    },
+    "paymentDialog": {
+      "title": "Ingrese los detalles de la tarjeta",
+      "buyButton": "Comprar {planName}",
+      "processing": "Procesando...",
+      "cardError": "Detalles de la tarjeta inválidos, por favor verifica e intenta nuevamente."
+    },
+    "dialog": {
+      "title": {
+        "add": "Crear Estrategia",
+        "edit": "Editar Estrategia",
+        "view": "Detalles de la Estrategia"
+      },
+      "success": {
+        "created": "Estrategia creada",
+        "updated": "Estrategia actualizada"
+      },
+      "error": {
+        "saveFailed": "Error al guardar la estrategia"
+      }
+    },
+    "form": {
+      "fields": {
+        "title": "Título",
+        "type": "Tipo",
+        "status": "Estado",
+        "currency": "Moneda",
+        "isPremium": "Premium",
+        "price": "Precio",
+        "comment": "Comentario"
+      },
+      "placeholders": {
+        "title": "Título de la estrategia",
+        "type": "Seleccionar tipo",
+        "status": "Seleccionar estado",
+        "currency": "Seleccionar moneda",
+        "price": "Precio de la estrategia",
+        "comment": "Descripción de la estrategia"
+      },
+      "buttons": {
+        "save": "Guardar Estrategia",
+        "add": "Agregar Estrategia"
+      },
+      "types": {
+        "PERSONAL": "PERSONAL",
+        "ELITE": "ELITE",
+        "ADDON": "ADDON"
+      },
+      "statuses": {
+        "DRAFT": "BORRADOR",
+        "PUBLISHED": "PUBLICADO",
+        "ARCHIVED": "ARCHIVADO"
+      }
+    }
+  },
+  "journal": {
+    "range": "Rango",
+    "buttons": {
+      "today": "Hoy",
+      "last7": "Últimos 7 días",
+      "thisWeek": "Esta semana",
+      "thisMonth": "Este mes",
+      "prevWeek": "Semana anterior",
+      "nextWeek": "Siguiente semana",
+      "prevMonth": "Mes anterior",
+      "nextMonth": "Siguiente mes"
+    },
+    "error": "Error: {message}"
+  },
+  "positionCalculator": {
+    "title": "Calculadora de Tamaño de Posición",
+    "instrument": "Instrumento",
+    "depositCurrency": "Moneda de Depósito",
+    "customCurrency": "Moneda Personalizada (opcional)",
+    "stopLoss": "Stop Loss (pips)",
+    "balance": "Saldo de la Cuenta",
+    "pipSize": "Tamaño de 1 Pip",
+    "riskPercent": "Porcentaje de Riesgo",
+    "contractSize": "Tamaño del Contrato (Unidades por Lote)",
+    "results": {
+      "lots": "Lotes (tamaño de operación)",
+      "units": "Unidades (tamaño de operación)",
+      "riskAmount": "Dinero en riesgo"
+    },
+    "sections": {
+      "forex": "Forex",
+      "crypto": "Cripto"
+    },
+    "placeholder": {
+      "customCurrency": "Ingrese moneda personalizada (ej. ZAR)",
+      "selectInstrument": "Seleccione instrumento",
+      "selectCurrency": "Seleccione moneda"
+    }
+  },
+  "plans": {
+    "header": "Selecciona tu plan de cuenta de trading",
+    "description": "Soportamos más de 100 brokers de MetaTrader 4/5 para que empieces.",
+    "billing": "Facturación",
+    "monthly": "Mensual",
+    "yearly": "Anual",
+    "pricesNote": "Precios en USD. Pueden aplicarse impuestos. Puedes cambiar o cancelar en cualquier momento.",
+    "freePlanSuccess": "¡Suscrito al plan gratuito!",
+    "subscriptionSuccess": "¡Redirigiendo al checkout!",
+    "subscriptionError": "Error al crear la suscripción",
+    "couponLabel": "¿Tienes un cupón?",
+    "couponApply": "Aplicar",
+    "couponChecking": "Comprobando…"
+  },
+  "accounts": {
+    "limitReached": "¡Has alcanzado el límite de cuentas!",
+    "created": "¡Cuenta creada!",
+    "updated": "¡Cuenta actualizada!",
+    "deleted": "¡Cuenta eliminada!",
+    "error": "Ocurrió un error",
+    "loadError": "Error al cargar las cuentas.",
+    "retry": "Reintentar",
+    "title": "Tus Cuentas",
+    "subtitle": "Administra todas las cuentas de TradeSync.",
+    "add": "Agregar cuenta",
+    "empty": "No hay cuentas aún.",
+    "form": {
+      "selectAppTitle": "Selecciona tu Aplicación",
+      "selectAppDesc": "Deseas continuar con MT4/MT5",
+      "tradeAccount": "Cuenta de Trading",
+      "tradesyncId": "TradeSync #{id}",
+      "localAccount": "Cuenta local",
+      "id": "ID: {id}",
+      "unsaved": "Cuenta no guardada",
+      "accountId": "ID de la Cuenta",
+      "accountIdPlaceholder": "ej. 12345678 o ACC_XXXX",
+      "brokerServer": "Servidor del Broker",
+      "selectBroker": "Selecciona un servidor...",
+      "investorPassword": "Contraseña de Inversor",
+      "notRequired": "No requerido para FREE",
+      "saving": "Guardando...",
+      "saveChanges": "Guardar cambios",
+      "deleting": "Eliminando...",
+      "delete": "Eliminar",
+      "deleteTitle": "¿Eliminar esta cuenta?",
+      "deleteDesc": "Esta acción no se puede deshacer.",
+      "cancel": "Cancelar",
+      "confirm": "Confirmar"
+    }
+  },
+  "orders": {
+    "title": "Mis Órdenes",
+    "loading": "Cargando órdenes...",
+    "loadError": "Error al cargar órdenes: {error}",
+    "rowsPerPage": "Filas por página",
+    "page": "página",
+    "pageOf": "Página {page} / {total}",
+    "table": {
+      "id": "ID",
+      "plan": "Producto",
+      "amount": "Monto",
+      "status": "Estado",
+      "currency": "Moneda",
+      "date": "Fecha"
+    },
+    "empty": "No se encontraron órdenes."
+  },
+  "leaderboard": {
+    "title": "Tabla de clasificación",
+    "desc": "Clasificación para usuarios de pago y cuentas reales "
+  },
+  "table": {
+    "operations": {
+      "trade": {
+        "ticket": "Ticket",
+        "account": "Cuenta",
+        "symbol": "Símbolo",
+        "type": "Tipo",
+        "lots": "Lotes",
+        "openPrice": "Precio de Apertura",
+        "closePrice": "Precio de Cierre",
+        "profit": "Ganancia",
+        "openDate": "Fecha de Apertura",
+        "closeDate": "Fecha de Cierre",
+        "status": "Estado",
+        "slippage": "Deslizamiento",
+        "actions": "Acciones",
+        "actions_view": "Ver",
+        "actions_edit": "Editar",
+        "actions_delete": "Eliminar",
+        "dialog_delete_title": "Confirmar Eliminación",
+        "dialog_delete_desc": "¿Estás seguro de que deseas eliminar esta operación? Esta acción no se puede deshacer.",
+        "dialog_cancel": "Cancelar",
+        "dialog_deleting": "Eliminando...",
+        "dialog_confirmDelete": "Sí, Eliminar"
+      },
+      "pagination": {
+        "page": "Página",
+        "previous": "Anterior",
+        "next": "Siguiente",
+        "first": "Primero",
+        "last": "Ultimo"
+      }
+    }
   },
   "form": {
     "change_password": {
@@ -156,6 +368,76 @@
       "desc": "Por tu seguridad, te recomendamos actualizar tu contraseña con regularidad y elegir una que sea segura.",
       "button": "Cambiar",
       "loading": "Cambiando..."
+    },
+    "trade": {
+      "add": {
+        "title": "Agregar Nueva Operación",
+        "button": "Agregar"
+      },
+      "edit": {
+        "title": "Editar Operación",
+        "button": "Actualizar"
+      },
+      "view": {
+        "title": "Ver Operación"
+      },
+      "desc": "Ingrese o actualice los detalles de la operación.",
+      "fields": {
+        "ticket": {
+          "label": "Ticket",
+          "placeholder": "12345678"
+        },
+        "accountNumber": {
+          "label": "Número de Cuenta",
+          "placeholder": "1234567890"
+        },
+        "symbol": {
+          "label": "Símbolo",
+          "placeholder": "EURUSD"
+        },
+        "type": {
+          "label": "Tipo",
+          "placeholder": "compra/venta"
+        },
+        "lots": {
+          "label": "Lotes",
+          "placeholder": "1.00"
+        },
+        "openPrice": {
+          "label": "Precio de Apertura",
+          "placeholder": "1.0865"
+        },
+        "closePrice": {
+          "label": "Precio de Cierre",
+          "placeholder": "1.0930"
+        },
+        "profit": {
+          "label": "Ganancia",
+          "placeholder": "250.00"
+        },
+        "openDate": {
+          "label": "Fecha de Apertura"
+        },
+        "closeDate": {
+          "label": "Fecha de Cierre"
+        },
+        "status": {
+          "label": "Estado",
+          "placeholder": "Cerrada / Abierta"
+        },
+        "slippage": {
+          "label": "Deslizamiento",
+          "placeholder": "0.5"
+        },
+        "note": {
+          "label": "Nota",
+          "placeholder": "Nota opcional"
+        }
+      },
+      "submitting": {
+        "adding": "Agregando...",
+        "updating": "Actualizando..."
+      }
     },
     "update_profile": {
       "title": "Información Básica",

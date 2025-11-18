@@ -27,6 +27,7 @@ import { strategySchema } from "./validation";
 import type { z } from "zod";
 import { useUserInfo } from "@/helpers/use-user";
 import { useDialogState } from "@/helpers/use-dialog";
+import { useIntl, FormattedMessage } from "react-intl";
 
 type StrategyFormValues = z.infer<typeof strategySchema>;
 
@@ -43,6 +44,8 @@ export function StrategyForm({
 }) {
   const { mode } = useDialogState("strategy");
   const { user } = useUserInfo();
+  const intl = useIntl();
+
   const form = useForm<StrategyFormValues>({
     resolver: zodResolver(strategySchema as any),
     defaultValues: {
@@ -55,7 +58,7 @@ export function StrategyForm({
       status: "DRAFT",
       hasPrice: false,
       userId: user?.id || "",
-      price: Number(defaultValues.price || 0),
+      price: Number(defaultValues?.price || 0),
       ...defaultValues,
     },
   });
@@ -74,7 +77,7 @@ export function StrategyForm({
         userId: user?.id || "",
         price: 0,
       });
-  }, [defaultValues]);
+  }, [defaultValues, mode]);
 
   const watchIsPremium = form.watch("isPremium");
 
@@ -82,16 +85,23 @@ export function StrategyForm({
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <fieldset disabled={readOnly} className="space-y-6">
-          {/* Two-column row: Title + Type */}
+          {/* Row: Title + Type */}
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Title</FormLabel>
+                  <FormLabel>
+                    {intl.formatMessage({ id: "strategy.form.fields.title" })}
+                  </FormLabel>
                   <FormControl>
-                    <Input placeholder="Strategy title" {...field} />
+                    <Input
+                      placeholder={intl.formatMessage({
+                        id: "strategy.form.placeholders.title",
+                      })}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -103,16 +113,34 @@ export function StrategyForm({
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel>
+                      {intl.formatMessage({ id: "strategy.form.fields.type" })}
+                    </FormLabel>
                     <FormControl>
                       <Select {...field} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select type" />
+                          <SelectValue
+                            placeholder={intl.formatMessage({
+                              id: "strategy.form.placeholders.type",
+                            })}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="ADDON">ADDON</SelectItem>
-                          <SelectItem value="ELITE">ELITE</SelectItem>
-                          <SelectItem value="PERSONAL">PERSONAL</SelectItem>
+                          <SelectItem value="ADDON">
+                            {intl.formatMessage({
+                              id: "strategy.form.types.ADDON",
+                            })}
+                          </SelectItem>
+                          <SelectItem value="ELITE">
+                            {intl.formatMessage({
+                              id: "strategy.form.types.ELITE",
+                            })}
+                          </SelectItem>
+                          <SelectItem value="PERSONAL">
+                            {intl.formatMessage({
+                              id: "strategy.form.types.PERSONAL",
+                            })}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -127,16 +155,36 @@ export function StrategyForm({
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>
+                      {intl.formatMessage({
+                        id: "strategy.form.fields.status",
+                      })}
+                    </FormLabel>
                     <FormControl>
                       <Select {...field} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select status" />
+                          <SelectValue
+                            placeholder={intl.formatMessage({
+                              id: "strategy.form.placeholders.status",
+                            })}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="DRAFT">DRAFT</SelectItem>
-                          <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
-                          <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
+                          <SelectItem value="DRAFT">
+                            {intl.formatMessage({
+                              id: "strategy.form.statuses.DRAFT",
+                            })}
+                          </SelectItem>
+                          <SelectItem value="PUBLISHED">
+                            {intl.formatMessage({
+                              id: "strategy.form.statuses.PUBLISHED",
+                            })}
+                          </SelectItem>
+                          <SelectItem value="ARCHIVED">
+                            {intl.formatMessage({
+                              id: "strategy.form.statuses.ARCHIVED",
+                            })}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -147,7 +195,7 @@ export function StrategyForm({
             )}
           </div>
 
-          {/* Two-column row: Status + Currency */}
+          {/* Row: Status + Currency (Admin) */}
           {user?.role === "admin" && (
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -155,16 +203,36 @@ export function StrategyForm({
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>
+                      {intl.formatMessage({
+                        id: "strategy.form.fields.status",
+                      })}
+                    </FormLabel>
                     <FormControl>
                       <Select {...field} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select status" />
+                          <SelectValue
+                            placeholder={intl.formatMessage({
+                              id: "strategy.form.placeholders.status",
+                            })}
+                          />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="DRAFT">DRAFT</SelectItem>
-                          <SelectItem value="PUBLISHED">PUBLISHED</SelectItem>
-                          <SelectItem value="ARCHIVED">ARCHIVED</SelectItem>
+                          <SelectItem value="DRAFT">
+                            {intl.formatMessage({
+                              id: "strategy.form.statuses.DRAFT",
+                            })}
+                          </SelectItem>
+                          <SelectItem value="PUBLISHED">
+                            {intl.formatMessage({
+                              id: "strategy.form.statuses.PUBLISHED",
+                            })}
+                          </SelectItem>
+                          <SelectItem value="ARCHIVED">
+                            {intl.formatMessage({
+                              id: "strategy.form.statuses.ARCHIVED",
+                            })}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </FormControl>
@@ -172,17 +240,24 @@ export function StrategyForm({
                   </FormItem>
                 )}
               />
-
               <FormField
                 control={form.control}
                 name="currency"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Currency</FormLabel>
+                    <FormLabel>
+                      {intl.formatMessage({
+                        id: "strategy.form.fields.currency",
+                      })}
+                    </FormLabel>
                     <FormControl>
                       <Select {...field} onValueChange={field.onChange}>
                         <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select currency" />
+                          <SelectValue
+                            placeholder={intl.formatMessage({
+                              id: "strategy.form.placeholders.currency",
+                            })}
+                          />
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="USD">USD</SelectItem>
@@ -199,7 +274,7 @@ export function StrategyForm({
             </div>
           )}
 
-          {/* Two-column row: Premium + Price */}
+          {/* Row: Premium + Price (Admin) */}
           {user?.role === "admin" && (
             <div className="grid grid-cols-2 gap-4">
               <FormField
@@ -213,7 +288,11 @@ export function StrategyForm({
                         onCheckedChange={field.onChange}
                       />
                     </FormControl>
-                    <FormLabel className="font-normal">Premium</FormLabel>
+                    <FormLabel>
+                      {intl.formatMessage({
+                        id: "strategy.form.fields.isPremium",
+                      })}
+                    </FormLabel>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -224,11 +303,17 @@ export function StrategyForm({
                   name="price"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Price</FormLabel>
+                      <FormLabel>
+                        {intl.formatMessage({
+                          id: "strategy.form.fields.price",
+                        })}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           type="number"
-                          placeholder="Strategy price"
+                          placeholder={intl.formatMessage({
+                            id: "strategy.form.placeholders.price",
+                          })}
                           {...field}
                           onChange={(e) =>
                             field.onChange(
@@ -245,17 +330,21 @@ export function StrategyForm({
             </div>
           )}
 
-          {/* Description (full width) */}
+          {/* Comment */}
           <FormField
             control={form.control}
             name="comment"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Comment</FormLabel>
+                <FormLabel>
+                  {intl.formatMessage({ id: "strategy.form.fields.comment" })}
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     className="h-[300px]"
-                    placeholder="Strategy description"
+                    placeholder={intl.formatMessage({
+                      id: "strategy.form.placeholders.comment",
+                    })}
                     {...field}
                   />
                 </FormControl>
@@ -267,7 +356,10 @@ export function StrategyForm({
 
         {!readOnly && (
           <Button disabled={isLoading} type="submit">
-            Save Strategy
+            <FormattedMessage
+              id="strategy.form.buttons.save"
+              defaultMessage="Save Strategy"
+            />
           </Button>
         )}
       </form>

@@ -22,122 +22,78 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { MoreHorizontal } from "lucide-react";
-
 import { useDeleteTrade } from "@/features/operations/hook/mutations";
 import { toast } from "sonner";
 import { useState } from "react";
 import { getErrorMessage } from "@/lib/error_handler/error";
 import { queryClient } from "@/provider/react-query";
-
-// // Define the shape of your data (from your Trades entity)
-// export type Trade = {
-//   id: string;
-//   ticket: number;
-//   accountNumber: string;
-//   symbol: string;
-//   type: string;
-//   lots: number;
-//   openPrice: number;
-//   closePrice: number;
-//   profit: number;
-//   openDate: string | null;
-//   closeDate: string | null;
-//   status: string | null;
-//   slippage: number | null;
-// };
+import { useIntl, FormattedMessage } from "react-intl";
 
 export function getColumns(): ColumnDef<TradeRaw>[] {
+  const intl = useIntl();
+  const getText = (id: string, defaultMessage: string) =>
+    intl.formatMessage({ id, defaultMessage });
+
+  // Base path for your translation
+  const base = "table.operations.trade";
+
   return [
     {
       accessorKey: "ticket",
-      header: "Ticket",
+      header: getText(`${base}.ticket`, "Ticket"),
       enableSorting: true,
     },
     {
       accessorKey: "accountNumber",
-      header: "Account",
+      header: getText(`${base}.account`, "Account"),
       enableSorting: true,
       enableColumnFilter: true,
       filterFn: "includesString",
     },
     {
       accessorKey: "symbol",
-      header: "Symbol",
+      header: getText(`${base}.symbol`, "Symbol"),
       enableSorting: true,
       enableColumnFilter: true,
       filterFn: "includesString",
     },
-    {
-      accessorKey: "type",
-      header: "Type",
-    },
-    {
-      accessorKey: "lots",
-      header: "Lots",
-    },
+    { accessorKey: "type", header: getText(`${base}.type`, "Type") },
+    { accessorKey: "lots", header: getText(`${base}.lots`, "Lots") },
     {
       accessorKey: "openPrice",
-      header: "Open Price",
+      header: getText(`${base}.openPrice`, "Open Price"),
     },
     {
       accessorKey: "closePrice",
-      header: "Close Price",
+      header: getText(`${base}.closePrice`, "Close Price"),
+    },
+    { accessorKey: "profit", header: getText(`${base}.profit`, "Profit") },
+    {
+      accessorKey: "openDate",
+      header: getText(`${base}.openDate`, "Open Date"),
     },
     {
-      accessorKey: "profit",
-      header: "Profit",
-      enableSorting: true,
-      cell: ({ row }) => (
-        <span
-          className={
-            row.original.profit >= 0 ? "text-green-600" : "text-red-600"
-          }
-        >
-          {row.original.profit.toFixed(2)}
-        </span>
-      ),
+      accessorKey: "closeDate",
+      header: getText(`${base}.closeDate`, "Close Date"),
     },
-    // {
-    //   accessorKey: "openDate",
-    //   header: "Open Date",
-    //   enableSorting: true,
-    //   cell: ({ row }) =>
-    //     row.original.openDate
-    //       ? moment(row.original.openDate).format("YYYY-MM-DD HH:mm")
-    //       : "-",
-    // },
-    // {
-    //   accessorKey: "closeDate",
-    //   header: "Close Date",
-    //   enableSorting: true,
-    //   cell: ({ row }) =>
-    //     row.original.closeDate
-    //       ? moment(row.original.closeDate).format("YYYY-MM-DD HH:mm")
-    //       : "-",
-    // },
-    // {
-    //   accessorKey: "status",
-    //   header: "Status",
-    // },
-    // {
-    //   accessorKey: "slippage",
-    //   header: "Slippage",
-    // },
+    { accessorKey: "status", header: getText(`${base}.status`, "Status") },
+    {
+      accessorKey: "slippage",
+      header: getText(`${base}.slippage`, "Slippage"),
+    },
 
     {
       id: "actions",
-      header: "Actions",
+      header: getText(`${base}.actions`, "Actions"),
       enableHiding: true,
       cell: ({ row, table }) => {
         const dispatch = useDispatch();
-        const trade = row.original; // Access the current row data
+        const trade = row.original;
         const deleteTrade = useDeleteTrade();
         const isSync =
           ((table.options.meta as any)?.isSync as boolean) ?? false;
-        
         const [open, setOpen] = useState(false);
 
         const handleEdit = () => {
@@ -163,12 +119,16 @@ export function getColumns(): ColumnDef<TradeRaw>[] {
           );
         };
 
-        const handleDelete = async (id) => {
+        const handleDelete = async (id: string) => {
           if (isSync) return;
           try {
             await deleteTrade.mutateAsync(id);
+            queryClient.invalidateQueries({ queryKey: ["trades"] });
           } catch (err) {
-            toast.error("Failed to delete trade!");
+            const { message } = getErrorMessage(
+              err || "Failed to delete trade!"
+            );
+            toast.error(message);
           }
         };
 
@@ -182,41 +142,74 @@ export function getColumns(): ColumnDef<TradeRaw>[] {
               </DropdownMenuTrigger>
 
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={handleView}>View</DropdownMenuItem>
+                <DropdownMenuItem onClick={handleView}>
+                  <FormattedMessage
+                    id={`${base}.actions_view`}
+                    defaultMessage="View"
+                  />
+                </DropdownMenuItem>
                 {!isSync && (
-                  <DropdownMenuItem onClick={handleEdit}>Edit</DropdownMenuItem>
-                )}
-                {!isSync && <DropdownMenuSeparator />}
-
-                {!isSync && (
-                  <DropdownMenuItem
-                    onClick={() => setOpen(true)}
-                    className="text-red-600"
-                  >
-                    Delete
-                  </DropdownMenuItem>
+                  <>
+                    <DropdownMenuItem onClick={handleEdit}>
+                      <FormattedMessage
+                        id={`${base}.actions_edit`}
+                        defaultMessage="Edit"
+                      />
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => setOpen(true)}
+                      className="text-red-600"
+                    >
+                      <FormattedMessage
+                        id={`${base}.actions_delete`}
+                        defaultMessage="Delete"
+                      />
+                    </DropdownMenuItem>
+                  </>
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Move the AlertDialog outside */}
             <AlertDialog open={open} onOpenChange={setOpen}>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Confirm Deletion</AlertDialogTitle>
+                  <AlertDialogTitle>
+                    <FormattedMessage
+                      id={`${base}.dialog_delete_title`}
+                      defaultMessage="Confirm Deletion"
+                    />
+                  </AlertDialogTitle>
                   <AlertDialogDescription>
-                    Are you sure you want to delete this trade? This action
-                    cannot be undone.
+                    <FormattedMessage
+                      id={`${base}.dialog_delete_desc`}
+                      defaultMessage="Are you sure you want to delete this trade? This action cannot be undone."
+                    />
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogCancel>
+                    <FormattedMessage
+                      id={`${base}.dialog_cancel`}
+                      defaultMessage="Cancel"
+                    />
+                  </AlertDialogCancel>
                   <AlertDialogAction
                     onClick={() => handleDelete(trade.id)}
                     disabled={deleteTrade.isPending}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    {deleteTrade.isPending ? "Deleting..." : "Yes, Delete"}
+                    {deleteTrade.isPending ? (
+                      <FormattedMessage
+                        id={`${base}.dialog_deleting`}
+                        defaultMessage="Deleting..."
+                      />
+                    ) : (
+                      <FormattedMessage
+                        id={`${base}.dialog_confirmDelete`}
+                        defaultMessage="Yes, Delete"
+                      />
+                    )}
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>

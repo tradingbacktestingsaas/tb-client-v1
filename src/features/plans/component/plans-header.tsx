@@ -1,14 +1,27 @@
 "use client";
-import React, { useState } from "react";
+import React from "react";
+import { FormattedMessage } from "react-intl";
 
-export default function PlansHeader({ billingCycle, onToggle }) {
+export default function PlansHeader({
+  billingCycle,
+  onToggle,
+}: {
+  billingCycle: "month" | "year";
+  onToggle: (cycle: "month" | "year") => void;
+}) {
   return (
     <div className="mt-4 text-center">
       <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
-        Select your Trade Account Plan
+        <FormattedMessage
+          id="plans.header"
+          defaultMessage="Select your Trade Account Plan"
+        />
       </h1>
       <p className="text-gray-600 dark:text-gray-300 mt-2">
-        We support over 100+ MetaTrader 4/5 brokers to start from.
+        <FormattedMessage
+          id="plans.description"
+          defaultMessage="We support over 100+ MetaTrader 4/5 brokers to start from."
+        />
       </p>
 
       <div className="mt-8 flex justify-between items-center mb-8">
@@ -25,7 +38,7 @@ export default function PlansHeader({ billingCycle, onToggle }) {
               <rect x="2" y="4" width="20" height="16" rx="2" />
               <path d="M6 8h12M6 12h12M6 16h8" />
             </svg>
-            Billing
+            <FormattedMessage id="plans.billing" defaultMessage="Billing" />
           </div>
           <div className="text-sm text-muted-foreground flex items-center gap-1">
             <svg
@@ -39,7 +52,10 @@ export default function PlansHeader({ billingCycle, onToggle }) {
               <circle cx="12" cy="12" r="10" />
               <path d="M12 8v4M12 16h.01" />
             </svg>
-            Monthly / Yearly
+            <FormattedMessage
+              id="plans.monthlyYearly"
+              defaultMessage="Monthly / Yearly"
+            />
           </div>
         </div>
 
@@ -53,7 +69,7 @@ export default function PlansHeader({ billingCycle, onToggle }) {
                 : "text-muted-foreground"
             }`}
           >
-            Monthly
+            <FormattedMessage id="plans.monthly" defaultMessage="Monthly" />
           </button>
           <button
             onClick={() => onToggle("year")}
@@ -63,7 +79,7 @@ export default function PlansHeader({ billingCycle, onToggle }) {
                 : "text-muted-foreground"
             }`}
           >
-            Yearly
+            <FormattedMessage id="plans.yearly" defaultMessage="Yearly" />
           </button>
         </div>
       </div>

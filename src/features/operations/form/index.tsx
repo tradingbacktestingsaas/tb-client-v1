@@ -4,7 +4,7 @@ import { useDispatch } from "react-redux";
 import { useForm, Control, UseFormReturn } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 import { v4 as uuidv4 } from "uuid";
 import {
   Dialog,
@@ -24,17 +24,16 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Div, Span } from "@/components/ui/tags";
+import { Span } from "@/components/ui/tags";
+import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import { getErrorMessage } from "@/lib/error_handler/error";
 import { useDialogState } from "@/helpers/use-dialog";
 import { closeDialog } from "@/redux/slices/dialog/dialog-slice";
 import { tradeRawSchema } from "./validation";
 import { useCreateTrade, useUpdateTrade } from "../hook/mutations";
-import { useUserInfo } from "@/helpers/use-user";
 import { useEffect } from "react";
 import { queryClient } from "@/provider/react-query";
-import { Textarea } from "@/components/ui/textarea";
 import { useTradeAccountInfo } from "@/helpers/use-taccount";
 
 type TradeFormValues = z.infer<typeof tradeRawSchema>;
@@ -52,6 +51,10 @@ const FormContent = ({
   form: UseFormReturn<TradeFormValues>;
   mode: string;
 }) => {
+  const intl = useIntl();
+  const getPlaceholder = (id: string, defaultMessage: string) =>
+    intl.formatMessage({ id, defaultMessage });
+
   return (
     <DialogContent className="max-h-screen overflow-y-auto sm:max-w-[600px] max-h-[800px]">
       <DialogHeader>
@@ -66,21 +69,21 @@ const FormContent = ({
               id="form.trade.add.title"
               defaultMessage="Add New Trade"
             />
-          ) : mode === "view" ? (
+          ) : (
             <FormattedMessage
               id="form.trade.view.title"
               defaultMessage="View Trade"
             />
-          ) : null}
+          )}
         </DialogTitle>
-        {mode === "edit" || mode === "add" ? (
+        {(mode === "edit" || mode === "add") && (
           <DialogDescription>
             <FormattedMessage
               id="form.trade.desc"
               defaultMessage="Enter or update trade details."
             />
           </DialogDescription>
-        ) : null}
+        )}
       </DialogHeader>
 
       <Form {...form}>
@@ -90,81 +93,131 @@ const FormContent = ({
           autoComplete="off"
         >
           <fieldset disabled={mode === "view"} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4  ">
-              {/* Ticket */}
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="ticket"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Ticket</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.ticket.label"
+                        defaultMessage="Ticket"
+                      />
+                    </FormLabel>
                     <FormControl>
-                      <Input type="number" placeholder="12345678" {...field} />
+                      <Input
+                        type="number"
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.ticket.placeholder",
+                          "12345678"
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Account Number */}
               <FormField
                 control={control}
                 name="accountNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Account Number</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.accountNumber.label"
+                        defaultMessage="Account Number"
+                      />
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="1234567890" {...field} />
+                      <Input
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.accountNumber.placeholder",
+                          "1234567890"
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4  ">
-              {/* Symbol */}
+
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="symbol"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Symbol</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.symbol.label"
+                        defaultMessage="Symbol"
+                      />
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="EURUSD" {...field} />
+                      <Input
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.symbol.placeholder",
+                          "EURUSD"
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
 
-              {/* Type */}
               <FormField
                 control={control}
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Type</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.type.label"
+                        defaultMessage="Type"
+                      />
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="buy/sell" {...field} />
+                      <Input
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.type.placeholder",
+                          "buy/sell"
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4  ">
-              {/* Lots */}
+
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="lots"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Lots</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.lots.label"
+                        defaultMessage="Lots"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.01"
-                        placeholder="1.00"
+                        step={0.01}
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.lots.placeholder",
+                          "1.00"
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -173,18 +226,25 @@ const FormContent = ({
                 )}
               />
 
-              {/* Open / Close Prices */}
               <FormField
                 control={control}
                 name="openPrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Open Price</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.openPrice.label"
+                        defaultMessage="Open Price"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.0001"
-                        placeholder="1.0865"
+                        step={0.0001}
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.openPrice.placeholder",
+                          "1.0865"
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -193,18 +253,27 @@ const FormContent = ({
                 )}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4  ">
+
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="closePrice"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Close Price</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.closePrice.label"
+                        defaultMessage="Close Price"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.0001"
-                        placeholder="1.0930"
+                        step={0.0001}
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.closePrice.placeholder",
+                          "1.0930"
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -213,18 +282,25 @@ const FormContent = ({
                 )}
               />
 
-              {/* Profit */}
               <FormField
                 control={control}
                 name="profit"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Profit</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.profit.label"
+                        defaultMessage="Profit"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.01"
-                        placeholder="250.00"
+                        step={0.01}
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.profit.placeholder",
+                          "250.00"
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -233,14 +309,19 @@ const FormContent = ({
                 )}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4  ">
-              {/* Dates */}
+
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="openDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Open Date</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.openDate.label"
+                        defaultMessage="Open Date"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} />
                     </FormControl>
@@ -254,7 +335,12 @@ const FormContent = ({
                 name="closeDate"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Close Date</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.closeDate.label"
+                        defaultMessage="Close Date"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} />
                     </FormControl>
@@ -263,32 +349,52 @@ const FormContent = ({
                 )}
               />
             </div>
-            <div className="grid grid-cols-2 gap-4  ">
-              {/* Status */}
+
+            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="status"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Status</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.status.label"
+                        defaultMessage="Status"
+                      />
+                    </FormLabel>
                     <FormControl>
-                      <Input placeholder="Closed / Open" {...field} />
+                      <Input
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.status.placeholder",
+                          "Closed / Open"
+                        )}
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={control}
                 name="slippage"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Slippage</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.slippage.label"
+                        defaultMessage="Slippage"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Input
                         type="number"
-                        step="0.1"
-                        placeholder="0.5"
+                        step={0.1}
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.slippage.placeholder",
+                          "0.5"
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -297,19 +403,27 @@ const FormContent = ({
                 )}
               />
             </div>
-            <div className="grid grid-cols-1 gap-4  ">
-              {/* Note */}
+
+            <div className="grid grid-cols-1 gap-4">
               <FormField
                 control={control}
                 name="note"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Note</FormLabel>
+                    <FormLabel>
+                      <FormattedMessage
+                        id="form.trade.fields.note.label"
+                        defaultMessage="Note"
+                      />
+                    </FormLabel>
                     <FormControl>
                       <Textarea
                         rows={50}
                         className="max-h-[30px] overflow-auto resize-y"
-                        placeholder="Optional note"
+                        placeholder={getPlaceholder(
+                          "form.trade.fields.note.placeholder",
+                          "Optional note"
+                        )}
                         {...field}
                       />
                     </FormControl>
@@ -318,7 +432,7 @@ const FormContent = ({
                 )}
               />
             </div>
-            {/* Submit */}
+
             {mode !== "view" && (
               <Button
                 type="submit"
@@ -328,7 +442,18 @@ const FormContent = ({
               >
                 {isSubmitting ? (
                   <Span className="flex items-center gap-2">
-                    {mode === "edit" ? "Updating..." : "Adding..."} <Spinner />
+                    {mode === "edit" ? (
+                      <FormattedMessage
+                        id="form.trade.edit.loading"
+                        defaultMessage="Updating..."
+                      />
+                    ) : (
+                      <FormattedMessage
+                        id="form.trade.add.loading"
+                        defaultMessage="Adding..."
+                      />
+                    )}
+                    <Spinner />
                   </Span>
                 ) : mode === "edit" ? (
                   <FormattedMessage
@@ -350,12 +475,10 @@ const FormContent = ({
   );
 };
 
-// 🧠 Main Form
 const TradesForm = () => {
   const dispatch = useDispatch();
   const createMutation = useCreateTrade();
   const updateMutation = useUpdateTrade();
-  const { tradeAccounts } = useUserInfo();
   const accountId = useTradeAccountInfo()?.id;
   const { isOpen, mode, data } = useDialogState("trades");
 
@@ -378,6 +501,7 @@ const TradesForm = () => {
       note: null,
     },
   });
+
   useEffect(() => {
     if (!isOpen) return;
 
@@ -407,12 +531,10 @@ const TradesForm = () => {
     try {
       if (mode === "edit") {
         await updateMutation.mutateAsync(values);
-        queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
       } else {
-        const payload = { ...values, accountId: accountId };
-        createMutation.mutate(payload);
-        queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
+        createMutation.mutate({ ...values, accountId });
       }
+      queryClient.invalidateQueries({ queryKey: ["trades", accountId] });
       dispatch(closeDialog("trades"));
     } catch (e) {
       const { message } = getErrorMessage(e || "Failed to save trade!");
@@ -423,9 +545,7 @@ const TradesForm = () => {
   return (
     <Dialog
       open={isOpen}
-      onOpenChange={(open) => {
-        if (!open) dispatch(closeDialog("trades"));
-      }}
+      onOpenChange={(open) => !open && dispatch(closeDialog("trades"))}
     >
       <FormContent
         control={form.control}

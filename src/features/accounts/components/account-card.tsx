@@ -1,15 +1,13 @@
-// form.tsx
 "use client";
 
 import * as React from "react";
-
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
+  CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -19,10 +17,9 @@ import AccountForm from "../form";
 import { AccountTypeEnum, UpsertAccountValues } from "../form/validation";
 import z from "zod";
 import Image from "next/image";
-
 import mt4 from "../../../../public/assets/options_icon/mt4.png";
 import mt5 from "../../../../public/assets/options_icon/mt5.png";
-import { queryClient } from "@/provider/react-query";
+import { FormattedMessage } from "react-intl";
 
 type Props = {
   defaultValues: Partial<UpsertAccountValues>;
@@ -51,6 +48,7 @@ export default function AccountCard({
   const showChooseModal = type === null;
 
   type AccountType = z.infer<typeof AccountTypeEnum>;
+
   const titleBadge =
     type === "FREE"
       ? "bg-emerald-100 text-emerald-800"
@@ -75,132 +73,134 @@ export default function AccountCard({
     return (
       <Card>
         <CardHeader>
-          <CardTitle>Select Your Application</CardTitle>
+          <CardTitle>
+            <FormattedMessage
+              id="accounts.form.selectAppTitle"
+              defaultMessage="Select Your Application"
+            />
+          </CardTitle>
           <CardDescription>
-            Either you want to proceed with MT4/MT5
+            <FormattedMessage
+              id="accounts.form.selectAppDesc"
+              defaultMessage="Either you want to proceed with MT4/MT5"
+            />
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="w-full">
-            <div className="grid grid-cols-1 md:grid-cols-2  lg:grid-cols-2 py-2">
-              {(["MT4", "MT5"] as AccountType[]).map((type) => (
-                <div className="w-full flex justify-center">
-                  {type === "MT4" && (
-                    <Button
-                      key={type}
-                      variant={type === type ? "ghost" : "outline"}
-                      size="icon"
-                      className="w-fit h-full"
-                      disabled={isDeleting || isSaving}
-                      onClick={() => handleSelect(type)}
-                    >
-                      <Image
-                        className="rounded-xl"
-                        src={mt4}
-                        alt={type}
-                        width={100}
-                        height={20}
-                      />
-                    </Button>
-                  )}
-                  {type === "MT5" && (
-                    <Button
-                      key={type}
-                      variant={type === type ? "ghost" : "outline"}
-                      size="icon"
-                      className="w-fit h-full"
-                      disabled={isDeleting || isSaving}
-                      onClick={() => handleSelect(type)}
-                    >
-                      <Image
-                        className="rounded-xl"
-                        src={mt5}
-                        alt={type}
-                        width={100}
-                        height={20}
-                      />
-                    </Button>
-                  )}
-                </div>
-              ))}
-            </div>
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-2 py-2">
+            {(["MT4", "MT5"] as AccountType[]).map((t) => (
+              <div key={t} className="flex justify-center">
+                <Button
+                  variant={t === type ? "ghost" : "outline"}
+                  size="icon"
+                  className="w-fit h-full"
+                  disabled={isDeleting || isSaving}
+                  onClick={() => handleSelect(t)}
+                >
+                  <Image
+                    src={t === "MT4" ? mt4 : mt5}
+                    alt={t}
+                    width={100}
+                    height={20}
+                    className="rounded-xl"
+                  />
+                </Button>
+              </div>
+            ))}
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  if (type === "MT4" || type === "MT5" || type === "FREE") {
-    return (
-      <Card className={cn("rounded-2xl", className)}>
-        <CardHeader className="flex flex-row items-center justify-between gap-3">
-          <div className="space-y-1">
-            <CardTitle className="text-base">Trade Account</CardTitle>
-            <div className="text-xs text-muted-foreground">
-              {defaultValues?.tradesyncId ? (
-                <>TradeSync #{String(defaultValues?.tradesyncId)}</>
-              ) : (
-                <>Local account</>
-              )}
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Badge
-              className={cn(
-                "rounded-full px-2 py-0.5 text-[11px] font-medium",
-                titleBadge
-              )}
-            >
-              {type}
-            </Badge>
-            <Badge
-              className={cn(
-                "rounded-full px-2 py-0.5 text-[11px] font-medium",
-                statusBadge
-              )}
-            >
-              {status}
-            </Badge>
-            <Button
-              hidden={
-                defaultValues?.type === "FREE" ||
-                defaultValues?.tradesyncId === null
-              }
-              disabled={isDeleting || isSaving}
-              type="button"
-              variant="ghost"
-              size="icon"
-              onClick={() => setEditing((v) => !v)}
-              aria-label={editing ? "Close edit" : "Edit"}
-            >
-              {editing ? <X className="text-red-500" /> : <LucideEdit />}
-            </Button>
-          </div>
-        </CardHeader>
-
-        <CardContent>
-          <AccountForm
-            defaultValues={defaultValues}
-            onSave={onSave}
-            onDelete={onDelete}
-            isSaving={isSaving}
-            isDeleting={isDeleting}
-            editing={editing}
-            setEditing={setEditing}
-          />
-        </CardContent>
-
-        {!editing && (
-          <CardFooter className="text-xs text-muted-foreground">
-            {defaultValues?.id ? (
-              <>ID: {defaultValues?.id}</>
+  return (
+    <Card className={cn("rounded-2xl", className)}>
+      <CardHeader className="flex flex-row items-center justify-between gap-3">
+        <div className="space-y-1">
+          <CardTitle className="text-base">
+            <FormattedMessage
+              id="account.tradeAccount"
+              defaultMessage="Trade Account"
+            />
+          </CardTitle>
+          <div className="text-xs text-muted-foreground">
+            {defaultValues?.tradesyncId ? (
+              <FormattedMessage
+                id="account.tradesyncId"
+                defaultMessage="TradeSync #{id}"
+                values={{ id: defaultValues?.tradesyncId }}
+              />
             ) : (
-              <>Unsaved account</>
+              <FormattedMessage
+                id="account.localAccount"
+                defaultMessage="Local account"
+              />
             )}
-          </CardFooter>
-        )}
-      </Card>
-    );
-  }
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Badge
+            className={cn(
+              "rounded-full px-2 py-0.5 text-[11px] font-medium",
+              titleBadge
+            )}
+          >
+            {type}
+          </Badge>
+          <Badge
+            className={cn(
+              "rounded-full px-2 py-0.5 text-[11px] font-medium",
+              statusBadge
+            )}
+          >
+            {status}
+          </Badge>
+          <Button
+            hidden={
+              defaultValues?.type === "FREE" ||
+              defaultValues?.tradesyncId === null
+            }
+            disabled={isDeleting || isSaving}
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={() => setEditing((v) => !v)}
+            aria-label={editing ? "Close edit" : "Edit"}
+          >
+            {editing ? <X className="text-red-500" /> : <LucideEdit />}
+          </Button>
+        </div>
+      </CardHeader>
+
+      <CardContent>
+        <AccountForm
+          defaultValues={defaultValues}
+          onSave={onSave}
+          onDelete={onDelete}
+          isSaving={isSaving}
+          isDeleting={isDeleting}
+          editing={editing}
+          setEditing={setEditing}
+        />
+      </CardContent>
+
+      {!editing && (
+        <CardFooter className="text-xs text-muted-foreground">
+          {defaultValues?.id ? (
+            <FormattedMessage
+              id="account.id"
+              defaultMessage="ID: {id}"
+              values={{ id: defaultValues?.id }}
+            />
+          ) : (
+            <FormattedMessage
+              id="account.unsaved"
+              defaultMessage="Unsaved account"
+            />
+          )}
+        </CardFooter>
+      )}
+    </Card>
+  );
 }

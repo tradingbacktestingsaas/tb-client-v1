@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/table";
 import TableFilterHeader from "./search-filter";
 import { Spinner } from "@/components/ui/spinner";
+import { FormattedMessage } from "react-intl";
 
 type TradesQuery = {
   page: number; // 1-based
@@ -171,9 +172,9 @@ export function TradesTable<TData, TValue>({
           {isLoading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 backdrop-blur-sm z-10">
               <Spinner className="h-6 w-6 text-primary mb-2" />
-              <span className="text-sm text-muted-foreground">
+              {/* <span className="text-sm text-muted-foreground">
                 Loading data...
-              </span>
+              </span> */}
             </div>
           )}
         </div>
@@ -213,7 +214,7 @@ export function TradesTable<TData, TValue>({
               onClick={() => setQuery((prev) => ({ ...prev, page: 1 }))}
               disabled={pageIndex === 0 || totalPages === 0}
             >
-              First
+              <FormattedMessage id="table.operations.pagination.first" />
             </Button>
             <Button
               variant="outline"
@@ -221,7 +222,7 @@ export function TradesTable<TData, TValue>({
               onClick={handlePreviousPage}
               disabled={pageIndex === 0 || totalPages === 0}
             >
-              Previous
+              <FormattedMessage id="table.operations.pagination.previous" />
             </Button>
 
             {pagesToShow.map((n) => (
@@ -241,7 +242,7 @@ export function TradesTable<TData, TValue>({
               onClick={handleNextPage}
               disabled={pageIndex >= totalPages - 1 || totalPages === 0}
             >
-              Next
+              <FormattedMessage id="table.operations.pagination.next" />
             </Button>
             <Button
               variant="outline"
@@ -251,7 +252,7 @@ export function TradesTable<TData, TValue>({
               }
               disabled={pageIndex >= totalPages - 1 || totalPages === 0}
             >
-              Last
+              <FormattedMessage id="table.operations.pagination.last" />
             </Button>
 
             <span className="text-sm tabular-nums">

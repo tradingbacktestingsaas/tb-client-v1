@@ -37,6 +37,7 @@ import { resetSheets } from "@/redux/slices/sheet/slice";
 import { persistor } from "@/redux/store";
 
 import { Div, Span } from "@/components/ui/tags";
+import { FormattedMessage } from "react-intl";
 
 export function NavUser({
   user,
@@ -126,7 +127,9 @@ export function NavUser({
             >
               <Avatar className="h-8 w-8 rounded-lg">
                 <AvatarImage src={user?.avatar_url} alt={user?.firstName} />
-                <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                <AvatarFallback className="rounded-lg">
+                  {user?.firstName.slice(0, 1)}
+                </AvatarFallback>
               </Avatar>
               <Div className="grid flex-1 text-left text-sm leading-tight">
                 <Span className="truncate font-medium">
@@ -147,7 +150,9 @@ export function NavUser({
               <Div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
                   <AvatarImage src={user?.avatar_url} alt={user?.firstName} />
-                  <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                  <AvatarFallback className="rounded-lg">
+                    {user?.firstName.slice(0, 1)}
+                  </AvatarFallback>
                 </Avatar>
                 <Div className="grid flex-1 text-left text-sm leading-tight">
                   <Span className="truncate font-medium">
@@ -159,32 +164,31 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => router.push(`/upgrade`)}>
-                <Sparkles />
-                Upgrade to Pro
-              </DropdownMenuItem>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuGroup>
               <DropdownMenuItem
                 onClick={() => router.push(`/profile/${user.id}`)}
               >
                 <BadgeCheck />
-                Account
+                <FormattedMessage id="menu.profile" defaultMessage={"Profile"} />
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => router.push(`/billings`)}>
+              <DropdownMenuItem onClick={() => router.push(`/billing`)}>
                 <CreditCard />
-                Billing
+                <FormattedMessage
+                  id="menu.settings.billing"
+                  defaultMessage={"Billing"}
+                />
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => router.push(`/notifications`)}>
                 <Bell />
-                Notifications
+                <FormattedMessage
+                  id="notifications.title"
+                  defaultMessage={"Notifications"}
+                />
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
-              Log out
+              <FormattedMessage id="menu.logout" defaultMessage={"Logout"} />
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

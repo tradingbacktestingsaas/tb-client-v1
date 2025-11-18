@@ -7,6 +7,7 @@ import { openDialog } from "@/redux/slices/dialog/dialog-slice";
 import { Plus, Search } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { useUserInfo } from "@/helpers/use-user";
+import { FormattedMessage } from "react-intl";
 type TradesQuery = {
   page: number; // 1-based
   pageSize: number;
@@ -66,7 +67,10 @@ const TableFilterHeader: React.FC<Props> = ({ query, setQuery, isSync }) => {
             onClick={applySearch}
             aria-label="Apply symbol search"
           >
-            Apply
+            <FormattedMessage
+              id="operations.header.search"
+              defaultMessage={"Search"}
+            />
           </Button>
         )}
         {query.filters.symbol != "" && (
@@ -83,7 +87,10 @@ const TableFilterHeader: React.FC<Props> = ({ query, setQuery, isSync }) => {
             }}
             aria-label="Clear symbol filter"
           >
-            Clear
+            <FormattedMessage
+              id="operations.header.clear"
+              defaultMessage={"Clear"}
+            />
           </Button>
         )}
       </span>
@@ -103,7 +110,11 @@ const TableFilterHeader: React.FC<Props> = ({ query, setQuery, isSync }) => {
             }
             variant="outline"
           >
-            Add <Plus />
+            <FormattedMessage
+              id="operations.header.add"
+              defaultMessage={"Add"}
+            />{" "}
+            <Plus />
           </Button>
         )}
       </span>

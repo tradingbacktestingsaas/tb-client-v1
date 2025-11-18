@@ -13,6 +13,7 @@ import { useUserInfo } from "@/helpers/use-user";
 import { useCreateStrategy, useUpdateStrategy } from "../hooks/mutations";
 import { toast } from "sonner";
 import { queryClient } from "@/provider/react-query";
+import { useIntl } from "react-intl";
 
 const StrategyFormDialog = () => {
   const dispatch = useDispatch();
@@ -32,12 +33,16 @@ const StrategyFormDialog = () => {
       if (mode === "edit") {
         await updateMutation.mutateAsync(formData as any);
         queryClient.invalidateQueries({ queryKey: ["strategies"] });
-        toast.success("Strategy updated");
+        toast.success(
+          intl.formatMessage({ id: "strategy.dialog.success.updated" })
+        );
       } else {
         console.log(formData, "FORM");
         await createMutation.mutateAsync(formData);
         queryClient.invalidateQueries({ queryKey: ["strategies"] });
-        toast.success("Strategy created");
+        toast.success(
+          intl.formatMessage({ id: "strategy.dialog.success.created" })
+        );
       }
 
       dispatch(closeDialog("strategy"));
@@ -50,6 +55,8 @@ const StrategyFormDialog = () => {
     if (!isOpen) return;
   }, [isOpen]);
 
+  const intl = useIntl();
+
   return (
     <Dialog
       open={!!isOpen}
@@ -59,10 +66,10 @@ const StrategyFormDialog = () => {
         <DialogHeader className="flex justify-between items-center mb-4">
           <DialogTitle className="text-xl font-semibold">
             {mode === "edit"
-              ? "Edit Strategy"
+              ? intl.formatMessage({ id: "strategy.dialog.title.edit" })
               : mode === "view"
-              ? "Strategy Details"
-              : "Create Strategy"}
+              ? intl.formatMessage({ id: "strategy.dialog.title.view" })
+              : intl.formatMessage({ id: "strategy.dialog.title.add" })}
           </DialogTitle>
         </DialogHeader>
         <StrategyForm

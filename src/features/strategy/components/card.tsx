@@ -16,6 +16,7 @@ import { useDispatch } from "react-redux";
 import { openDialog } from "@/redux/slices/dialog/dialog-slice";
 import { StrategyData } from "../type/";
 import trimText from "@/utils/text-trim";
+import { useIntl } from "react-intl";
 
 const getBadgeColor = (data: StrategyData) => {
   switch (data.type) {
@@ -42,6 +43,7 @@ export default function StrategyCard({
   isLoading: boolean;
 }) {
   const dispatch = useDispatch();
+  const intl = useIntl();
   const { id, title, comment, type, price, currency, hasPrice, is_purchase } =
     strategy;
 
@@ -58,7 +60,8 @@ export default function StrategyCard({
                 "w-18 px-8 py-1 shadow-md text-xs"
               )}
             >
-              {type?.toUpperCase()}
+              {/* {type?.toUpperCase()} */}
+              {intl.formatMessage({ id: `strategy.badge.${type}` })}
             </Badge>
 
             {type === "PERSONAL" && (

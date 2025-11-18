@@ -40,6 +40,7 @@ import { Eye, EyeOff, Trash2 } from "lucide-react";
 import { Virtuoso } from "react-virtuoso";
 import { Badge } from "@/components/ui/badge";
 import { useGetBrokers } from "../hooks/queries";
+import { useIntl } from "react-intl";
 
 export default function AccountForm({
   defaultValues,
@@ -58,6 +59,7 @@ export default function AccountForm({
   editing: boolean;
   setEditing: (editing: boolean) => void;
 }) {
+  const intl = useIntl();
   const [showPw, setShowPw] = React.useState(false);
   const [page, setPage] = React.useState(1);
   const [searchTerm, setSearchTerm] = React.useState("");
@@ -79,7 +81,6 @@ export default function AccountForm({
 
   const type = form.watch("type");
 
-  // 🔹 Fetch brokers with pagination and search
   const {
     data: brokersData,
     isLoading,
@@ -139,9 +140,16 @@ export default function AccountForm({
             name="account_no"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Account ID</FormLabel>
+                <FormLabel>
+                  {intl.formatMessage({ id: "accounts.form.accountId" })}
+                </FormLabel>
                 <FormControl>
-                  <Input placeholder="e.g. 12345678 or ACC_XXXX" {...field} />
+                  <Input
+                    placeholder={intl.formatMessage({
+                      id: "accounts.form.accountIdPlaceholder",
+                    })}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -154,7 +162,9 @@ export default function AccountForm({
             name="broker_server_id"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Broker Server</FormLabel>
+                <FormLabel>
+                  {intl.formatMessage({ id: "accounts.form.brokerServer" })}
+                </FormLabel>
                 <FormControl>
                   <Select
                     disabled={type === "FREE" || !editing}
@@ -162,7 +172,6 @@ export default function AccountForm({
                       const selectedBroker = allBrokers.find(
                         (b) => String(b.id) === String(value)
                       );
-
                       if (selectedBroker) {
                         form.setValue("broker_server", selectedBroker.name);
                         form.setValue(
@@ -177,7 +186,9 @@ export default function AccountForm({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder="Select broker server..."
+                        placeholder={intl.formatMessage({
+                          id: "accounts.form.selectBroker",
+                        })}
                         {...(field.value
                           ? {
                               children:
@@ -188,21 +199,22 @@ export default function AccountForm({
                                 "No Broker",
                             }
                           : {
-                              children: "Select broker server...",
+                              children: intl.formatMessage({
+                                id: "accounts.form.selectBroker",
+                              }),
                             })}
                       />
                     </SelectTrigger>
                     <SelectContent className="p-0">
-                      {/* Search */}
                       <div className="p-2 border-b sticky top-0 bg-background">
                         <Input
-                          placeholder="Search brokers..."
+                          placeholder={intl.formatMessage({
+                            id: "accounts.form.selectBroker",
+                          })}
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                         />
                       </div>
-
-                      {/* Loading/Error/Results */}
                       {isLoading && (
                         <div className="p-3 text-sm text-muted-foreground text-center">
                           Loading brokers...
@@ -268,36 +280,6 @@ export default function AccountForm({
             )}
           />
 
-          {/* Type */}
-          {/* <FormField
-            control={form.control}
-            name="type"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Type</FormLabel>
-                <FormControl>
-                  <Select
-                    onValueChange={(v) => {
-                      field.onChange(v as typeof AccountTypeEnum.type);
-                      if (v === "FREE") form.setValue("investor_password", "");
-                    }}
-                    value={field.value}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="MT4">MT4</SelectItem>
-                      <SelectItem value="MT5">MT5</SelectItem>
-                      <SelectItem value="FREE">FREE</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          /> */}
-
           {/* Investor Password */}
           <FormField
             control={form.control}
@@ -305,7 +287,7 @@ export default function AccountForm({
             render={({ field }) => (
               <FormItem className="sm:col-span-2">
                 <FormLabel>
-                  Investor Password{" "}
+                  {intl.formatMessage({ id: "accounts.form.investorPassword" })}
                   {type !== "FREE" && <span className="text-red-500">*</span>}
                 </FormLabel>
                 <div className="flex items-center gap-2">
@@ -313,9 +295,9 @@ export default function AccountForm({
                     <Input
                       type={showPw ? "text" : "password"}
                       disabled={type === "FREE"}
-                      placeholder={
-                        type === "FREE" ? "Not required for FREE" : "••••••••"
-                      }
+                      placeholder={intl.formatMessage({
+                        id: "accounts.form.notRequired",
+                      })}
                       {...field}
                     />
                   </FormControl>
@@ -351,23 +333,31 @@ export default function AccountForm({
                     disabled={isDeleting}
                   >
                     <Trash2 className="mr-2 size-4" />
-                    {isDeleting ? "Deleting..." : "Delete"}
+                    {isDeleting
+                      ? intl.formatMessage({ id: "accounts.form.deleting" })
+                      : intl.formatMessage({ id: "accounts.form.delete" })}
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
-                    <AlertDialogTitle>Delete this account?</AlertDialogTitle>
+                    <AlertDialogTitle>
+                      {intl.formatMessage({ id: "accounts.form.deleteTitle" })}
+                    </AlertDialogTitle>
                     <AlertDialogDescription>
-                      This action cannot be undone.
+                      {intl.formatMessage({ id: "accounts.form.deleteDesc" })}
                     </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogCancel>
+                      {intl.formatMessage({ id: "accounts.form.cancel" })}
+                    </AlertDialogCancel>
                     <AlertDialogAction
                       onClick={handleDelete}
                       disabled={isDeleting}
                     >
-                      {isDeleting ? "Deleting..." : "Confirm"}
+                      {isDeleting
+                        ? intl.formatMessage({ id: "accounts.form.deleting" })
+                        : intl.formatMessage({ id: "accounts.form.confirm" })}
                     </AlertDialogAction>
                   </AlertDialogFooter>
                 </AlertDialogContent>
@@ -381,7 +371,9 @@ export default function AccountForm({
               variant="success"
               disabled={isSaving || isDeleting}
             >
-              {isSaving ? "Saving..." : "Save changes"}
+              {isSaving
+                ? intl.formatMessage({ id: "accounts.form.saving" })
+                : intl.formatMessage({ id: "accounts.form.saveChanges" })}
             </Button>
           </div>
         )}
