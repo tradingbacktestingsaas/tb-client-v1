@@ -7,7 +7,7 @@ import { useTradeAccountInfo } from "@/helpers/use-taccount";
 
 const OperationsLayout = () => {
   const accountId = useTradeAccountInfo()?.id;
-  
+  if (!accountId) return null;
   return (
     <div>
       <TradesList accountId={accountId as any} page={0} limit={8} />

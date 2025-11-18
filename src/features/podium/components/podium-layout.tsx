@@ -1,11 +1,12 @@
 "use client";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { Trophy } from "lucide-react";
 import { useGetLeaderboard } from "../hooks/queries";
 import { Spinner } from "@/components/ui/spinner";
+import { FormattedMessage } from "react-intl";
 
 const PodiumLayout = () => {
   const { data, isLoading } = useGetLeaderboard();
@@ -33,8 +34,17 @@ const PodiumLayout = () => {
         <CardHeader className="text-center border-b pb-4">
           <CardTitle className="text-3xl font-bold text-white flex items-center justify-center gap-2">
             <Trophy className="text-yellow-400 w-7 h-7" />
-            Leaderboard
+            <FormattedMessage
+              id="leaderboard.title"
+              defaultMessage="Leaderboard"
+            />
           </CardTitle>
+          <CardDescription>
+            <FormattedMessage
+              id="leaderboard.desc"
+              defaultMessage="All users who have live account and high profit"
+            />
+          </CardDescription>
         </CardHeader>
 
         <CardContent className="mt-4 ">

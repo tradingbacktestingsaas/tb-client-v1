@@ -18,12 +18,13 @@ const ALWAYS_PUBLIC = [
 const PROTECTED_PREFIXES = [
   "/dashboard",
   "/accounts",
+  "/profile",
   "/operations",
   "/journal",
   "/podium",
   "/tools",
   "/strategy",
-  "/billings",
+  "/billing",
   "/notifications",
 ];
 

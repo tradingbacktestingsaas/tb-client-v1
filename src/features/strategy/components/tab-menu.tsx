@@ -9,6 +9,7 @@ import { StrategyQueries } from "../type";
 import { openDialog } from "@/redux/slices/dialog/dialog-slice";
 import { UserPlan } from "@/types/user-type";
 import { useUserInfo } from "@/helpers/use-user";
+import { FormattedMessage } from "react-intl";
 
 interface TabMenuProps {
   setQueries: React.Dispatch<React.SetStateAction<StrategyQueries>>;
@@ -66,7 +67,7 @@ const AddButton = () => {
       }
     >
       <PlusCircle className="w-4 h-4" />
-      Add Strategy
+      <FormattedMessage id="strategy.form.buttons.add" defaultMessage={"Add Strategy"} />
     </Button>
   );
 };

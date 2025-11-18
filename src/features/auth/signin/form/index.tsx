@@ -270,9 +270,7 @@ const SignInForm = () => {
 
       // Dispatch user data to Redux
       disptach(loginSuccess(userData));
-      
-      console.log("✅ User logged in successfully:", { userId: userData.id, email: userData.email });
-
+  
       // Flush persistor to ensure state is saved before navigation
       await persistor.flush();
 

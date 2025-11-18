@@ -17,8 +17,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AccountCard from "./account-card";
 import { queryClient } from "@/provider/react-query";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { apiEndpoints } from "@/api/endpoints";
-import api from "@/api/axios";
+import { FormattedMessage } from "react-intl";
 
 /* ------------------ Normalize Accounts ------------------ */
 const normalizeAccounts = (data: any) => {
@@ -40,6 +39,7 @@ const normalizeAccounts = (data: any) => {
 const AccountLayout = () => {
   const { user } = useUserInfo();
   const [open, setOpen] = useState(false);
+  const [cooldowns, setCooldowns] = useState({});
 
   const userId = user?.id ?? "";
 
@@ -54,45 +54,6 @@ const AccountLayout = () => {
 
   const accounts = useMemo(() => normalizeAccounts(data), [data]);
 
-  /* ------------ Poll TradeSync Status ------------ */
-  // const waitForTradeSyncStatus = async (tradesyncId: string, attempt = 0) => {
-  //   const MAX_TRIES = 5;
-  //   const DELAY = 20000; // 2s for UI updates
-
-  //   if (!tradesyncId || attempt >= MAX_TRIES) return null;
-
-  //   try {
-  //     const r = await api.get(apiEndpoints.trade_account.status(tradesyncId));
-  //     const status = r?.data?.status;
-  //     console.log("GIT", status);
-  //     if (status) {
-  //       // Update cache properly
-  //       queryClient.setQueryData(["accounts"], (oldData: any) => {
-  //         if (!oldData?.data) return oldData;
-
-  //         const updated = oldData.data.map((acc: any) =>
-  //           acc.tradesyncId === tradesyncId ? { ...acc, status } : acc
-  //       );
-
-  //       return { ...oldData, data: updated };
-  //     });
-  //     console.log("GIT", status);
-  //     }
-
-  //     if (status === "attempt_failed" || status === "connection_ok") {
-  //       return r.data;
-  //     }
-
-  //     // Wait and try again
-  //     await new Promise((res) => setTimeout(res, DELAY));
-  //     return waitForTradeSyncStatus(tradesyncId, attempt + 1);
-  //   } catch (err) {
-  //     console.warn(`Attempt ${attempt + 1} failed for ${tradesyncId}`, err);
-  //     await new Promise((res) => setTimeout(res, DELAY));
-  //     return waitForTradeSyncStatus(tradesyncId, attempt + 1);
-  //   }
-  // };
-
   /* ------------ Create ------------ */
   const handleCreate = (values) => {
     const mtAccounts = accounts.filter(
@@ -103,7 +64,12 @@ const AccountLayout = () => {
       user?.subscriptions?.plan?.features?.account_limit ?? Infinity;
 
     if (mtAccounts.length >= limit) {
-      toast.error("You have reached your account limit!");
+      toast.error(
+        <FormattedMessage
+          id="accounts.limitReached"
+          defaultMessage="You have reached your account limit!"
+        />
+      );
       return;
     }
 
@@ -111,12 +77,32 @@ const AccountLayout = () => {
       { data: { ...values, userId } },
       {
         onSuccess: (data) => {
-          toast.success("Account created!");
-          // const tradesyncId = data?.data?.id;
-          // if (tradesyncId) waitForTradeSyncStatus(tradesyncId);
+          toast.success(
+            <FormattedMessage
+              id="accounts.created"
+              defaultMessage="Account created!"
+            />
+          );
+
+          const newAcc = data?.data;
+          if (!newAcc?.id) return;
+          setCooldowns((prev) => ({ ...prev, [newAcc.id]: true }));
+
+          setTimeout(() => {
+            setCooldowns((prev) => ({ ...prev, [newAcc.id]: false }));
+          }, 2 * 60 * 1000); // 2 minutes
+
           queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
-        onError: (e) => toast.error(getErrorMessage(e).message),
+        onError: (e) =>
+          toast.error(
+            getErrorMessage(e)?.message ?? (
+              <FormattedMessage
+                id="accounts.error"
+                defaultMessage="Error occurred"
+              />
+            )
+          ),
       }
     );
   };
@@ -127,10 +113,23 @@ const AccountLayout = () => {
       { id: values.id, data: values },
       {
         onSuccess: () => {
-          toast.success("Account updated!");
+          toast.success(
+            <FormattedMessage
+              id="accounts.updated"
+              defaultMessage="Account updated!"
+            />
+          );
           queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
-        onError: (e) => toast.error(getErrorMessage(e).message),
+        onError: (e) =>
+          toast.error(
+            getErrorMessage(e)?.message ?? (
+              <FormattedMessage
+                id="accounts.error"
+                defaultMessage="Error occurred"
+              />
+            )
+          ),
       }
     );
 
@@ -140,10 +139,23 @@ const AccountLayout = () => {
       { id },
       {
         onSuccess: () => {
-          toast.success("Account deleted!");
+          toast.success(
+            <FormattedMessage
+              id="accounts.deleted"
+              defaultMessage="Account deleted!"
+            />
+          );
           queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
-        onError: (e) => toast.error(getErrorMessage(e).message),
+        onError: (e) =>
+          toast.error(
+            getErrorMessage(e)?.message ?? (
+              <FormattedMessage
+                id="accounts.error"
+                defaultMessage="Error occurred"
+              />
+            )
+          ),
       }
     );
 
@@ -167,11 +179,14 @@ const AccountLayout = () => {
     return (
       <div className="p-6 flex flex-col items-center gap-3">
         <p className="text-sm text-muted-foreground">
-          Failed to load accounts.
+          <FormattedMessage
+            id="accounts.loadError"
+            defaultMessage="Failed to load accounts."
+          />
         </p>
         <Button onClick={() => refetch()}>
           <RefreshCw className="mr-2 size-4" />
-          Retry
+          <FormattedMessage id="accounts.retry" defaultMessage="Retry" />
         </Button>
       </div>
     );
@@ -182,22 +197,36 @@ const AccountLayout = () => {
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold">Your Accounts</h2>
+          <h2 className="text-xl font-semibold">
+            <FormattedMessage
+              id="accounts.title"
+              defaultMessage="Your Accounts"
+            />
+          </h2>
           <p className="text-sm text-muted-foreground">
-            Manage all TradeSync accounts.
+            <FormattedMessage
+              id="accounts.subtitle"
+              defaultMessage="Manage all TradeSync accounts."
+            />
           </p>
         </div>
 
-        {user.subscriptions?.plan?.code !== "FREE" && (
+        {user?.subscriptions?.plan?.code !== "FREE" && (
           <Button onClick={() => setOpen(true)}>
-            <Plus className="mr-2 size-4" /> Add account
+            <Plus className="mr-2 size-4" />
+            <FormattedMessage id="accounts.add" defaultMessage="Add account" />
           </Button>
         )}
       </div>
 
       {accounts.length === 0 ? (
         <div className="rounded-2xl border p-8 text-center">
-          <p className="text-sm text-muted-foreground">No accounts yet.</p>
+          <p className="text-sm text-muted-foreground">
+            <FormattedMessage
+              id="accounts.empty"
+              defaultMessage="No accounts yet."
+            />
+          </p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">

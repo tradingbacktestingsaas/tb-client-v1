@@ -1,5 +1,5 @@
-// JournalLayout.tsx
 "use client";
+
 import React, { useEffect, useState } from "react";
 import { TradeCalendarWidget } from "./components/calendar-view";
 import { useGetTrades } from "@/features/operations/hook/queries";
@@ -21,21 +21,22 @@ import {
 } from "date-fns";
 import {
   ArrowLeft,
-  ArrowLeftCircleIcon,
   ArrowRight,
+  ArrowLeftCircleIcon,
   ArrowRightCircleIcon,
 } from "lucide-react";
 import { useUserInfo } from "@/helpers/use-user";
 import { normalizeTrades } from "@/utils/map-trades";
 import { useTradeAccountInfo } from "@/helpers/use-taccount";
+import { useIntl } from "react-intl";
 
 const LIMIT = 10;
 
 const JournalLayout = () => {
-  const activeAcc = useTradeAccountInfo()?.id
+  const intl = useIntl();
+  const activeAcc = useTradeAccountInfo()?.id;
   const [page, setPage] = useState(1);
 
-  // ✅ use real defaults (avoid nulls -> "Invalid date")
   const [openDate, setOpenDate] = useState<Date>(null);
   const [closeDate, setCloseDate] = useState<Date>(null);
 
@@ -98,7 +99,15 @@ const JournalLayout = () => {
   );
 
   if (isLoading) return <LayoutSkeleton />;
-  if (isError) return <div>Error: {(error as Error).message}</div>;
+  if (isError)
+    return (
+      <div>
+        {intl.formatMessage(
+          { id: "journal.error" },
+          { message: (error as Error)?.message }
+        )}
+      </div>
+    );
 
   const trades = data?.data ?? data?.trades ?? [];
   const mapped = normalizeTrades(trades);
@@ -121,28 +130,29 @@ const JournalLayout = () => {
       {/* Range toolbar */}
       <div className="flex flex-wrap items-center gap-2">
         <div className="text-sm text-muted-foreground mr-2">
-          Range:{" "}
+          {intl.formatMessage({ id: "journal.range" })}:{" "}
           <span className="font-medium">
             {safeFmt(openDate)} — {safeFmt(closeDate)}
           </span>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="outline" size="sm" onClick={setToday}>
-            Today
+            {intl.formatMessage({ id: "journal.buttons.today" })}
           </Button>
           <Button variant="outline" size="sm" onClick={setLast7}>
-            Last 7 days
+            {intl.formatMessage({ id: "journal.buttons.last7" })}
           </Button>
           <Button variant="outline" size="sm" onClick={setThisWeek}>
-            This week
+            {intl.formatMessage({ id: "journal.buttons.thisWeek" })}
           </Button>
           <Button variant="outline" size="sm" onClick={setThisMonth}>
-            This month
+            {intl.formatMessage({ id: "journal.buttons.thisMonth" })}
           </Button>
         </div>
         <div className="flex flex-wrap gap-2 ml-auto">
           <Button variant="outline" size="sm" onClick={prevWeek}>
-            <ArrowLeftCircleIcon /> Prev Week
+            <ArrowLeftCircleIcon />{" "}
+            {intl.formatMessage({ id: "journal.buttons.prevWeek" })}
           </Button>
           <Button
             variant="outline"
@@ -150,10 +160,12 @@ const JournalLayout = () => {
             onClick={nextWeek}
             disabled={isAfter(closeDate, new Date())}
           >
-            Next Week <ArrowRightCircleIcon />
+            {intl.formatMessage({ id: "journal.buttons.nextWeek" })}{" "}
+            <ArrowRightCircleIcon />
           </Button>
           <Button variant="outline" size="sm" onClick={prevMonth}>
-            <ArrowLeft /> Prev Month
+            <ArrowLeft />{" "}
+            {intl.formatMessage({ id: "journal.buttons.prevMonth" })}
           </Button>
           <Button
             variant="outline"
@@ -161,7 +173,8 @@ const JournalLayout = () => {
             onClick={nextMonth}
             disabled={isAfter(endOfMonth(closeDate), new Date())}
           >
-            Next Month <ArrowRight />
+            {intl.formatMessage({ id: "journal.buttons.nextMonth" })}{" "}
+            <ArrowRight />
           </Button>
         </div>
       </div>

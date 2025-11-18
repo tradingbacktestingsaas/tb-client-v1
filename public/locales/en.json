@@ -22,6 +22,14 @@
     "have_account": "Already have an account?",
     "find_my_account": "Find my account"
   },
+  "operations": {
+    "title": "Operations",
+    "header": {
+      "clear": "Clear",
+      "search": "Search",
+      "add": "Add"
+    }
+  },
   "offerings": {
     "title": "What We Offer",
     "features": {
@@ -124,7 +132,211 @@
       "upload": "Upload"
     }
   },
-
+  "strategy": {
+    "title": "Strategies",
+    "badge": {
+      "ELITE": "ELITE",
+      "ADDON": "ADDON",
+      "PERSONAL": "PERSONAL"
+    },
+    "paymentDialog": {
+      "title": "Enter Card Details",
+      "buyButton": "Buy {planName}",
+      "processing": "Processing...",
+      "cardError": "Invalid card details, please check and try again."
+    },
+    "dialog": {
+      "title": {
+        "add": "Create Strategy",
+        "edit": "Edit Strategy",
+        "view": "Strategy Details"
+      },
+      "success": {
+        "created": "Strategy created",
+        "updated": "Strategy updated"
+      },
+      "error": {
+        "saveFailed": "Failed to save strategy"
+      }
+    },
+    "form": {
+      "fields": {
+        "title": "Title",
+        "type": "Type",
+        "status": "Status",
+        "currency": "Currency",
+        "isPremium": "Premium",
+        "price": "Price",
+        "comment": "Comment"
+      },
+      "placeholders": {
+        "title": "Strategy title",
+        "type": "Select type",
+        "status": "Select status",
+        "currency": "Select currency",
+        "price": "Strategy price",
+        "comment": "Strategy description"
+      },
+      "buttons": {
+        "save": "Save Strategy",
+        "add": "Add Strategy"
+      },
+      "types": {
+        "PERSONAL": "PERSONAL",
+        "ELITE": "ELITE",
+        "ADDON": "ADDON"
+      },
+      "statuses": {
+        "DRAFT": "DRAFT",
+        "PUBLISHED": "PUBLISHED",
+        "ARCHIVED": "ARCHIVED"
+      }
+    }
+  },
+  "journal": {
+    "range": "Range",
+    "buttons": {
+      "today": "Today",
+      "last7": "Last 7 days",
+      "thisWeek": "This week",
+      "thisMonth": "This month",
+      "prevWeek": "Previous week",
+      "nextWeek": "Next week",
+      "prevMonth": "Previous month",
+      "nextMonth": "Next month"
+    },
+    "error": "Error: {message}"
+  },
+  "plans": {
+    "header": "Select your Trade Account Plan",
+    "description": "We support over 100+ MetaTrader 4/5 brokers to start from.",
+    "billing": "Billing",
+    "monthly": "Monthly",
+    "yearly": "Yearly",
+    "pricesNote": "Prices in USD. Taxes may apply. You can change or cancel anytime.",
+    "freePlanSuccess": "Subscribed to free plan!",
+    "subscriptionSuccess": "Redirected to checkout!",
+    "subscriptionError": "Failed to create subscription",
+    "couponLabel": "Have a coupon?",
+    "couponApply": "Apply",
+    "couponChecking": "Checking…"
+  },
+  "positionCalculator": {
+    "title": "Position Size Calculator",
+    "instrument": "Instrument",
+    "depositCurrency": "Deposit Currency",
+    "customCurrency": "Custom Currency (optional)",
+    "stopLoss": "Stop Loss (pips)",
+    "balance": "Account Balance",
+    "pipSize": "1 Pip Size",
+    "riskPercent": "Risk %",
+    "contractSize": "Contract Size (Units per Lot)",
+    "results": {
+      "lots": "Lots (trade size)",
+      "units": "Units (trade size)",
+      "riskAmount": "Money at risk"
+    },
+    "sections": {
+      "forex": "Forex",
+      "crypto": "Crypto"
+    },
+    "placeholder": {
+      "customCurrency": "Enter custom currency (e.g. ZAR)",
+      "selectInstrument": "Select instrument",
+      "selectCurrency": "Select currency"
+    }
+  },
+  "accounts": {
+    "limitReached": "You have reached your account limit!",
+    "created": "Account created!",
+    "updated": "Account updated!",
+    "deleted": "Account deleted!",
+    "error": "Error occurred",
+    "loadError": "Failed to load accounts.",
+    "retry": "Retry",
+    "title": "Your Accounts",
+    "subtitle": "Manage all TradeSync accounts.",
+    "add": "Add account",
+    "empty": "No accounts yet.",
+    "form": {
+      "selectAppTitle": "Select Your Application",
+      "selectAppDesc": "Either you want to proceed with MT4/MT5",
+      "tradeAccount": "Trade Account",
+      "tradesyncId": "TradeSync #{id}",
+      "localAccount": "Local account",
+      "id": "ID: {id}",
+      "unsaved": "Unsaved account",
+      "accountId": "Account ID",
+      "accountIdPlaceholder": "e.g. 12345678 or ACC_XXXX",
+      "brokerServer": "Broker Server",
+      "selectBroker": "Select broker server...",
+      "investorPassword": "Investor Password",
+      "notRequired": "Not required for FREE",
+      "saving": "Saving...",
+      "saveChanges": "Save changes",
+      "deleting": "Deleting...",
+      "delete": "Delete",
+      "deleteTitle": "Delete this account?",
+      "deleteDesc": "This action cannot be undone.",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    }
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "desc": "Leaderboard for paid users and live accounts"
+  },
+  "orders": {
+    "title": "My Orders",
+    "loading": "Loading orders...",
+    "loadError": "Failed to load orders: {error}",
+    "rowsPerPage": "Rows per page",
+    "page": "page",
+    "pageOf": "Page {page} / {total}",
+    "table": {
+      "id": "ID",
+      "plan": "Product",
+      "amount": "Amount",
+      "status": "Status",
+      "currency": "Currency",
+      "date": "Date"
+    },
+    "empty": "No orders found yet."
+  },
+  "table": {
+    "operations": {
+      "trade": {
+        "ticket": "Ticket",
+        "account": "Account",
+        "symbol": "Symbol",
+        "type": "Type",
+        "lots": "Lots",
+        "openPrice": "Open Price",
+        "closePrice": "Close Price",
+        "profit": "Profit",
+        "openDate": "Open Date",
+        "closeDate": "Close Date",
+        "status": "Status",
+        "slippage": "Slippage",
+        "actions": "Actions",
+        "actions_view": "View",
+        "actions_edit": "Edit",
+        "actions_delete": "Delete",
+        "dialog_delete_title": "Confirm Deletion",
+        "dialog_delete_desc": "Are you sure you want to delete this trade? This action cannot be undone.",
+        "dialog_cancel": "Cancel",
+        "dialog_deleting": "Deleting...",
+        "dialog_confirmDelete": "Yes, Delete"
+      },
+      "pagination": {
+        "page": "Page",
+        "previous": "Previous",
+        "next": "Next",
+        "first": "First",
+        "last": "Last"
+      }
+    }
+  },
   "menu": {
     "platform": "Platform",
     "dashboard": "Dashboard",
@@ -140,9 +352,12 @@
       "title": "Settings",
       "billing": "Billing",
       "tradeAccount": "Trade Account"
-    }
+    },
+    "profile": "Profile",
+    "logout": "Logout"
   },
   "notifications": {
+    "title": "Notifications",
     "component": {
       "is_read": "New",
       "title": "Notifications",

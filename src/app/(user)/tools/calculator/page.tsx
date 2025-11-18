@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { useIntl } from "react-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -22,7 +23,6 @@ const forexPairs = [
   "NZD/USD",
   "XAU/USD",
 ];
-
 const cryptos = [
   "BTC/USD",
   "ETH/USD",
@@ -31,10 +31,11 @@ const cryptos = [
   "ADA/USD",
   "DOGE/USD",
 ];
-
 const depositCurrencies = ["USD", "EUR", "GBP", "JPY", "AUD", "CAD", "USDT"];
 
 export default function PositionSizeCalculator() {
+  const intl = useIntl();
+
   const [instrument, setInstrument] = useState("EUR/USD");
   const [depositCurrency, setDepositCurrency] = useState("USD");
   const [stopLoss, setStopLoss] = useState(200);
@@ -59,7 +60,7 @@ export default function PositionSizeCalculator() {
       <Card className="shadow-xl bg-card">
         <CardHeader>
           <CardTitle className="text-center text-2xl font-bold">
-            Position Size Calculator
+            {intl.formatMessage({ id: "positionCalculator.title" })}
           </CardTitle>
         </CardHeader>
 
@@ -67,19 +68,33 @@ export default function PositionSizeCalculator() {
           {/* Top dropdowns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm mb-1">Instrument</label>
+              <label className="block text-sm mb-1">
+                {intl.formatMessage({ id: "positionCalculator.instrument" })}
+              </label>
               <Select onValueChange={setInstrument} defaultValue={instrument}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select instrument" />
+                  <SelectValue
+                    placeholder={intl.formatMessage({
+                      id: "positionCalculator.placeholder.selectInstrument",
+                    })}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  <div className="px-2 py-1 text-xs text-gray-400">Forex</div>
+                  <div className="px-2 py-1 text-xs text-gray-400">
+                    {intl.formatMessage({
+                      id: "positionCalculator.sections.forex",
+                    })}
+                  </div>
                   {forexPairs.map((p) => (
                     <SelectItem key={p} value={p}>
                       {p}
                     </SelectItem>
                   ))}
-                  <div className="px-2 py-1 text-xs text-gray-400">Crypto</div>
+                  <div className="px-2 py-1 text-xs text-gray-400">
+                    {intl.formatMessage({
+                      id: "positionCalculator.sections.crypto",
+                    })}
+                  </div>
                   {cryptos.map((c) => (
                     <SelectItem key={c} value={c}>
                       {c}
@@ -90,13 +105,21 @@ export default function PositionSizeCalculator() {
             </div>
 
             <div>
-              <label className="block text-sm mb-1">Deposit Currency</label>
+              <label className="block text-sm mb-1">
+                {intl.formatMessage({
+                  id: "positionCalculator.depositCurrency",
+                })}
+              </label>
               <Select
                 onValueChange={setDepositCurrency}
                 defaultValue={depositCurrency}
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select currency" />
+                  <SelectValue
+                    placeholder={intl.formatMessage({
+                      id: "positionCalculator.placeholder.selectCurrency",
+                    })}
+                  />
                 </SelectTrigger>
                 <SelectContent>
                   {depositCurrencies.map((c) => (
@@ -112,12 +135,14 @@ export default function PositionSizeCalculator() {
           {/* Custom currency */}
           <div>
             <label className="block text-sm mb-1">
-              Custom Currency (optional)
+              {intl.formatMessage({ id: "positionCalculator.customCurrency" })}
             </label>
             <Input
               value={customCurrency}
               onChange={(e) => setCustomCurrency(e.target.value.toUpperCase())}
-              placeholder="Enter custom currency (e.g. ZAR)"
+              placeholder={intl.formatMessage({
+                id: "positionCalculator.placeholder.customCurrency",
+              })}
               className="bg-gray-800 text-white border-gray-700"
             />
           </div>
@@ -125,7 +150,9 @@ export default function PositionSizeCalculator() {
           {/* Main Inputs - Two Columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm mb-1">Stop Loss (pips)</label>
+              <label className="block text-sm mb-1">
+                {intl.formatMessage({ id: "positionCalculator.stopLoss" })}
+              </label>
               <Input
                 type="number"
                 value={stopLoss}
@@ -135,7 +162,9 @@ export default function PositionSizeCalculator() {
             </div>
 
             <div>
-              <label className="block text-sm mb-1">Account Balance</label>
+              <label className="block text-sm mb-1">
+                {intl.formatMessage({ id: "positionCalculator.balance" })}
+              </label>
               <Input
                 type="number"
                 value={balance}
@@ -145,7 +174,9 @@ export default function PositionSizeCalculator() {
             </div>
 
             <div>
-              <label className="block text-sm mb-1">1 Pip Size</label>
+              <label className="block text-sm mb-1">
+                {intl.formatMessage({ id: "positionCalculator.pipSize" })}
+              </label>
               <Input
                 type="number"
                 step="0.00001"
@@ -156,7 +187,9 @@ export default function PositionSizeCalculator() {
             </div>
 
             <div>
-              <label className="block text-sm mb-1">Risk %</label>
+              <label className="block text-sm mb-1">
+                {intl.formatMessage({ id: "positionCalculator.riskPercent" })}
+              </label>
               <Input
                 type="number"
                 value={riskPercent}
@@ -167,7 +200,7 @@ export default function PositionSizeCalculator() {
 
             <div className="md:col-span-2">
               <label className="block text-sm mb-1">
-                Contract Size (Units per Lot)
+                {intl.formatMessage({ id: "positionCalculator.contractSize" })}
               </label>
               <Input
                 type="number"
@@ -181,13 +214,18 @@ export default function PositionSizeCalculator() {
           {/* Results */}
           <div className="text-center mt-6 border-t border-gray-700 pt-6">
             <p className="text-lg font-semibold">
-              Lots (trade size): {lots.toFixed(2)}
+              {intl.formatMessage({ id: "positionCalculator.results.lots" })}:{" "}
+              {lots.toFixed(2)}
             </p>
             <p className="text-lg font-semibold">
-              Units (trade size): {positionSize.toFixed(0)}
+              {intl.formatMessage({ id: "positionCalculator.results.units" })}:{" "}
+              {positionSize.toFixed(0)}
             </p>
             <p className="text-xl mt-3">
-              Money at risk:{" "}
+              {intl.formatMessage({
+                id: "positionCalculator.results.riskAmount",
+              })}
+              :{" "}
               <span className="font-bold text-yellow-400">
                 {displayCurrency} {riskAmount.toFixed(2)}
               </span>
