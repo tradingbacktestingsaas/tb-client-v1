@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyJWTServer } from "@/lib/auth_JWT/verify_JWT"; // must be edge-safe
 
 // Pages anyone can visit (add /plans so we don't loop)
-const PUBLIC_ROUTES = ["/login", "/signup", "/auth/signin", "/plans"];
+const PUBLIC_ROUTES = ["/login", "/signup", "/auth/signin", "/plans", "/"];
 
 // URL patterns we never run auth logic for (assets, files, etc.)
 const ALWAYS_PUBLIC = [
@@ -16,7 +16,6 @@ const ALWAYS_PUBLIC = [
 
 // Prefixes that require auth
 const PROTECTED_PREFIXES = [
-  "/",
   "/dashboard",
   "/accounts",
   "/profile",
@@ -61,7 +60,9 @@ export async function middleware(req: NextRequest) {
     console.warn("JWT validation failed:", err);
     return redirectTo(req, "/auth/signin", pathname + search);
   }
-
+  if (!session) {
+    return redirectTo(req, "/auth/signin", pathname + search);
+  }
   // 5) No valid session -> signin
   if (!session?.success) {
     return redirectTo(req, "/auth/signin", pathname + search);
