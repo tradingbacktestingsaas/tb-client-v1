@@ -309,6 +309,8 @@ const DashboardLayout = () => {
     planType.isPremium &&
     activeAccountId &&
     metricsAccountId &&
+    metrics &&
+    charts &&
     tradesAccountId
   ) {
     return (
@@ -336,6 +338,8 @@ const DashboardLayout = () => {
     planType.isFree &&
     activeAccountId &&
     metricsAccountId &&
+    metrics &&
+    charts &&
     tradesAccountId
   ) {
     // Free users can see dashboard even without account
