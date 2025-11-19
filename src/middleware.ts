@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyJWTServer } from "@/lib/auth_JWT/verify_JWT"; // must be edge-safe
 
 // Pages anyone can visit (add /plans so we don't loop)
-const PUBLIC_ROUTES = ["/", "/login", "/signup", "/auth/signin", "/plans"];
+const PUBLIC_ROUTES = ["/login", "/signup", "/auth/signin", "/plans"];
 
 // URL patterns we never run auth logic for (assets, files, etc.)
 const ALWAYS_PUBLIC = [
@@ -16,6 +16,7 @@ const ALWAYS_PUBLIC = [
 
 // Prefixes that require auth
 const PROTECTED_PREFIXES = [
+  "/",
   "/dashboard",
   "/accounts",
   "/profile",

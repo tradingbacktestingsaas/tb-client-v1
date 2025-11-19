@@ -33,6 +33,8 @@ const DashboardLayout = () => {
   const dispatch = useDispatch();
   const { user: reduxUser, id: userId } = useUserInfo();
 
+  if (!reduxUser && !userId) return <DashboardSkeleton />;
+
   // Use Redux user as primary source, only fetch if user exists in Redux but we need fresh data
   // This prevents race conditions where Redux hasn't rehydrated yet
   const { user: fetchedUser, isLoading: userLoading } = useGetUser(
