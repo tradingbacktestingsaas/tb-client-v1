@@ -40,29 +40,30 @@ export default function PlansLayout() {
       },
       {
         onSuccess: (data) => {
-          toast.success(
-            data?.message || (
-              <FormattedMessage
-                id="plans.subscriptionSuccess"
-                defaultMessage="Redirected to checkout!"
-              />
-            )
-          );
+          toast.success(data?.message || "Redirected to checkout!");
+          toast.success("Redirected to checkout!");
           router.push(data?.redirect);
+          // data?.message || (
+          //   <FormattedMessage
+          //     id="plans.subscriptionSuccess"
+          //     defaultMessage="Redirected to checkout!"
+          //   />
+          // );
         },
         onError: (err) => {
           const message = getErrorMessage(
             err,
             "Failed to create subscription"
           ).message;
-          toast.error(
-            message || (
-              <FormattedMessage
-                id="plans.subscriptionError"
-                defaultMessage="Failed to create subscription"
-              />
-            )
-          );
+          // toast.error(
+          //   message || (
+          //     <FormattedMessage
+          //       id="plans.subscriptionError"
+          //       defaultMessage="Failed to create subscription"
+          //     />
+          //   )
+          // );
+          toast.error(message || "Failed to create subscription!");
         },
       }
     );
@@ -91,12 +92,7 @@ export default function PlansLayout() {
                     onSuccess: async (data) => {
                       if (data && data.success) {
                         toast.success(
-                          data?.message || (
-                            <FormattedMessage
-                              id="plans.freePlanSuccess"
-                              defaultMessage="Subscribed to free plan!"
-                            />
-                          )
+                          data?.message || "Redirected to checkout!"
                         );
                         const result = await refetch();
                         const user = result?.data?.user;
@@ -109,14 +105,7 @@ export default function PlansLayout() {
                         err,
                         "Failed to create subscription"
                       ).message;
-                      toast.error(
-                        message || (
-                          <FormattedMessage
-                            id="plans.subscriptionError"
-                            defaultMessage="Failed to create subscription"
-                          />
-                        )
-                      );
+                      toast.error(message || "Failed to create subscription! ");
                     },
                   }
                 );
