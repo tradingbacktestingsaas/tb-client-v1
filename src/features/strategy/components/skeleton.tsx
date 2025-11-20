@@ -3,9 +3,9 @@ import React, { memo } from "react";
 const StrategySkeleton = () => {
   return (
     <div className="flex flex-col p-6 space-y-5 h-full">
-      <div className="flex w-full justify-between">
+      {/* <div className="flex w-full justify-between">
         <div className="bg-gray-200 dark:bg-gray-800 animate-pulse w-[280px] h-[40px] rounded-md"></div>
-      </div>
+      </div> */}
       <div className=" w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 3 }).map((_, index) => (
           <div

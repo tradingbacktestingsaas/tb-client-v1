@@ -7,6 +7,7 @@ import { useEffect, useMemo, useState } from "react";
 import { TableSkeleton } from "./skeletion";
 import { TradeRaw } from "@/features/dashboard/types/trade-type";
 import { normalizeTrades } from "@/utils/map-trades";
+import { useIntl } from "react-intl";
 
 type TradesQuery = {
   page: number; // 1-based for API
@@ -28,6 +29,7 @@ export default function TradesList({
   page: number;
   limit: number;
 }) {
+  const intl = useIntl();
   const [query, setQuery] = useState<TradesQuery>({
     page,
     pageSize: limit,
@@ -41,19 +43,17 @@ export default function TradesList({
   );
 
   const totalCount = data?.pagination.total;
-  const columns = useMemo(() => getColumns(), []);
+  const columns = useMemo(() => getColumns(intl), [intl]);
 
   return (
-    <div className="p-12">
-      <TradesTable
-        isLoading={isLoading}
-        columns={columns}
-        data={normalizeTrades(data?.data)}
-        query={query}
-        isSync={data?.sync === true}
-        setQuery={setQuery}
-        totalCount={totalCount}
-      />
-    </div>
+    <TradesTable
+      isLoading={isLoading}
+      columns={columns}
+      data={normalizeTrades(data?.data)}
+      query={query}
+      isSync={data?.sync === true}
+      setQuery={setQuery}
+      totalCount={totalCount}
+    />
   );
 }

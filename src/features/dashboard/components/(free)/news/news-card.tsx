@@ -39,7 +39,7 @@ export default function ForexNewsCards() {
 
       <Virtuoso
         data={news}
-        style={{ height: 600 }}
+        style={{ height: 650 }}
         itemContent={(index, newsItem) => (
           <div className="p-4 mb-4 border rounded-xl shadow-sm bg-card hover:shadow-lg transition-all">
             <div className="flex justify-between items-start mb-2">

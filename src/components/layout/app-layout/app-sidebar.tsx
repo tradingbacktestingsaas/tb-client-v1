@@ -22,7 +22,8 @@ import { MAIN_MENU } from "./menu-data";
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUserInfo();
-  const currentPlan: any = user.plan;
+  if (!user) return null;
+  const currentPlan: any = user?.plan;
   const { theme } = useTheme();
   return (
     <Sidebar variant="inset" {...props}>

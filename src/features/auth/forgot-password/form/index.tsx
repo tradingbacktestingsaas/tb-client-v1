@@ -141,7 +141,7 @@ const FormFooter = () => (
         id="auth.dont_have_account"
         defaultMessage={"Don't have an account?"}
       />
-      <Link href="/signup" className="underline text-indigo-400">
+      <Link href="/auth/signup" className="underline text-indigo-400">
         <FormattedMessage id="auth.create_one" defaultMessage={"Create One."} />
       </Link>
     </Para>

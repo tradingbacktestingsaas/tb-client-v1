@@ -13,7 +13,7 @@ const Analytics: React.FC<ProfitDistributionWidgetProps> = ({ data }) => {
   const tradePieChartData = transformTradesToPieChartData(data || []);
   const tradeAnalyticsData = transformTradesToChartData(data || []);
   return (
-    <Div className="grid grid-cols-2 gap-6">
+    <Div className="grid grid-cols-1 md:grid-cols-2 gap-6">
       <DistributionPieChart chartData={tradePieChartData} />
       <TradesAreaChart data={tradeAnalyticsData} />
     </Div>

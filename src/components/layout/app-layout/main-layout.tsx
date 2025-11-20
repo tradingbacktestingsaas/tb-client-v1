@@ -29,7 +29,7 @@ export default function MainLayout({
   const isAuthPath = path.startsWith("/auth");
   const isPlansRoute = path.startsWith("/plans");
 
-  if (isAuthPath || isPlansRoute) {
+  if (isAuthPath || isPlansRoute ) {
     return (
       <StoreProvider>
         <SocketBridge userId="f6a59e30-a62c-4d9b-8cac-52ee1a1becb1">

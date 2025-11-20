@@ -109,6 +109,58 @@
         "label": "Total Net Profit",
         "description": "Net profit this month"
       }
+    },
+    "analytics": {
+      "title": "Account Analytics",
+      "subtitle": "ID #{id} • Last updated {date}",
+      "started": "Started:",
+      "growthStatus": "Growth {value}",
+      "tradesBadge": "{trades} trades • {lots} lots",
+      "status": {
+        "active": "Active account",
+        "inactive": "No activity yet"
+      },
+      "pnl": {
+        "title": "Profit / Loss",
+        "description": "Total closed PnL",
+        "growthLabel": "Growth:"
+      },
+      "winRate": {
+        "title": "Win Rate",
+        "description": "Across {trades} trades",
+        "breakdown": "W: {wins} • L: {losses}",
+        "longs": "Longs",
+        "shorts": "Shorts"
+      },
+      "averages": {
+        "title": "Averages",
+        "description": "Per winning/losing trade",
+        "averageWin": "Average Win",
+        "averageLoss": "Average Loss",
+        "commission": "Commission",
+        "swap": "Swap"
+      },
+      "breakdown": {
+        "title": "Breakdown",
+        "description": "Volumes, transfers and best/worst trades",
+        "totalLots": "Total Lots",
+        "deposits": "Deposits",
+        "withdrawals": "Withdrawals",
+        "totalLongs": "Total Longs",
+        "totalShorts": "Total Shorts",
+        "tradesWL": "Trades (W/L)",
+        "bestTrade": "Best Trade",
+        "worstTrade": "Worst Trade"
+      },
+      "rawData": {
+        "title": "Raw Data",
+        "description": "For quick inspection and debugging."
+      },
+      "empty": {
+        "title": "No activity yet",
+        "description": "This account has no trades, deposits or withdrawals recorded. Once you start trading, your analytics will appear here.",
+        "badge": "Waiting for first trades"
+      }
     }
   },
   "profile": {
@@ -213,13 +265,87 @@
     "billing": "Billing",
     "monthly": "Monthly",
     "yearly": "Yearly",
+    "monthlyYearly": "Monthly/Yearly",
     "pricesNote": "Prices in USD. Taxes may apply. You can change or cancel anytime.",
     "freePlanSuccess": "Subscribed to free plan!",
     "subscriptionSuccess": "Redirected to checkout!",
     "subscriptionError": "Failed to create subscription",
     "couponLabel": "Have a coupon?",
     "couponApply": "Apply",
-    "couponChecking": "Checking…"
+    "couponChecking": "Checking…",
+    "yearlyShort": "yr",
+    "monthlyShort": "mo",
+    "wasPrice": "Was {price}",
+    "features": {
+      "accountLimit": "Account Limit",
+      "support": "Support",
+      "sync": "Sync",
+      "broker": "Broker"
+    },
+    "cta": {
+      "currentPlan": "Current Plan"
+    },
+    "couponEmpty": "Please enter a coupon code",
+    "couponValidationError": "Coupon validation failed.",
+    "couponAppliedToast": "Coupon applied!",
+    "couponAppliedBadge": "Coupon applied",
+    "couponAppliedTo": "Coupon \"{code}\" applied to {target}",
+    "allPlans": "all plans",
+    "free": {
+      "id": "free",
+      "name": "Free",
+      "tagline": "Priority 24/7",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "period": "yr",
+        "formatted": "$0.00 /yr"
+      },
+      "features": [
+        "Account Limit: 0",
+        "Support: Priority 24/7",
+        "Sync: Manual trading and limited analysis",
+        "Broker: -"
+      ],
+      "ctaLabel": "Start Free"
+    },
+    "standard": {
+      "id": "standard",
+      "name": "Standard",
+      "tagline": "Priority 24/7",
+      "price": {
+        "amount": 359.88,
+        "currency": "USD",
+        "period": "yr",
+        "formatted": "$359.88 /yr"
+      },
+      "features": [
+        "Account Limit: 2",
+        "Support: Priority 24/7",
+        "Sync: Live MT4/MT5 account sync",
+        "Broker: 100+ different brokers support"
+      ],
+      "ctaLabel": "Start to Standard"
+    },
+    "elite": {
+      "id": "elite",
+      "name": "Elite",
+      "tagline": "Priority 24/7",
+      "price": {
+        "amount": 551.88,
+        "currency": "USD",
+        "period": "yr",
+        "formatted": "$551.88 /yr"
+      },
+      "features": [
+        "Account Limit: 4",
+        "Support: Priority 24/7",
+        "Sync: Live MT4/MT5 account sync",
+        "Broker: 100+ different brokers support"
+      ],
+      "ctaLabel": "Start to Elite"
+    },
+    "current_plan": "Current Plan"
   },
   "positionCalculator": {
     "title": "Position Size Calculator",
@@ -262,7 +388,7 @@
       "selectAppTitle": "Select Your Application",
       "selectAppDesc": "Either you want to proceed with MT4/MT5",
       "tradeAccount": "Trade Account",
-      "tradesyncId": "TradeSync #{id}",
+      "liveAccount": "Live account #{id}",
       "localAccount": "Local account",
       "id": "ID: {id}",
       "unsaved": "Unsaved account",
@@ -356,6 +482,7 @@
     "profile": "Profile",
     "logout": "Logout"
   },
+
   "notifications": {
     "title": "Notifications",
     "component": {

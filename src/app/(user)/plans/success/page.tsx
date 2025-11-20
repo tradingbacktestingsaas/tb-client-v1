@@ -1,5 +1,6 @@
 "use client";
 
+import { Spinner } from "@/components/ui/spinner";
 import { useGetUser } from "@/features/users/hooks";
 import { useUserInfo } from "@/helpers/use-user";
 import { queryClient } from "@/provider/react-query";
@@ -29,11 +30,10 @@ export default function Page() {
 
   if (isLoading || isFetching || !user) {
     return (
-      <div className="w-full flex items-center justify-center h-screen text-xl">
-        Loading...
+      <div className="min-h-screen flex items-center justify-center">
+        <Spinner fontSize={45} className="w-92" />
       </div>
     );
   }
-
   return null;
 }

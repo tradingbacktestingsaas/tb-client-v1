@@ -1,8 +1,9 @@
 "use client";
 
-import { Separator } from "@/components/ui/separator";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
 import { useDispatch } from "react-redux";
+
+import { Separator } from "@/components/ui/separator";
 
 import AccountSwitcher from "./(paid)/account-switcher";
 import ForexNewsCarousel from "./(free)/news/news-card";
@@ -12,169 +13,108 @@ import Analytics from "./(free)/analytics";
 import Trades from "./(free)/trades";
 import TradesForm from "../../operations/form";
 
-import { useGetMertics } from "../hooks/queries";
-import { useUserInfo } from "@/helpers/use-user";
-import { useGetTrades } from "../../operations/hook/queries";
-
 import DashboardSkeleton from "./(free)/skeleton";
 import DashboardEmpty from "./(free)/empty";
-import { openDialog } from "@/redux/slices/dialog/dialog-slice";
 
-import { UserPlan } from "@/types/user-type";
 import TradeAnalyticsOverview from "./(paid)/analytics";
 import ConnectAccount from "./(paid)/account";
 
-import { useGetUser } from "@/features/users/hooks";
+import { openDialog } from "@/redux/slices/dialog/dialog-slice";
 import { updateProfile } from "@/redux/slices/user/user-slice";
 import { setAccountState } from "@/redux/slices/trade-account/trade_account-slice";
-import { useTradeAccountInfo } from "@/helpers/use-taccount";
 
-const DashboardLayout = () => {
+import { UserPlan } from "@/types/user-type";
+
+import { useUserInfo } from "@/helpers/use-user";
+import { useTradeAccountInfo } from "@/helpers/use-taccount";
+import { useGetUser } from "@/features/users/hooks";
+import { useGetMertics } from "../hooks/queries";
+import { useGetTrades } from "../../operations/hook/queries";
+
+// ---------- small helper hooks ---------- //
+
+function useDashboardBootstrap() {
   const dispatch = useDispatch();
   const { user: reduxUser, id: userId } = useUserInfo();
 
-  if (!reduxUser && !userId) return <DashboardSkeleton />;
-
-  // Use Redux user as primary source, only fetch if user exists in Redux but we need fresh data
-  // This prevents race conditions where Redux hasn't rehydrated yet
+  // Always call hooks – even if userId is empty
   const { user: fetchedUser, isLoading: userLoading } = useGetUser(
     userId || ""
   );
 
-  // Always refresh user + account state on page load
+  const user = fetchedUser || reduxUser || null;
+
+  const reduxAccount = useTradeAccountInfo();
+  const reduxAccountId = reduxAccount?.id ?? null;
+
+  const [initialized, setInitialized] = useState(false);
+
+  // Single source of truth to hydrate Redux from user data
   useEffect(() => {
-    if (!fetchedUser || userLoading) return;
+    if (!user || userLoading || initialized) return;
 
-    // 1) Always update user in redux
-    dispatch(updateProfile(fetchedUser));
-
-    // 2) Always set account to user's first account
-    const firstAcc = fetchedUser?.tradeAccounts?.[0] || null;
-
-    dispatch(
-      setAccountState(
-        firstAcc
-          ? {
-              current: {
-                accountId: firstAcc.id,
-                type: firstAcc.type?.toUpperCase() ?? "",
-              },
-              account: firstAcc,
-            }
-          : {
-              current: null,
-              account: null,
-            }
-      )
-    );
-  }, [fetchedUser, userLoading, dispatch]);
-
-  // Prefer fetched user (if available), otherwise use Redux user
-  // This ensures we have the latest data but also work with persisted data
-  const user = fetchedUser || reduxUser;
-
-  const [isSwitching, setIsSwitching] = useState(false);
-
-  // Track previous account ID to detect changes
-  const previousAccountIdRef = useRef<string | null>(null);
-
-  // Get Redux account state first (might be null initially)
-  const reduxAccountState = useTradeAccountInfo();
-  const reduxAccountId = reduxAccountState?.id;
-
-  // Extract first account from user data
-  const userFirstAccount = useMemo(() => {
-    return user?.tradeAccounts?.[0] ?? null;
-  }, [user?.tradeAccounts, user]);
-
-  // Determine the active account ID
-  // Priority: Redux state (if switched) > User's first account > null
-  // Use whichever is available immediately - don't wait for Redux sync
-  const activeAccountId = useMemo(() => {
-    if (reduxAccountId) return reduxAccountId;
-    if (userFirstAccount?.id) return userFirstAccount.id;
-    return null;
-  }, [reduxAccountId, userFirstAccount?.id]);
-
-  // State to track if we've initialized Redux from user data
-  const [hasInitializedRedux, setHasInitializedRedux] = useState(false);
-
-  // Initialize Redux state from user data (runs once when user loads)
-  useEffect(() => {
-    if (!user || userLoading || hasInitializedRedux) return;
-
-    // Always update user profile in Redux
     dispatch(updateProfile(user));
 
-    // Initialize account state only if Redux doesn't have one yet
-    // This preserves manual account switches from previous sessions
-    if (!reduxAccountId && userFirstAccount?.id) {
+    if (!reduxAccountId) {
+      const firstAcc = user.tradeAccounts?.[0] ?? null;
+
       dispatch(
-        setAccountState({
-          current: {
-            accountId: userFirstAccount.id,
-            type: userFirstAccount.type?.toUpperCase() ?? "",
-          },
-          account: userFirstAccount,
-        })
-      );
-    } else if (!reduxAccountId && !userFirstAccount) {
-      // No account available, set to null
-      dispatch(
-        setAccountState({
-          current: null,
-          account: null,
-        })
+        setAccountState(
+          firstAcc
+            ? {
+                current: {
+                  accountId: firstAcc.id,
+                  type: firstAcc.type?.toUpperCase() ?? "",
+                },
+                account: firstAcc,
+              }
+            : {
+                current: null,
+                account: null,
+              }
+        )
       );
     }
 
-    // Mark as initialized
-    setHasInitializedRedux(true);
-  }, [
+    setInitialized(true);
+  }, [user, userLoading, reduxAccountId, initialized, dispatch]);
+
+  // Derive activeAccountId with a clear priority:
+  // Redux selection > first account > null
+  const activeAccountId = useMemo(() => {
+    if (reduxAccountId) return reduxAccountId;
+    const first = user?.tradeAccounts?.[0];
+    return first?.id ?? null;
+  }, [reduxAccountId, user?.tradeAccounts]);
+
+  const planCode: UserPlan =
+    (user?.subscriptions?.plan?.code?.toUpperCase() as UserPlan) ??
+    UserPlan.FREE;
+
+  const planType = {
+    isFree: planCode === UserPlan.FREE,
+    isPremium: planCode === UserPlan.STANDARD || planCode === UserPlan.ELITE,
+  };
+
+  const isBootstrapping = userLoading && !user;
+
+  return {
     user,
-    userLoading,
-    hasInitializedRedux,
-    reduxAccountId,
-    userFirstAccount,
-    dispatch,
-  ]);
+    isBootstrapping,
+    activeAccountId,
+    planCode,
+    planType,
+  };
+}
 
-  // Reset initialization flag and local state when user changes or logs out
-  useEffect(() => {
-    if (!user) {
-      setHasInitializedRedux(false);
-      setIsSwitching(false);
-      previousAccountIdRef.current = null;
-    }
-  }, [user]);
+function useDashboardData(activeAccountId: string | null, userLoaded: boolean) {
+  const accountId = activeAccountId ?? "";
 
-  // Extract plan information
-  const plan = useMemo(() => {
-    if (!user) return null;
-    return user?.subscriptions?.plan?.code?.toUpperCase() ?? UserPlan.FREE;
-  }, [user?.subscriptions?.plan?.code]);
-
-  // Determine plan type
-  const planType = useMemo(() => {
-    if (!plan) return { isFree: false, isPremium: false };
-    return {
-      isFree: plan === UserPlan.FREE,
-      isPremium: ["ELITE", "STANDARD"].includes(plan),
-    };
-  }, [plan]);
-
-  // Queries - pass accountId directly, hooks will handle enabled logic
-  // Only fetch if user is loaded and we have an accountId
-  const metricsAccountId =
-    !userLoading && !!user && !!activeAccountId ? activeAccountId : "";
-
-  const metricsQuery = useGetMertics(metricsAccountId);
-
-  const tradesAccountId =
-    !userLoading && !!user && !!activeAccountId ? activeAccountId : "";
+  // Hooks are always called; hooks themselves should no-op when accountId is ""
+  const metricsQuery = useGetMertics(accountId);
   const tradesQuery = useGetTrades(
     {
-      accountId: tradesAccountId,
+      accountId,
       symbol: "",
       openDate: "",
       closeDate: "",
@@ -184,72 +124,65 @@ const DashboardLayout = () => {
   );
 
   const metrics = metricsQuery.data;
-  const metricsLoading = metricsQuery.isLoading || metricsQuery.isFetching;
   const charts = tradesQuery.data;
-  const chartsLoading = tradesQuery.isLoading || tradesQuery.isFetching;
 
-  // Detect account ID changes and show skeleton during transition
+  const metricsLoading =
+    !!accountId && (metricsQuery.isLoading || metricsQuery.isFetching);
+  const chartsLoading =
+    !!accountId && (tradesQuery.isLoading || tradesQuery.isFetching);
+
+  const isDataLoading =
+    userLoaded && !!accountId && (metricsLoading || chartsLoading);
+
+  return {
+    metrics,
+    charts,
+    isDataLoading,
+    metricsLoading,
+    chartsLoading,
+  };
+}
+
+// ---------- main component ---------- //
+
+const DashboardLayout = () => {
+  const dispatch = useDispatch();
+
+  // bootstrap user + account + plan
+  const { user, isBootstrapping, activeAccountId, planType } =
+    useDashboardBootstrap();
+
+  const [isSwitching, setIsSwitching] = useState(false);
+  const previousAccountIdRef = useRef<string | null>(null);
+
+  const userLoaded = !!user;
+
+  const { metrics, charts, isDataLoading, metricsLoading, chartsLoading } =
+    useDashboardData(activeAccountId, userLoaded);
+
+  // Track account switching (for skeleton during transitions)
   useEffect(() => {
-    // Skip on initial load (when previousAccountIdRef is null and activeAccountId is set)
-    if (previousAccountIdRef.current === null) {
-      if (activeAccountId) {
-        previousAccountIdRef.current = activeAccountId;
-      }
+    if (!activeAccountId) {
+      previousAccountIdRef.current = null;
+      setIsSwitching(false);
       return;
     }
 
-    // If account ID changed, start switching
-    if (activeAccountId && previousAccountIdRef.current !== activeAccountId) {
+    if (
+      previousAccountIdRef.current &&
+      previousAccountIdRef.current !== activeAccountId
+    ) {
       setIsSwitching(true);
     }
 
-    // Always update the ref to track current account
-    if (activeAccountId) {
-      previousAccountIdRef.current = activeAccountId;
-    } else {
-      previousAccountIdRef.current = null;
-    }
+    previousAccountIdRef.current = activeAccountId;
   }, [activeAccountId]);
 
-  // Handle account switching state - reset when data finishes loading
   useEffect(() => {
-    if (!isSwitching) return;
-
-    // Reset switching state when both queries finish loading
-    // Also check that we have data for the current account
-    if (
-      !metricsLoading &&
-      !chartsLoading &&
-      metricsAccountId === activeAccountId &&
-      tradesAccountId === activeAccountId &&
-      (metrics || charts) // At least one has data
-    ) {
+    if (isSwitching && !metricsLoading && !chartsLoading) {
       setIsSwitching(false);
     }
-  }, [
-    isSwitching,
-    metricsLoading,
-    chartsLoading,
-    metricsAccountId,
-    tradesAccountId,
-    activeAccountId,
-    metrics,
-    charts,
-  ]);
-
-  // Loading states
-  const isInitialLoading = userLoading || !user;
-  const isDataLoading = metricsLoading || chartsLoading;
-
-  // Show skeleton during initial user load
-  if (isInitialLoading) {
-    return <DashboardSkeleton />;
-  }
-
-  // Guard: Ensure user exists
-  if (!user || !plan) {
-    return null;
-  }
+  }, [isSwitching, metricsLoading, chartsLoading]);
 
   const handleConnectAccount = () => {
     dispatch(
@@ -266,36 +199,20 @@ const DashboardLayout = () => {
     );
   };
 
-  // Show skeleton during account switching
-  // Check multiple conditions to ensure skeleton shows during transitions
-  const shouldShowSkeleton =
-    isSwitching || // Explicitly set by account switcher
-    (activeAccountId &&
-      previousAccountIdRef.current !== null &&
-      previousAccountIdRef.current !== activeAccountId &&
-      (metricsLoading || chartsLoading)); // Account changed and queries are loading
+  // ---------- view routing ---------- //
 
-  if (shouldShowSkeleton) {
+  // 1) Initial bootstrap → skeleton
+  if (isBootstrapping || !user) {
     return <DashboardSkeleton />;
   }
 
-  // Show skeleton if we don't have required data
-  if (!metricsAccountId || !tradesAccountId) {
-    return <DashboardSkeleton />;
-  }
-
-  // Show skeleton if data is loading for the first time
-  if (isDataLoading && !metrics && !charts) {
-    return <DashboardSkeleton />;
-  }
-
-  // Premium user with no account
-  if (planType.isPremium && !activeAccountId) {
+  // 2) No account (applies to FREE and PREMIUM now)
+  if (!activeAccountId) {
     return (
       <>
         <DashboardEmpty
           title="Add your MT4/MT5 Account"
-          description="You can connect to MT4/MT5 with our app."
+          description="Connect your MT4/MT5 account to start seeing analytics."
           actionLabel="Connect Account"
           onAction={handleConnectAccount}
         />
@@ -304,60 +221,58 @@ const DashboardLayout = () => {
     );
   }
 
-  // Premium user dashboard
-  if (
-    planType.isPremium &&
-    activeAccountId &&
-    metricsAccountId &&
-    metrics &&
-    charts &&
-    tradesAccountId
-  ) {
+  // 3) Switching account or first data load → skeleton
+  if (isSwitching || (isDataLoading && !metrics && !charts)) {
+    return <DashboardSkeleton />;
+  }
+
+  // At this point we have:
+  // - user
+  // - activeAccountId
+  // - data loaded (or at least attempted)
+
+  const analyticsData = metrics?.analytics ?? null;
+  const tradesData = charts?.data || [];
+
+  // 4) Premium dashboard
+  if (planType.isPremium) {
     return (
       <div className="p-12 space-y-12">
         <section className="flex mb-0 bottom-0 w-full justify-end">
           <AccountSwitcher setIsSwitching={setIsSwitching} />
         </section>
-        <Separator />
-        <TradeAnalyticsOverview data={metrics?.analytics} />
 
-        <section className="grid grid-cols-2">
-          <div>
-            <h1>Operations</h1>
-            <Trades />
-          </div>
+        <Separator />
+
+        <TradeAnalyticsOverview data={analyticsData} />
+
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
+          <Trades />
+
           <ForexNewsCarousel />
         </section>
+
         <TradesForm />
       </div>
     );
   }
 
-  // Free plan dashboard
-  if (
-    planType.isFree &&
-    activeAccountId &&
-    metricsAccountId &&
-    metrics &&
-    charts &&
-    tradesAccountId
-  ) {
-    // Free users can see dashboard even without account
-    // Data will be empty/undefined if no account, but UI should still render
+  // 5) Free dashboard (requires account as well)
+  if (planType.isFree) {
     return (
       <div className="flex flex-col w-full space-y-12 p-12">
         <Separator />
 
-        <QuickStats data={metrics?.analytics} />
+        <QuickStats data={analyticsData} />
         <Separator />
 
-        <Metrics data={metrics?.analytics} />
+        <Metrics data={analyticsData} />
         <Separator />
 
-        <Analytics data={charts?.data || []} />
+        <Analytics data={tradesData} />
         <Separator />
 
-        <section className="grid grid-cols-2">
+        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
           <Trades />
           <ForexNewsCarousel />
         </section>
@@ -368,7 +283,8 @@ const DashboardLayout = () => {
     );
   }
 
-  return null;
+  // Fallback – should basically never happen
+  return <DashboardSkeleton />;
 };
 
 export default DashboardLayout;

@@ -93,7 +93,7 @@ const FormContent = ({
           autoComplete="off"
         >
           <fieldset disabled={mode === "view"} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={control}
                 name="ticket"
@@ -144,9 +144,6 @@ const FormContent = ({
                   </FormItem>
                 )}
               />
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="symbol"
@@ -171,7 +168,10 @@ const FormContent = ({
                   </FormItem>
                 )}
               />
+            </div>
 
+
+            <div className="grid grid-cols-3 gap-4">
               <FormField
                 control={control}
                 name="type"
@@ -195,10 +195,8 @@ const FormContent = ({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-            </div>
+              /> 
 
-            <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={control}
                 name="lots"

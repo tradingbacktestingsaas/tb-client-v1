@@ -16,6 +16,7 @@ const ALWAYS_PUBLIC = [
 
 // Prefixes that require auth
 const PROTECTED_PREFIXES = [
+  "/",
   "/dashboard",
   "/accounts",
   "/profile",

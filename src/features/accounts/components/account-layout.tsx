@@ -17,7 +17,7 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import AccountCard from "./account-card";
 import { queryClient } from "@/provider/react-query";
 import { DialogTitle } from "@radix-ui/react-dialog";
-import { FormattedMessage } from "react-intl";
+import { FormattedMessage, useIntl } from "react-intl";
 
 /* ------------------ Normalize Accounts ------------------ */
 const normalizeAccounts = (data: any) => {
@@ -42,6 +42,7 @@ const AccountLayout = () => {
   const [cooldowns, setCooldowns] = useState({});
 
   const userId = user?.id ?? "";
+  const intl = useIntl();
 
   /* ------------ Queries ------------ */
   const { data, isLoading, isError, refetch } = useGetAccounts(userId, {
@@ -64,12 +65,12 @@ const AccountLayout = () => {
       user?.subscriptions?.plan?.features?.account_limit ?? Infinity;
 
     if (mtAccounts.length >= limit) {
-      toast.error(
-        <FormattedMessage
-          id="accounts.limitReached"
-          defaultMessage="You have reached your account limit!"
-        />
-      );
+      const message = intl.formatMessage({
+        id: "accounts.limitReached",
+        defaultMessage:
+          "You have reached your account limit. Please upgrade your plan to create more accounts.",
+      });
+      toast.error(message || "Account limit reached!");
       return;
     }
 
@@ -77,12 +78,11 @@ const AccountLayout = () => {
       { data: { ...values, userId } },
       {
         onSuccess: (data) => {
-          toast.success(
-            <FormattedMessage
-              id="accounts.created"
-              defaultMessage="Account created!"
-            />
-          );
+          const message = intl.formatMessage({
+            id: "accounts.created",
+            defaultMessage: "Account created!",
+          });
+          toast.success(message || "Account created!");
 
           const newAcc = data?.data;
           if (!newAcc?.id) return;
@@ -94,15 +94,15 @@ const AccountLayout = () => {
 
           queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
-        onError: (e) =>
-          toast.error(
-            getErrorMessage(e)?.message ?? (
-              <FormattedMessage
-                id="accounts.error"
-                defaultMessage="Error occurred"
-              />
-            )
-          ),
+        onError: (e) => {
+          const { message: err } = getErrorMessage(e);
+          const msg =
+            intl.formatMessage({
+              id: "accounts.error",
+              defaultMessage: "Error occurred",
+            }) || "Error occurred!";
+          toast.error(err ?? msg);
+        },
       }
     );
   };
@@ -113,23 +113,22 @@ const AccountLayout = () => {
       { id: values.id, data: values },
       {
         onSuccess: () => {
-          toast.success(
-            <FormattedMessage
-              id="accounts.updated"
-              defaultMessage="Account updated!"
-            />
-          );
+          const msg = intl.formatMessage({
+            id: "accounts.updated",
+            defaultMessage: "Account updated!",
+          });
+          toast.success(msg || "Account updated!");
           queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
-        onError: (e) =>
-          toast.error(
-            getErrorMessage(e)?.message ?? (
-              <FormattedMessage
-                id="accounts.error"
-                defaultMessage="Error occurred"
-              />
-            )
-          ),
+        onError: (e) => {
+          const { message: err } = getErrorMessage(e);
+          const msg =
+            intl.formatMessage({
+              id: "accounts.error",
+              defaultMessage: "Error occurred",
+            }) || "Error occurred!";
+          toast.error(err ?? msg);
+        },
       }
     );
 
@@ -139,23 +138,22 @@ const AccountLayout = () => {
       { id },
       {
         onSuccess: () => {
-          toast.success(
-            <FormattedMessage
-              id="accounts.deleted"
-              defaultMessage="Account deleted!"
-            />
-          );
+          const message = intl.formatMessage({
+            id: "accounts.deleted",
+            defaultMessage: "Account deleted!",
+          });
+          toast.success(message || "Deleted successfully!");
           queryClient.invalidateQueries({ queryKey: ["accounts"] });
         },
-        onError: (e) =>
-          toast.error(
-            getErrorMessage(e)?.message ?? (
-              <FormattedMessage
-                id="accounts.error"
-                defaultMessage="Error occurred"
-              />
-            )
-          ),
+        onError: (e) => {
+          const { message: err } = getErrorMessage(e);
+          const msg =
+            intl.formatMessage({
+              id: "accounts.error",
+              defaultMessage: "Error occurred",
+            }) || "Error occurred!";
+          toast.error(err ?? msg);
+        },
       }
     );
 

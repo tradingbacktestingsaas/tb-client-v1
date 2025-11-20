@@ -8,14 +8,17 @@ const Trades = () => {
   const reduxAccountId = useTradeAccountInfo()?.id;
   const { tradeAccounts } = useUserInfo();
   const userFirstAccountId = tradeAccounts[0]?.id;
-  
+
   // Priority: Redux active account > User's first account
   const accountId = reduxAccountId ?? userFirstAccountId;
-  
+
   if (!accountId) return null;
-  
+
   return (
-    <TradesList accountId={accountId as any} page={0} limit={8} />
+    <div className=" md:p-12 lg:p-12">
+      {/* <h1>Operations</h1> */}
+      <TradesList accountId={accountId as any} page={0} limit={8} />
+    </div>
   );
 };
 
