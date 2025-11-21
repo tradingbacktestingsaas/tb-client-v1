@@ -119,20 +119,20 @@ export default function AccountCard({
         <div className="space-y-1">
           <CardTitle className="text-base">
             <FormattedMessage
-              id="account.tradeAccount"
+              id="accounts.form.tradeAccount"
               defaultMessage="Trade Account"
             />
           </CardTitle>
           <div className="text-xs text-muted-foreground">
             {defaultValues?.tradesyncId ? (
               <FormattedMessage
-                id="account.tradesyncId"
-                defaultMessage="TradeSync #{id}"
+                id="accounts.form.liveAccount"
+                defaultMessage="Live account #{id}"
                 values={{ id: defaultValues?.tradesyncId }}
               />
             ) : (
               <FormattedMessage
-                id="account.localAccount"
+                id="accounts.form.localAccount"
                 defaultMessage="Local account"
               />
             )}

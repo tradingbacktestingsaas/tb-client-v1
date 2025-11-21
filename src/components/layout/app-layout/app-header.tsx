@@ -4,6 +4,7 @@ import { useUserInfo } from "@/helpers/use-user";
 import { ModeToggle } from "@/provider/theme/toggle-button";
 import React from "react";
 import NotificationsBell from "@/components/common/notificationBell";
+import LanguageSwitcher from "@/components/ui/language-switcher";
 
 const AppHeader = () => {
   return (
@@ -13,6 +14,7 @@ const AppHeader = () => {
     >
       <SidebarTrigger className="-ml-1" />
       <Div className="flex justify-end w-full gap-3 items-center">
+        <LanguageSwitcher />
         <ModeToggle />
         <NotificationsBell />
       </Div>

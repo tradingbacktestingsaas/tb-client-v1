@@ -29,10 +29,9 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { getErrorMessage } from "@/lib/error_handler/error";
 import { queryClient } from "@/provider/react-query";
-import { useIntl, FormattedMessage } from "react-intl";
+import { FormattedMessage } from "react-intl";
 
-export function getColumns(): ColumnDef<TradeRaw>[] {
-  const intl = useIntl();
+export function getColumns(intl: any): ColumnDef<TradeRaw>[] {
   const getText = (id: string, defaultMessage: string) =>
     intl.formatMessage({ id, defaultMessage });
 

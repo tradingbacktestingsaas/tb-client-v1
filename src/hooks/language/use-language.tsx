@@ -13,9 +13,13 @@ const flagMap: Record<SupportedLanguage, string> = {
   es: "🇪🇸",
 };
 
-// ✅ Flatten nested JSON to dot notation
+type MessagePrimitive = string | number | boolean | null;
+
 interface NestedMessages {
-  [key: string]: string | NestedMessages;
+  [key: string]:
+    | MessagePrimitive
+    | NestedMessages
+    | Array<MessagePrimitive | NestedMessages>;
 }
 
 const flattenMessages = (
@@ -26,10 +30,36 @@ const flattenMessages = (
     const value = nestedMessages[key];
     const prefixedKey = prefix ? `${prefix}.${key}` : key;
 
-    if (typeof value === "string") {
-      messages[prefixedKey] = value;
-    } else {
-      Object.assign(messages, flattenMessages(value, prefixedKey));
+    if (
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean"
+    ) {
+      // ✅ Cast non-string primitives to string
+      messages[prefixedKey] = String(value);
+    } else if (Array.isArray(value)) {
+      // ✅ Flatten arrays: key.0, key.1, ...
+      value.forEach((item, index) => {
+        const arrayKey = `${prefixedKey}.${index}`;
+        if (
+          typeof item === "string" ||
+          typeof item === "number" ||
+          typeof item === "boolean"
+        ) {
+          messages[arrayKey] = String(item);
+        } else if (item && typeof item === "object") {
+          Object.assign(
+            messages,
+            flattenMessages(item as NestedMessages, arrayKey)
+          );
+        }
+      });
+    } else if (value && typeof value === "object") {
+      // ✅ Nested object – recurse
+      Object.assign(
+        messages,
+        flattenMessages(value as NestedMessages, prefixedKey)
+      );
     }
 
     return messages;
@@ -38,8 +68,8 @@ const flattenMessages = (
 
 // ✅ Apply flattening to both languages
 const messages = {
-  en: flattenMessages(en),
-  es: flattenMessages(es),
+  en: flattenMessages(en as NestedMessages),
+  es: flattenMessages(es as NestedMessages),
 };
 
 interface LanguageContextType {
@@ -74,7 +104,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({
     setLanguage,
     flag: flagMap[language],
   };
-  
+
   return (
     <LanguageContext.Provider value={value}>
       <IntlProvider locale={language} messages={messages[language]}>

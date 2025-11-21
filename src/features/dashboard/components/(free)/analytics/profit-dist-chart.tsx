@@ -29,16 +29,22 @@ interface DistributionPieChartProps {
 const DistributionPieChart = memo(function DistributionPieChart({
   chartData,
 }: DistributionPieChartProps) {
-  const filteredData = chartData.filter((d) => d.profit > 0);
+  const filteredData = useMemo(
+    () => chartData.filter((d) => d.profit > 0),
+    [chartData]
+  );
+
   const chartConfig: ChartConfig = useMemo(() => {
-    return chartData.reduce((config, item) => {
+    return filteredData.reduce((config, item) => {
       config[item.pair] = {
         label: item.pair,
         color: item.fill,
       };
       return config;
     }, {} as ChartConfig);
-  }, [chartData]);
+  }, [filteredData]);
+
+  const hasData = filteredData.length > 0;
 
   return (
     <Card>
@@ -52,7 +58,7 @@ const DistributionPieChart = memo(function DistributionPieChart({
       </CardHeader>
 
       <CardContent className="pb-0">
-        {chartData.length > 0 ? (
+        {hasData ? (
           <ChartContainer
             config={chartConfig}
             className="mx-auto aspect-square max-h-[300px]"
@@ -71,7 +77,7 @@ const DistributionPieChart = memo(function DistributionPieChart({
             </PieChart>
           </ChartContainer>
         ) : (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center h-[300px]">
             <p>No data to present</p>
           </div>
         )}

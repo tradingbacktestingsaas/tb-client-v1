@@ -20,6 +20,10 @@ import {
 import TableFilterHeader from "./search-filter";
 import { Spinner } from "@/components/ui/spinner";
 import { FormattedMessage } from "react-intl";
+import { usePathname } from "next/navigation";
+import { openDialog } from "@/redux/slices/dialog/dialog-slice";
+import { Plus } from "lucide-react";
+import { useAppDispatch } from "@/redux/hook";
 
 type TradesQuery = {
   page: number; // 1-based
@@ -49,6 +53,9 @@ export function TradesTable<TData, TValue>({
   totalCount,
   isLoading,
 }: DataTableProps<TData, TValue>) {
+  const path = usePathname();
+  const isDashboard = path === "/dashboard";
+  const dispatch = useAppDispatch();
   const totalPages = Math.max(
     0,
     Math.ceil(totalCount / Math.max(1, query.pageSize))
@@ -118,56 +125,91 @@ export function TradesTable<TData, TValue>({
   return (
     <div>
       <div className="relative rounded-md border overflow-hidden">
-        <TableFilterHeader isSync={isSync} setQuery={setQuery} query={query} />
+        {!isDashboard && (
+          <TableFilterHeader
+            isSync={isSync}
+            setQuery={setQuery}
+            query={query}
+          />
+        )}
+        {isDashboard  && !isSync && (
+          <div className="flex items-center justify-between p-4">
+            <Button
+              onClick={() =>
+                dispatch(
+                  openDialog({
+                    key: "trades",
+                    mode: "add",
+                    data: null,
+                    formType: "trade",
+                  })
+                )
+              }
+              variant="outline"
+            >
+              <FormattedMessage
+                id="operations.header.add"
+                defaultMessage={"Add"}
+              />{" "}
+              <Plus />
+            </Button>
+          </div>
+        )}
 
         {/* Table + Loading Overlay */}
         <div className="relative min-h-[600px]">
-          <Table>
-            <TableHeader>
-              {table.getHeaderGroups().map((headerGroup) => (
-                <TableRow key={headerGroup.id}>
-                  {headerGroup.headers.map((header) => (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  ))}
-                </TableRow>
-              ))}
-            </TableHeader>
-
-            {!isLoading && (
-              <TableBody>
-                {table.getRowModel().rows?.length ? (
-                  table.getRowModel().rows.map((row) => (
-                    <TableRow key={row.id}>
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell
-                      colSpan={columns.length}
-                      className="h-24 text-center"
-                    >
-                      No results.
-                    </TableCell>
+          {table.getRowModel().rows?.length > 0 ? (
+            <Table>
+              <TableHeader>
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <TableRow key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => (
+                      <TableHead key={header.id}>
+                        {header.isPlaceholder
+                          ? null
+                          : flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                      </TableHead>
+                    ))}
                   </TableRow>
-                )}
-              </TableBody>
-            )}
-          </Table>
+                ))}
+              </TableHeader>
+
+              {!isLoading && (
+                <TableBody>
+                  {table.getRowModel().rows?.length ? (
+                    table.getRowModel().rows.map((row) => (
+                      <TableRow key={row.id}>
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(
+                              cell.column.columnDef.cell,
+                              cell.getContext()
+                            )}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow className="h-full">
+                      <TableCell
+                        colSpan={columns.length}
+                        className="h-24 text-center"
+                      >
+                        No results.
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              )}
+            </Table>
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 backdrop-blur-sm z-10">
+              <span className="text-sm text-muted-foreground">No results.</span>
+            </div>
+          )}
 
           {isLoading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 backdrop-blur-sm z-10">
@@ -195,7 +237,18 @@ export function TradesTable<TData, TValue>({
         </div>
 
         <div className="flex items-center gap-2">
-          <select
+          {pagesToShow.map((n) => (
+            <Button
+              className="text-center"
+              key={n}
+              variant={n === pageIndex + 1 ? "default" : "outline"}
+              size="sm"
+              onClick={() => handlePageClick(n)}
+            >
+              {n}
+            </Button>
+          ))}
+          {/* <select
             className="h-9 rounded-md border px-2 text-sm bg-background"
             value={query.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
@@ -205,60 +258,65 @@ export function TradesTable<TData, TValue>({
                 {size}
               </option>
             ))}
-          </select>
+          </select> */}
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setQuery((prev) => ({ ...prev, page: 1 }))}
-              disabled={pageIndex === 0 || totalPages === 0}
-            >
-              <FormattedMessage id="table.operations.pagination.first" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handlePreviousPage}
-              disabled={pageIndex === 0 || totalPages === 0}
-            >
-              <FormattedMessage id="table.operations.pagination.previous" />
-            </Button>
+          {!isDashboard && (
+            <div className="flex md:flex lg:flex gap-2">
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setQuery((prev) => ({ ...prev, page: 1 }))}
+                  disabled={pageIndex === 0 || totalPages === 0}
+                >
+                  <FormattedMessage id="table.operations.pagination.first" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() =>
+                    setQuery((prev) => ({
+                      ...prev,
+                      page: Math.max(1, totalPages),
+                    }))
+                  }
+                  disabled={pageIndex >= totalPages - 1 || totalPages === 0}
+                >
+                  <FormattedMessage id="table.operations.pagination.last" />
+                </Button>
+              </div>
 
-            {pagesToShow.map((n) => (
-              <Button
-                key={n}
-                variant={n === pageIndex + 1 ? "default" : "outline"}
-                size="sm"
-                onClick={() => handlePageClick(n)}
-              >
-                {n}
-              </Button>
-            ))}
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handlePreviousPage}
+                  disabled={pageIndex === 0 || totalPages === 0}
+                >
+                  <FormattedMessage id="table.operations.pagination.previous" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleNextPage}
+                  disabled={pageIndex >= totalPages - 1 || totalPages === 0}
+                >
+                  <FormattedMessage id="table.operations.pagination.next" />
+                </Button>
+              </div>
 
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={handleNextPage}
-              disabled={pageIndex >= totalPages - 1 || totalPages === 0}
-            >
-              <FormattedMessage id="table.operations.pagination.next" />
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() =>
-                setQuery((prev) => ({ ...prev, page: Math.max(1, totalPages) }))
-              }
-              disabled={pageIndex >= totalPages - 1 || totalPages === 0}
-            >
-              <FormattedMessage id="table.operations.pagination.last" />
-            </Button>
-
-            <span className="text-sm tabular-nums">
-              Page {totalPages === 0 ? 0 : pageIndex + 1} of {totalPages}
-            </span>
-          </div>
+              <span className="text-sm tabular-nums text-center">
+                Page {totalPages === 0 ? 0 : pageIndex + 1} of {totalPages}
+              </span>
+            </div>
+          )}
+          {isDashboard && (
+            <div className="flex items-center gap-2">
+              <span className="text-sm tabular-nums">
+                Page {totalPages === 0 ? 0 : pageIndex + 1} of {totalPages}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

@@ -12,14 +12,12 @@ interface QuickStatsProps {
   };
 }
 
-const QuickStats = memo(function QuickStats({
-  data: {
-    mostTradedPair,
-    totalTradesCurrentMonth,
-    totalNetProfit,
-    avgProfitPerTrade,
-  },
-}: QuickStatsProps) {
+const QuickStats = memo(function QuickStats({ data }: QuickStatsProps) {
+  const mostTradedPair = data?.mostTradedPair ?? "N/A";
+  const totalTradesCurrentMonth = data?.totalTradesCurrentMonth ?? "N/A";
+  const avgProfitPerTrade = data?.avgProfitPerTrade ?? "N/A";
+  const totalNetProfit = data?.totalNetProfit ?? 0;
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
       <QuickStatsCard

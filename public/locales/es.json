@@ -82,6 +82,7 @@
       "next": "Siguiente"
     },
     "metrics": {
+      "title": "Resumen de la métrica",
       "card": {
         "riskReward": {
           "title": "Relación Riesgo/Beneficio",
@@ -125,6 +126,59 @@
       "totalNetProfit": {
         "label": "Ganancia Neta Total",
         "description": "Ganancia neta este mes"
+      }
+    },
+
+    "analytics": {
+      "title": "Analíticas de la cuenta",
+      "subtitle": "ID #{id} • Última actualización {date}",
+      "started": "Inicio:",
+      "growthStatus": "Crecimiento {value}",
+      "tradesBadge": "{trades} operaciones • {lots} lotes",
+      "status": {
+        "active": "Cuenta activa",
+        "inactive": "Sin actividad"
+      },
+      "pnl": {
+        "title": "Beneficio / Pérdida",
+        "description": "PnL cerrado total",
+        "growthLabel": "Crecimiento:"
+      },
+      "winRate": {
+        "title": "Tasa de aciertos",
+        "description": "Sobre {trades} operaciones",
+        "breakdown": "G: {wins} • P: {losses}",
+        "longs": "Largos",
+        "shorts": "Cortos"
+      },
+      "averages": {
+        "title": "Promedios",
+        "description": "Por operación ganadora/perdedora",
+        "averageWin": "Ganancia media",
+        "averageLoss": "Pérdida media",
+        "commission": "Comisiones",
+        "swap": "Swap"
+      },
+      "breakdown": {
+        "title": "Detalle",
+        "description": "Volúmenes, movimientos y mejores/peores operaciones",
+        "totalLots": "Lotes totales",
+        "deposits": "Depósitos",
+        "withdrawals": "Retiros",
+        "totalLongs": "Largos totales",
+        "totalShorts": "Cortos totales",
+        "tradesWL": "Operaciones (G/P)",
+        "bestTrade": "Mejor operación",
+        "worstTrade": "Peor operación"
+      },
+      "rawData": {
+        "title": "Datos en bruto",
+        "description": "Para una revisión rápida y depuración."
+      },
+      "empty": {
+        "title": "Sin actividad",
+        "description": "Esta cuenta no tiene operaciones, depósitos ni retiros registrados. Cuando empieces a operar, tus analíticas aparecerán aquí.",
+        "badge": "Esperando las primeras operaciones"
       }
     }
   },
@@ -263,13 +317,89 @@
     "billing": "Facturación",
     "monthly": "Mensual",
     "yearly": "Anual",
+    "monthlyYearly": "Mensual/Anual",
     "pricesNote": "Precios en USD. Pueden aplicarse impuestos. Puedes cambiar o cancelar en cualquier momento.",
     "freePlanSuccess": "¡Suscrito al plan gratuito!",
     "subscriptionSuccess": "¡Redirigiendo al checkout!",
     "subscriptionError": "Error al crear la suscripción",
     "couponLabel": "¿Tienes un cupón?",
     "couponApply": "Aplicar",
-    "couponChecking": "Comprobando…"
+    "couponChecking": "Comprobando…",
+
+    "yearlyShort": "año",
+    "monthlyShort": "mes",
+    "wasPrice": "Antes {price}",
+    "features": {
+      "accountLimit": "Límite de cuentas",
+      "support": "Soporte",
+      "sync": "Sincronización",
+      "broker": "Broker"
+    },
+    "cta": {
+      "currentPlan": "Plan actual"
+    },
+    "couponEmpty": "Introduce un código de cupón",
+    "couponValidationError": "Error al validar el cupón.",
+    "couponAppliedToast": "¡Cupón aplicado!",
+    "couponAppliedBadge": "Cupón aplicado",
+    "couponAppliedTo": "Cupón \"{code}\" aplicado a {target}",
+    "allPlans": "todos los planes",
+
+    "free": {
+      "id": "free",
+      "name": "Gratis",
+      "tagline": "Prioridad 24/7",
+      "price": {
+        "amount": 0,
+        "currency": "USD",
+        "period": "yr",
+        "formatted": "$0.00 /año"
+      },
+      "features": [
+        "Límite de cuentas: 0",
+        "Soporte: Prioridad 24/7",
+        "Sincronización: Trading manual y análisis limitado",
+        "Broker: -"
+      ],
+      "ctaLabel": "Empezar gratis"
+    },
+    "standard": {
+      "id": "standard",
+      "name": "Standard",
+      "tagline": "Prioridad 24/7",
+      "price": {
+        "amount": 359.88,
+        "currency": "USD",
+        "period": "yr",
+        "formatted": "$359.88 /año"
+      },
+      "features": [
+        "Límite de cuentas: 2",
+        "Soporte: Prioridad 24/7",
+        "Sincronización: Sincronización en vivo de cuentas MT4/MT5",
+        "Broker: compatibilidad con más de 100 brokers distintos"
+      ],
+      "ctaLabel": "Actualizar a Standard"
+    },
+    "elite": {
+      "id": "elite",
+      "name": "Elite",
+      "tagline": "Prioridad 24/7",
+      "price": {
+        "amount": 551.88,
+        "currency": "USD",
+        "period": "yr",
+        "formatted": "$551.88 /año"
+      },
+      "features": [
+        "Límite de cuentas: 4",
+        "Soporte: Prioridad 24/7",
+        "Sincronización: Sincronización en vivo de cuentas MT4/MT5",
+        "Broker: compatibilidad con más de 100 brokers distintos"
+      ],
+      "ctaLabel": "Actualizar a Elite"
+    },
+    "current_plan": "Plan actual"
   },
   "accounts": {
     "limitReached": "¡Has alcanzado el límite de cuentas!",
@@ -287,7 +417,7 @@
       "selectAppTitle": "Selecciona tu Aplicación",
       "selectAppDesc": "Deseas continuar con MT4/MT5",
       "tradeAccount": "Cuenta de Trading",
-      "tradesyncId": "TradeSync #{id}",
+      "liveAccount": "Cuenta en vivo #{id}",
       "localAccount": "Cuenta local",
       "id": "ID: {id}",
       "unsaved": "Cuenta no guardada",
@@ -372,7 +502,8 @@
     "trade": {
       "add": {
         "title": "Agregar Nueva Operación",
-        "button": "Agregar"
+        "button": "Agregar",
+        "adding": "Agregando..."
       },
       "edit": {
         "title": "Editar Operación",

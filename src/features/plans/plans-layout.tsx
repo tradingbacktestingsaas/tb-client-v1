@@ -70,8 +70,8 @@ export default function PlansLayout() {
   };
 
   return (
-    <div className="flex h-screen w-full items-center justify-center">
-      <div className="flex items-center justify-center h-full w-full overflow-hidden">
+    <div className="flex h-full w-full items-center justify-center">
+      <div className="flex items-center justify-center h-screen w-full overflow-hidden">
         <div className="max-w-5xl mx-auto px-4">
           <PlansHeader billingCycle={cycle} onToggle={setCycle} />
 
@@ -96,8 +96,12 @@ export default function PlansLayout() {
                         );
                         const result = await refetch();
                         const user = result?.data?.user;
-                        dispatch(updateProfile(user));
-                        router.push("/dashboard");
+                        if (user) {
+                          dispatch(updateProfile(user));
+                          router.push("/plans/success");
+                        } else {
+                          router.push("/");
+                        }
                       }
                     },
                     onError: (err) => {

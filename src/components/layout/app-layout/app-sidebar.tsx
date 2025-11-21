@@ -20,12 +20,15 @@ import { useTheme } from "next-themes";
 import { Div, Span } from "@/components/ui/tags";
 import { MAIN_MENU } from "./menu-data";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+// AppSidebar.tsx
+export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUserInfo();
-  const currentPlan: any = user.plan;
+  if (!user) return null;
+  const currentPlan: any = user?.plan;
   const { theme } = useTheme();
+
   return (
-    <Sidebar variant="inset" {...props}>
+    <Sidebar {...props}>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
@@ -54,12 +57,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
+
       <SidebarContent>
         <NavMain
           items={MAIN_MENU[currentPlan]?.navMain || MAIN_MENU["FREE"].navMain}
         />
-        {/* <NavMenu items={data.navSecondary} className="mt-auto" /> */}
       </SidebarContent>
+
       <SidebarFooter>{user && <NavUser user={user} />}</SidebarFooter>
     </Sidebar>
   );

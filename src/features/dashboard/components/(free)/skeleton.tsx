@@ -10,7 +10,7 @@ const DashboardSkeleton = () => {
     <Div className="flex flex-col w-full space-y-12 p-12 animate-pulse">
       {/* Account Switcher */}
       <Section className="flex mb-0 bottom-0 w-full justify-end">
-        <Skeleton className="h-10 w-40 rounded-xl" />
+        <Skeleton className="h-10 mb-4 w-40 rounded-xl" />
       </Section>
 
       <Separator />

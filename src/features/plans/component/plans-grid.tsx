@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import React, { useState } from "react";
 import CouponSection from "./coupon-section";
 import { toast } from "sonner";
-import { on } from "events";
 import { useValidateCoupon } from "../hooks/mutations";
+import { FormattedMessage, useIntl } from "react-intl";
 
 export default function PlansGrid({
   plans,
@@ -15,6 +15,8 @@ export default function PlansGrid({
   loading,
   setCoupon,
 }) {
+  const intl = useIntl();
+
   const [couponInfo, setCouponInfo] = useState<any | null>(null);
   const [validating, setValidating] = useState(false);
   const [couponCode, setCouponCode] = useState<string>("");
@@ -23,27 +25,40 @@ export default function PlansGrid({
 
   const handleValidateCoupon = async (planCode: string) => {
     if (!couponCode?.trim()) {
-      toast.error("Please enter a coupon code");
+      toast.error(
+        intl.formatMessage({
+          id: "plans.couponEmpty",
+          defaultMessage: "Please enter a coupon code",
+        })
+      );
       return;
     }
 
     setValidating(true);
     try {
-      const data = await validateCouponMutation.mutateAsync(
+      await validateCouponMutation.mutateAsync(
         {
           code: couponCode.trim(),
-          plan_code: planCode, // ✅ dynamically passed plan_code
+          plan_code: planCode,
         },
         {
           onError: (error: any) => {
             const msg =
-              error?.response?.data?.message || "Coupon validation failed.";
+              error?.response?.data?.message ||
+              intl.formatMessage({
+                id: "plans.couponValidationError",
+                defaultMessage: "Coupon validation failed.",
+              });
             toast.error(msg);
           },
           onSuccess: (res: any) => {
-            console.log(res?.data);
-
-            toast.success(res?.message || "Coupon applied!");
+            toast.success(
+              res?.message ||
+                intl.formatMessage({
+                  id: "plans.couponAppliedToast",
+                  defaultMessage: "Coupon applied!",
+                })
+            );
             setCouponInfo(res?.data);
             setCoupon(couponCode.trim());
           },
@@ -114,6 +129,7 @@ export default function PlansGrid({
               : plan.price_cents / 100;
 
           const isCurrent = currentPlan === plan.id;
+          const planKey = plan.code.toLowerCase(); // "free" | "standard" | "elite"
 
           return (
             <div
@@ -128,12 +144,20 @@ export default function PlansGrid({
             >
               {/* Plan title */}
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold">{plan.name}</h3>
+                <h3 className="font-semibold">
+                  <FormattedMessage
+                    id={`plans.${planKey}.name`}
+                    defaultMessage={plan.name}
+                  />
+                </h3>
               </div>
 
-              {/* Description */}
+              {/* Tagline / description */}
               <p className="mt-2 text-sm text-muted-foreground">
-                {plan.features?.support}
+                <FormattedMessage
+                  id={`plans.${planKey}.tagline`}
+                  defaultMessage={plan.features?.support}
+                />
               </p>
 
               {/* Price */}
@@ -142,21 +166,60 @@ export default function PlansGrid({
                   ${price.toFixed(2)}
                 </span>
                 <span className="text-muted-foreground">
-                  /{billingCycle === "year" ? "yr" : "mo"}
+                  /
+                  {billingCycle === "year" ? (
+                    <FormattedMessage
+                      id="plans.yearlyShort"
+                      defaultMessage="yr"
+                    />
+                  ) : (
+                    <FormattedMessage
+                      id="plans.monthlyShort"
+                      defaultMessage="mo"
+                    />
+                  )}
                 </span>
               </div>
               {price !== basePrice && (
                 <div className="text-xs text-muted-foreground line-through">
-                  Was ${basePrice.toFixed(2)}
+                  <FormattedMessage
+                    id="plans.wasPrice"
+                    defaultMessage="Was {price}"
+                    values={{ price: basePrice.toFixed(2) }}
+                  />
                 </div>
               )}
 
               {/* Features list */}
               <ul className="mt-4 space-y-3 text-sm">
-                <li>Account Limit: {plan.features?.account_limit}</li>
-                <li>Support: {plan.features?.support}</li>
-                <li>Sync: {plan.features?.sync}</li>
-                <li>Broker: {plan.features?.broker}</li>
+                <li>
+                  <FormattedMessage
+                    id="plans.features.accountLimit"
+                    defaultMessage="Account Limit"
+                  />
+                  : {plan.features?.account_limit}
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="plans.features.support"
+                    defaultMessage="Support"
+                  />
+                  : {plan.features?.support}
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="plans.features.sync"
+                    defaultMessage="Sync"
+                  />
+                  : {plan.features?.sync}
+                </li>
+                <li>
+                  <FormattedMessage
+                    id="plans.features.broker"
+                    defaultMessage="Broker"
+                  />
+                  : {plan.features?.broker}
+                </li>
               </ul>
 
               {/* Action button */}
@@ -168,21 +231,35 @@ export default function PlansGrid({
                 variant={plan.code === "ELITE" ? "gradient" : "outline"}
                 className="mt-6 w-full rounded-lg text-white px-4 py-2"
               >
-                {plan.code === "FREE"
-                  ? isCurrent
-                    ? "Current Plan"
-                    : "Start Free"
-                  : isCurrent
-                  ? "Current Plan"
-                  : `Upgrade to ${plan.name}`}
+                {isCurrent ? (
+                  <FormattedMessage
+                    id="plans.cta.currentPlan"
+                    defaultMessage="Current Plan"
+                  />
+                ) : (
+                  <FormattedMessage
+                    id={`plans.${planKey}.ctaLabel`}
+                    // fallbacks in case message is missing
+                    defaultMessage={
+                      plan.code === "FREE"
+                        ? "Start free"
+                        : plan.code === "ELITE"
+                        ? "Upgrade to Elite"
+                        : "Choose Standard"
+                    }
+                  />
+                )}
               </Button>
 
-              {/* Optional: show badge if coupon applies to this plan */}
+              {/* Badge when coupon applies */}
               {couponInfo &&
                 (couponInfo.applies_to === plan.code.toLowerCase() ||
                   couponInfo.applies_to === "any") && (
                   <div className="absolute top-4 right-4 bg-green-600 text-white px-2 py-1 rounded-full text-xs">
-                    Coupon applied
+                    <FormattedMessage
+                      id="plans.couponAppliedBadge"
+                      defaultMessage="Coupon applied"
+                    />
                   </div>
                 )}
             </div>
@@ -194,10 +271,20 @@ export default function PlansGrid({
       <div className="space-y-2">
         {couponInfo && (
           <div className="flex items-center gap-2 text-sm text-white bg-green-600 px-3 py-1 rounded-full w-fit">
-            Coupon "{couponInfo.code}" applied to{" "}
-            {couponInfo.appliesTo === "any"
-              ? "all plans"
-              : couponInfo.appliesTo}
+            <FormattedMessage
+              id="plans.couponAppliedTo"
+              defaultMessage={'Coupon "{code}" applied to {target}'}
+              values={{
+                code: couponInfo.code,
+                target:
+                  couponInfo.appliesTo === "any"
+                    ? intl.formatMessage({
+                        id: "plans.allPlans",
+                        defaultMessage: "all plans",
+                      })
+                    : couponInfo.appliesTo,
+              }}
+            />
           </div>
         )}
         <CouponSection
