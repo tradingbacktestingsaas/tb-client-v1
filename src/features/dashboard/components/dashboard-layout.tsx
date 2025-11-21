@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, useMemo } from "react";
+import { useEffect, useRef, useState, useMemo, memo } from "react";
 import { useDispatch } from "react-redux";
 
 import { Separator } from "@/components/ui/separator";
@@ -42,18 +42,23 @@ function useDashboardBootstrap() {
     userId || ""
   );
 
-  const user = fetchedUser || reduxUser || null;
+  // Prefer fetched user, fall back to redux user while loading to avoid flicker
+  const user = fetchedUser ?? reduxUser ?? null;
 
   const reduxAccount = useTradeAccountInfo();
   const reduxAccountId = reduxAccount?.id ?? null;
 
   const [initialized, setInitialized] = useState(false);
 
-  // Single source of truth to hydrate Redux from user data
+  // 🔹 1) ALWAYS sync latest user into redux when we have one
+  useEffect(() => {
+    if (!fetchedUser || userLoading) return;
+    dispatch(updateProfile(fetchedUser));
+  }, [fetchedUser, userLoading, dispatch]);
+
+  // 🔹 2) ONE-TIME bootstrap of account selection
   useEffect(() => {
     if (!user || userLoading || initialized) return;
-
-    dispatch(updateProfile(user));
 
     if (!reduxAccountId) {
       const firstAcc = user.tradeAccounts?.[0] ?? null;
@@ -88,8 +93,7 @@ function useDashboardBootstrap() {
   }, [reduxAccountId, user?.tradeAccounts]);
 
   const planCode: UserPlan =
-    (user?.subscriptions?.plan?.code?.toUpperCase() as UserPlan) ??
-    UserPlan.FREE;
+    (user?.subscriptions?.plan?.code?.toUpperCase() as UserPlan) ?? null;
 
   const planType = {
     isFree: planCode === UserPlan.FREE,
@@ -106,7 +110,6 @@ function useDashboardBootstrap() {
     planType,
   };
 }
-
 function useDashboardData(activeAccountId: string | null, userLoaded: boolean) {
   const accountId = activeAccountId ?? "";
 
@@ -145,7 +148,7 @@ function useDashboardData(activeAccountId: string | null, userLoaded: boolean) {
 
 // ---------- main component ---------- //
 
-const DashboardLayout = () => {
+const DashboardLayoutComponent = () => {
   const dispatch = useDispatch();
 
   // bootstrap user + account + plan
@@ -156,9 +159,15 @@ const DashboardLayout = () => {
   const previousAccountIdRef = useRef<string | null>(null);
 
   const userLoaded = !!user;
+  const accounts = user?.tradeAccounts?.[0];
 
   const { metrics, charts, isDataLoading, metricsLoading, chartsLoading } =
     useDashboardData(activeAccountId, userLoaded);
+
+  const analyticsData = useMemo(() => metrics?.analytics ?? null, [metrics]);
+  console.log(user);
+
+  const tradesData = useMemo(() => charts?.data ?? [], [charts]);
 
   // Track account switching (for skeleton during transitions)
   useEffect(() => {
@@ -207,7 +216,7 @@ const DashboardLayout = () => {
   }
 
   // 2) No account (applies to FREE and PREMIUM now)
-  if (!activeAccountId) {
+  if (activeAccountId && user.tradeAccounts?.length === 0) {
     return (
       <>
         <DashboardEmpty
@@ -231,9 +240,6 @@ const DashboardLayout = () => {
   // - activeAccountId
   // - data loaded (or at least attempted)
 
-  const analyticsData = metrics?.analytics ?? null;
-  const tradesData = charts?.data || [];
-
   // 4) Premium dashboard
   if (planType.isPremium) {
     return (
@@ -244,8 +250,13 @@ const DashboardLayout = () => {
 
         <Separator />
 
-        <TradeAnalyticsOverview data={analyticsData} />
-
+        {accounts?.type === "MT4" ||
+          (accounts?.type === "MT5" && (
+            <TradeAnalyticsOverview data={analyticsData} />
+          ))}
+        {accounts?.type === "FREE" && <QuickStats data={analyticsData} />}
+        {accounts?.type === "FREE" && <Metrics data={analyticsData} />}
+        <Analytics data={tradesData} />
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
           <Trades />
 
@@ -253,6 +264,7 @@ const DashboardLayout = () => {
         </section>
 
         <TradesForm />
+        <ConnectAccount />
       </div>
     );
   }
@@ -286,5 +298,5 @@ const DashboardLayout = () => {
   // Fallback – should basically never happen
   return <DashboardSkeleton />;
 };
-
+const DashboardLayout = memo(DashboardLayoutComponent);
 export default DashboardLayout;

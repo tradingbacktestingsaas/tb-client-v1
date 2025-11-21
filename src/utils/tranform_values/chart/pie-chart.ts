@@ -27,14 +27,15 @@ export function transformTradesToPieChartData(
 
   for (const trade of rawTrades) {
     const currentProfit = pairMap.get(trade.symbol) ?? 0;
-    pairMap.set(trade.symbol, currentProfit + trade.profit);
+
+    pairMap.set(trade.symbol, trade.profit);
   }
 
   Array.from(pairMap.entries()).forEach(([pair, profit], index) => {
     result.push({
       pair,
-      profit: parseFloat(profit.toFixed(2)),
-      fill: COLORS[index % COLORS.length],
+      profit: parseFloat(profit.toFixed(2)) || 0,
+      fill: COLORS[index % COLORS.length] || COLORS[0],
     });
   });
 

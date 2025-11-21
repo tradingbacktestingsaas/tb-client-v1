@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { memo, useMemo, useCallback } from "react";
 import { AreaChart, Area, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -27,22 +28,13 @@ const chartConfig: ChartConfig = {
 interface AreaChartWidgetProps {
   data: { date: string; profit: number; loss: number }[];
 }
-const TradesAreaChart = React.memo(({ data }: AreaChartWidgetProps) => {
-  const [chartData, setChartData] = React.useState<
-    { date: string; profit: number; loss: number }[]
-  >([]);
-    console.log(data);
-    
-  React.useEffect(() => {
-    if (data && data.length > 0) {
-      setChartData(data);
-    } else {
-      setChartData([]);
-    }
-  }, [data]);
 
-    
-  const formatDate = React.useCallback(
+const TradesAreaChart = memo(function TradesAreaChart({
+  data,
+}: AreaChartWidgetProps) {
+  const chartData = useMemo(() => data ?? [], [data]);
+
+  const formatDate = useCallback(
     (value: string) =>
       new Date(value).toLocaleDateString("en-US", {
         month: "short",
@@ -50,6 +42,8 @@ const TradesAreaChart = React.memo(({ data }: AreaChartWidgetProps) => {
       }),
     []
   );
+
+  const hasData = chartData.length > 0;
 
   return (
     <div className="w-full h-full">
@@ -62,8 +56,9 @@ const TradesAreaChart = React.memo(({ data }: AreaChartWidgetProps) => {
             </CardDescription>
           </div>
         </CardHeader>
+
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-          {chartData.length > 0 ? (
+          {hasData ? (
             <ChartContainer
               config={chartConfig}
               className="aspect-auto h-[250px] w-full"
@@ -100,7 +95,6 @@ const TradesAreaChart = React.memo(({ data }: AreaChartWidgetProps) => {
                   }
                 />
 
-                {/* Profit Line */}
                 <Area
                   dataKey="profit"
                   type="monotone"
@@ -110,7 +104,6 @@ const TradesAreaChart = React.memo(({ data }: AreaChartWidgetProps) => {
                   isAnimationActive={false}
                 />
 
-                {/* Loss Line */}
                 <Area
                   dataKey="loss"
                   type="monotone"
@@ -134,5 +127,4 @@ const TradesAreaChart = React.memo(({ data }: AreaChartWidgetProps) => {
   );
 });
 
-TradesAreaChart.displayName = "TradesAreaChart";
 export { TradesAreaChart };

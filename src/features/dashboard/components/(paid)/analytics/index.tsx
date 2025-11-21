@@ -263,9 +263,7 @@ export default function TradeAnalyticsOverview({
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
-            <div
-              className={`text-3xl font-bold ${healthColor(d.profit_loss)}`}
-            >
+            <div className={`text-3xl font-bold ${healthColor(d.profit_loss)}`}>
               {formatCurrency(d.profit_loss)}
             </div>
             <div className="mt-2 flex items-center gap-2 text-sm">
@@ -469,9 +467,9 @@ export default function TradeAnalyticsOverview({
                 <MetricRow
                   labelId="dashboard.analytics.breakdown.tradesWL"
                   fallbackLabel="Trades (W/L)"
-                  value={`${formatNumber(
-                    d.total_trades_won
-                  )} / ${formatNumber(d.total_trades_lost)}`}
+                  value={`${formatNumber(d.total_trades_won)} / ${formatNumber(
+                    d.total_trades_lost
+                  )}`}
                 />
               </div>
               <div className="space-y-4">

@@ -54,16 +54,11 @@ const AccountLayout = () => {
   const deleteMutation = useDeleteAccount();
 
   const accounts = useMemo(() => normalizeAccounts(data), [data]);
-
+  const limit = user?.subscriptions?.plan?.features?.account_limit ?? 0;
+  const mtAccounts =
+    accounts.filter((a) => a.type === "MT4" || a.type === "MT5") ?? [];
   /* ------------ Create ------------ */
   const handleCreate = (values) => {
-    const mtAccounts = accounts.filter(
-      (a) => a.type === "MT4" || a.type === "MT5"
-    );
-
-    const limit =
-      user?.subscriptions?.plan?.features?.account_limit ?? Infinity;
-
     if (mtAccounts.length >= limit) {
       const message = intl.formatMessage({
         id: "accounts.limitReached",
@@ -210,7 +205,10 @@ const AccountLayout = () => {
         </div>
 
         {user?.subscriptions?.plan?.code !== "FREE" && (
-          <Button onClick={() => setOpen(true)}>
+          <Button
+            disabled={accounts.length >= limit || isLoading}
+            onClick={() => setOpen(true)}
+          >
             <Plus className="mr-2 size-4" />
             <FormattedMessage id="accounts.add" defaultMessage="Add account" />
           </Button>

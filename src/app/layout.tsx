@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "@/provider/theme/provider";
 import { LanguageProvider } from "@/hooks/language/use-language";
 import { Toaster } from "@/components/ui/sonner";
+import StoreProvider from "@/redux/store-provider";
 
 const poppins = Poppins({
   variable: "--font-poppins",
@@ -30,15 +31,17 @@ export default function RootLayout({
         suppressHydrationWarning
         className={`${poppins.variable} antialiased`}
       >
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <LanguageProvider>{children}</LanguageProvider>
-          <Toaster />
-        </ThemeProvider>
+        <StoreProvider>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <LanguageProvider>{children}</LanguageProvider>
+            <Toaster />
+          </ThemeProvider>
+        </StoreProvider>
       </body>
     </html>
   );

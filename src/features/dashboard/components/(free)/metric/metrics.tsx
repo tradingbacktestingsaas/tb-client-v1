@@ -16,7 +16,7 @@ interface MetricCardProps {
 
 const Metrics: React.FC<MetricCardProps> = ({ data }) => {
   return (
-    <div className="w-full h-full">
+    <div className="w-full ">
       <h1 className="text-2xl font-bold mt-2 mb-4">
         <FormattedMessage
           id="dashboard.metrics.title"

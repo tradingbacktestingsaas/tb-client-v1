@@ -96,8 +96,12 @@ export default function PlansLayout() {
                         );
                         const result = await refetch();
                         const user = result?.data?.user;
-                        dispatch(updateProfile(user));
-                        router.push("/dashboard");
+                        if (user) {
+                          dispatch(updateProfile(user));
+                          router.push("/plans/success");
+                        } else {
+                          router.push("/");
+                        }
                       }
                     },
                     onError: (err) => {
