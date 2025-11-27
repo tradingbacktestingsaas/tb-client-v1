@@ -30,67 +30,102 @@ import { useTradeAccountInfo } from "@/helpers/use-taccount";
 import { useGetUser } from "@/features/users/hooks";
 import { useGetMertics } from "../hooks/queries";
 import { useGetTrades } from "../../operations/hook/queries";
+import FilterHeader from "./(free)/shared/filterHeader";
 
-// ---------- small helper hooks ---------- //
+// ---------------- small helper hooks ---------------- //
+
+type DashboardFilters = {
+  accountId: string;
+  symbol: string;
+  openDate: string;
+  closeDate: string;
+  selectedDate: string;
+  month: string;
+  range: "" | "current" | "3m" | "6m";
+};
+
+type DashboardQueryState = {
+  page: number;
+  pageSize: number;
+  filters: DashboardFilters;
+};
 
 function useDashboardBootstrap() {
   const dispatch = useDispatch();
   const { user: reduxUser, id: userId } = useUserInfo();
+  const reduxAccount = useTradeAccountInfo();
 
-  // Always call hooks – even if userId is empty
-  const { user: fetchedUser, isLoading: userLoading } = useGetUser(
-    userId || ""
-  );
+  // Always call hook, even if userId is empty
+  const {
+    user: fetchedUser,
+    isLoading: userLoading,
+    refetch: refetchUser,
+  } = useGetUser(userId || "");
 
-  // Prefer fetched user, fall back to redux user while loading to avoid flicker
+  // Prefer fetched user, fallback to redux while loading
   const user = fetchedUser ?? reduxUser ?? null;
 
-  const reduxAccount = useTradeAccountInfo();
-  const reduxAccountId = reduxAccount?.id ?? null;
+  // Force user refetch on page load (hard reload)
+  useEffect(() => {
+    if (!userId) return;
+    refetchUser();
+  }, [userId, refetchUser]);
 
-  const [initialized, setInitialized] = useState(false);
-
-  // 🔹 1) ALWAYS sync latest user into redux when we have one
+  // Sync latest fetched user into Redux
   useEffect(() => {
     if (!fetchedUser || userLoading) return;
     dispatch(updateProfile(fetchedUser));
   }, [fetchedUser, userLoading, dispatch]);
 
-  // 🔹 2) ONE-TIME bootstrap of account selection
-  useEffect(() => {
-    if (!user || userLoading || initialized) return;
-
-    if (!reduxAccountId) {
-      const firstAcc = user.tradeAccounts?.[0] ?? null;
-
-      dispatch(
-        setAccountState(
-          firstAcc
-            ? {
-                current: {
-                  accountId: firstAcc.id,
-                  type: firstAcc.type?.toUpperCase() ?? "",
-                },
-                account: firstAcc,
-              }
-            : {
-                current: null,
-                account: null,
-              }
-        )
-      );
+  // Compute activeAccountId from **current redux account OR latest user**
+  const activeAccountId = useMemo(() => {
+    // If trade-account slice already has a selected account, trust that first
+    if (reduxAccount?.id) {
+      return reduxAccount.id as string;
+    }
+    if (reduxAccount?.id) {
+      return reduxAccount.id as string;
     }
 
-    setInitialized(true);
-  }, [user, userLoading, reduxAccountId, initialized, dispatch]);
-
-  // Derive activeAccountId with a clear priority:
-  // Redux selection > first account > null
-  const activeAccountId = useMemo(() => {
-    if (reduxAccountId) return reduxAccountId;
+    // Otherwise, fallback to first account from latest user
     const first = user?.tradeAccounts?.[0];
     return first?.id ?? null;
-  }, [reduxAccountId, user?.tradeAccounts]);
+  }, [reduxAccount, user?.tradeAccounts]);
+
+  // Ensure trade-account slice has a valid account based on latest user
+  useEffect(() => {
+    if (!user) return;
+
+    const firstAcc = user.tradeAccounts?.[0] ?? null;
+
+    // If there is no account at all -> clear redux state
+    if (!firstAcc) {
+      dispatch(
+        setAccountState({
+          current: null,
+          account: null,
+        })
+      );
+      return;
+    }
+
+    // If redux account doesn't match latest user (e.g. after refetch), fix it
+    const currentId = reduxAccount?.id ?? (reduxAccount as any)?.id ?? null;
+
+    if (currentId !== firstAcc.id) {
+      // `locked` is optional: if you want to prevent overriding a user-chosen account,
+      // remove this condition or implement it in your slice.
+      dispatch(
+        setAccountState({
+          current: {
+            accountId: firstAcc.id,
+            type: firstAcc.type?.toUpperCase() ?? "",
+          },
+          account: firstAcc,
+        })
+      );
+    }
+  }, [user, reduxAccount, dispatch]);
 
   const planCode: UserPlan =
     (user?.subscriptions?.plan?.code?.toUpperCase() as UserPlan) ?? null;
@@ -110,24 +145,35 @@ function useDashboardBootstrap() {
     planType,
   };
 }
+
 function useDashboardData(activeAccountId: string | null, userLoaded: boolean) {
   const accountId = activeAccountId ?? "";
+  const initialPage = 0;
+  const limit = 30;
 
-  // Hooks are always called; hooks themselves should no-op when accountId is ""
-  const metricsQuery = useGetMertics(accountId);
-  const tradesQuery = useGetTrades(
-    {
+  const [query, setQuery] = useState<DashboardQueryState>({
+    page: initialPage,
+    pageSize: limit,
+    filters: {
       accountId,
       symbol: "",
       openDate: "",
       closeDate: "",
+      selectedDate: "",
+      month: "",
+      range: "",
     },
-    0,
-    8
-  );
+  });
+
+  const [selectedDate, setSelectedDate] = useState(""); // YYYY-MM-DD
+  const [month, setMonth] = useState(""); // YYYY-MM
+  const [filter, setFilter] = useState<"" | "current" | "3m" | "6m">("");
+
+  const metricsQuery = useGetMertics(accountId);
+  const tradesQuery = useGetTrades(query.filters, query.page, query.pageSize);
 
   const metrics = metricsQuery.data;
-  const charts = tradesQuery.data;
+  const charts = tradesQuery;
 
   const metricsLoading =
     !!accountId && (metricsQuery.isLoading || metricsQuery.isFetching);
@@ -137,21 +183,63 @@ function useDashboardData(activeAccountId: string | null, userLoaded: boolean) {
   const isDataLoading =
     userLoaded && !!accountId && (metricsLoading || chartsLoading);
 
+  // When accountId changes OR page reloads with a valid account, refetch
+  useEffect(() => {
+    if (!userLoaded || !accountId) return;
+    metricsQuery.refetch();
+    tradesQuery.refetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [accountId, userLoaded]);
+
+  // When accountId changes, reset filters & pagination to defaults
+  useEffect(() => {
+    if (!accountId) return;
+
+    setQuery((prev) => ({
+      ...prev,
+      page: 0,
+      pageSize: limit,
+      filters: {
+        ...prev.filters,
+        accountId,
+        symbol: "",
+        openDate: "",
+        closeDate: "",
+        selectedDate: "",
+        month: "",
+        range: "",
+      },
+    }));
+
+    setSelectedDate("");
+    setMonth("");
+    setFilter("");
+  }, [accountId]);
+
   return {
     metrics,
     charts,
     isDataLoading,
     metricsLoading,
     chartsLoading,
+
+    setSelectedDate,
+    setMonth,
+    setQuery,
+    query,
+    setFilter,
+    refetch: tradesQuery.refetch,
+    selectedDate,
+    month,
+    filter,
   };
 }
 
-// ---------- main component ---------- //
+// ---------------- main component ---------------- //
 
 const DashboardLayoutComponent = () => {
   const dispatch = useDispatch();
 
-  // bootstrap user + account + plan
   const { user, isBootstrapping, activeAccountId, planType } =
     useDashboardBootstrap();
 
@@ -159,15 +247,28 @@ const DashboardLayoutComponent = () => {
   const previousAccountIdRef = useRef<string | null>(null);
 
   const userLoaded = !!user;
-  const accounts = user?.tradeAccounts?.[0];
 
-  const { metrics, charts, isDataLoading, metricsLoading, chartsLoading } =
-    useDashboardData(activeAccountId, userLoaded);
+  const {
+    metrics,
+    charts,
+    isDataLoading,
+    metricsLoading,
+    chartsLoading,
+    refetch,
+    selectedDate,
+    query,
+    setQuery,
+  } = useDashboardData(activeAccountId, userLoaded);
 
   const analyticsData = useMemo(() => metrics?.analytics ?? null, [metrics]);
-  console.log(user);
-
   const tradesData = useMemo(() => charts?.data ?? [], [charts]);
+
+  const activeAccount = useMemo(
+    () =>
+      user?.tradeAccounts?.find((acc: any) => acc.id === activeAccountId) ??
+      null,
+    [user, activeAccountId]
+  );
 
   // Track account switching (for skeleton during transitions)
   useEffect(() => {
@@ -193,6 +294,45 @@ const DashboardLayoutComponent = () => {
     }
   }, [isSwitching, metricsLoading, chartsLoading]);
 
+  const handleFilterChart = ({
+    date = "",
+    monthValue = "",
+    range = "",
+  }: {
+    date?: string;
+    monthValue?: string;
+    range?: "" | "current" | "3m" | "6m";
+  }) => {
+    const newFilters: DashboardFilters = {
+      accountId: activeAccountId ?? "",
+      symbol: "",
+      openDate: "",
+      closeDate: "",
+      selectedDate: "",
+      month: "",
+      range: "",
+    };
+
+    if (date) {
+      newFilters.selectedDate = date;
+    } else if (monthValue) {
+      newFilters.month = monthValue;
+    } else if (range) {
+      newFilters.range = range;
+    }
+
+    setQuery((prev) => ({
+      ...prev,
+      filters: newFilters,
+      page: 1,
+      pageSize: 30,
+    }));
+
+    setTimeout(() => {
+      refetch();
+    }, 0);
+  };
+
   const handleConnectAccount = () => {
     dispatch(
       openDialog({
@@ -208,15 +348,17 @@ const DashboardLayoutComponent = () => {
     );
   };
 
-  // ---------- view routing ---------- //
+  // ---------------- view routing ---------------- //
 
-  // 1) Initial bootstrap → skeleton
   if (isBootstrapping || !user) {
     return <DashboardSkeleton />;
   }
 
-  // 2) No account (applies to FREE and PREMIUM now)
-  if (activeAccountId && user.tradeAccounts?.length === 0) {
+  if (
+    !activeAccountId ||
+    !user.tradeAccounts ||
+    user.tradeAccounts.length === 0
+  ) {
     return (
       <>
         <DashboardEmpty
@@ -230,17 +372,10 @@ const DashboardLayoutComponent = () => {
     );
   }
 
-  // 3) Switching account or first data load → skeleton
   if (isSwitching || (isDataLoading && !metrics && !charts)) {
     return <DashboardSkeleton />;
   }
 
-  // At this point we have:
-  // - user
-  // - activeAccountId
-  // - data loaded (or at least attempted)
-
-  // 4) Premium dashboard
   if (planType.isPremium) {
     return (
       <div className="p-12 space-y-12">
@@ -250,16 +385,35 @@ const DashboardLayoutComponent = () => {
 
         <Separator />
 
-        {accounts?.type === "MT4" ||
-          (accounts?.type === "MT5" && (
-            <TradeAnalyticsOverview data={analyticsData} />
-          ))}
-        {accounts?.type === "FREE" && <QuickStats data={analyticsData} />}
-        {accounts?.type === "FREE" && <Metrics data={analyticsData} />}
-        <Analytics data={tradesData} />
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-          <Trades />
+        {(activeAccount?.type === "MT4" || activeAccount?.type === "MT5") && (
+          <TradeAnalyticsOverview data={analyticsData} />
+        )}
 
+        {activeAccount?.type === "FREE" && <QuickStats data={analyticsData} />}
+        {activeAccount?.type === "FREE" && <Metrics data={analyticsData} />}
+        <Separator />
+        <div>
+          <FilterHeader
+            chartsLoading={chartsLoading}
+            selectedDate={selectedDate}
+            handleFilterChart={handleFilterChart}
+          />
+        </div>
+
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Analytics data={tradesData} />
+        </section>
+        <Separator />
+        <section className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1">
+          <Trades
+            isLoading={chartsLoading}
+            data={tradesData}
+            query={query}
+            setQuery={setQuery}
+          />
+        </section>
+        <Separator />
+        <section>
           <ForexNewsCarousel />
         </section>
 
@@ -269,7 +423,6 @@ const DashboardLayoutComponent = () => {
     );
   }
 
-  // 5) Free dashboard (requires account as well)
   if (planType.isFree) {
     return (
       <div className="flex flex-col w-full space-y-12 p-12">
@@ -280,12 +433,25 @@ const DashboardLayoutComponent = () => {
 
         <Metrics data={analyticsData} />
         <Separator />
-
-        <Analytics data={tradesData} />
+        <div>
+          <FilterHeader
+            chartsLoading={chartsLoading}
+            selectedDate={selectedDate}
+            handleFilterChart={handleFilterChart}
+          />
+        </div>
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Analytics data={tradesData} />
+        </section>
         <Separator />
 
         <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
-          <Trades />
+          <Trades
+            isLoading={chartsLoading}
+            data={tradesData}
+            query={query}
+            setQuery={setQuery}
+          />
           <ForexNewsCarousel />
         </section>
         <Separator />
@@ -295,8 +461,8 @@ const DashboardLayoutComponent = () => {
     );
   }
 
-  // Fallback – should basically never happen
   return <DashboardSkeleton />;
 };
+
 const DashboardLayout = memo(DashboardLayoutComponent);
 export default DashboardLayout;

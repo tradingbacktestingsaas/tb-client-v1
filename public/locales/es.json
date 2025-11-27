@@ -172,9 +172,47 @@
         "worstTrade": "Peor operación"
       },
       "rawData": {
-        "title": "Datos en bruto",
-        "description": "Para una revisión rápida y depuración."
+        "title": "Datos Brutos",
+        "description": "Para inspección y depuración rápida.",
+
+        "profit_loss": "Ganancia / Pérdida",
+        "growth": "Crecimiento",
+        "total_deposits": "Depósitos Totales",
+        "total_withdrawals": "Retiros Totales",
+        "total_lots": "Lotes Totales",
+        "total_commission": "Comisión Total",
+        "total_swap": "Swap Total",
+        "total_trades": "Operaciones Totales",
+        "total_longs": "Total Longs",
+        "total_shorts": "Total Shorts",
+        "total_trades_won": "Operaciones Ganadas",
+        "total_trades_lost": "Operaciones Perdidas",
+        "average_win": "Promedio de Ganancia",
+        "average_loss": "Promedio de Pérdida",
+        "best_trade": "Mejor Operación",
+        "best_trade_date": "Fecha de la Mejor Operación",
+        "worst_trade": "Peor Operación",
+        "worst_trade_date": "Fecha de la Peor Operación",
+        "longs_won": "Longs Ganados",
+        "shorts_won": "Shorts Ganados"
       },
+      "charts": {
+        "plArea": {
+          "title": "Gráfico de Área P/L",
+          "description": "Muestra la ganancia y pérdida total a lo largo del tiempo",
+          "noData": "No hay datos para mostrar",
+          "series": {
+            "profit": "Ganancia",
+            "loss": "Pérdida"
+          }
+        },
+        "profitDistribution": {
+          "title": "Distribución de Ganancias",
+          "description": "Distribución de la ganancia por par de trading.",
+          "noData": "No hay datos para mostrar"
+        }
+      },
+
       "empty": {
         "title": "Sin actividad",
         "description": "Esta cuenta no tiene operaciones, depósitos ni retiros registrados. Cuando empieces a operar, tus analíticas aparecerán aquí.",
@@ -460,6 +498,12 @@
   },
   "table": {
     "operations": {
+      "filter_header": {
+        "current_month": "Mes Actual",
+        "last_3_months": "Últimos 3 Meses",
+        "last_6_months": "Últimos 6 Meses",
+        "clear": "Limpiar"
+      },
       "trade": {
         "ticket": "Ticket",
         "account": "Cuenta",

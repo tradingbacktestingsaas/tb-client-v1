@@ -14,6 +14,7 @@ export default function PlansGrid({
   onSelectPlan,
   loading,
   setCoupon,
+  buttonLoading,
 }) {
   const intl = useIntl();
 
@@ -224,7 +225,7 @@ export default function PlansGrid({
 
               {/* Action button */}
               <Button
-                disabled={isCurrent}
+                disabled={isCurrent || buttonLoading}
                 onClick={() =>
                   onSelectPlan(plan, couponInfo?.code, billingCycle)
                 }

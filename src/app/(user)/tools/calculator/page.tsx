@@ -46,15 +46,20 @@ export default function PositionSizeCalculator() {
   const [customCurrency, setCustomCurrency] = useState("");
 
   const { riskAmount, positionSize, lots } = useMemo(() => {
-    const risk = (balance * riskPercent) / 100;
-    const pipValue = contractSize * pipSize;
-    const size = stopLoss > 0 ? risk / (stopLoss * pipValue) : 0;
-    const lots = size / contractSize;
-    return { riskAmount: risk, positionSize: size, lots };
+    const riskAmount = balance * (riskPercent / 100);
+
+    // pip value per 1 lot
+    const pipValuePerLot = contractSize * pipSize;
+
+    // correct lot size formula
+    const lots = stopLoss > 0 ? riskAmount / (stopLoss * pipValuePerLot) : 0;
+
+    // convert lots → units
+    const positionSize = lots * contractSize;
+
+    return { riskAmount, positionSize, lots };
   }, [balance, stopLoss, riskPercent, contractSize, pipSize]);
-
   const displayCurrency = customCurrency || depositCurrency;
-
   return (
     <div className="max-w-4xl mx-auto py-10">
       <Card className="shadow-xl bg-card">

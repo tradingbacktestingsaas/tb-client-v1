@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Div } from "@/components/ui/tags";
 import { DistributionPieChart } from "./profit-dist-chart";
 import { TradesAreaChart } from "./area-chart";
 import { TradeRaw } from "@/features/dashboard/types/trade-type";
@@ -16,10 +15,8 @@ interface ProfitDistributionWidgetProps {
 const AnalyticsComponent: React.FC<ProfitDistributionWidgetProps> = ({
   data,
 }) => {
-  // ✅ memoize normalization
   const normalized = useMemo(() => normalizeTrades(data), [data]);
 
-  // ✅ memoize derived datasets
   const tradePieChartData = useMemo(
     () => transformTradesToPieChartData(normalized),
     [normalized]
@@ -31,10 +28,10 @@ const AnalyticsComponent: React.FC<ProfitDistributionWidgetProps> = ({
   );
 
   return (
-    <Div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <>
       <DistributionPieChart chartData={tradePieChartData} />
       <TradesAreaChart data={tradeAnalyticsData} />
-    </Div>
+    </>
   );
 };
 

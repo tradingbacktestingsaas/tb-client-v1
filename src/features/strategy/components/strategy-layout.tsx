@@ -16,6 +16,8 @@ import { useElements, useStripe } from "@stripe/react-stripe-js";
 import { toast } from "sonner";
 import { useBuyStrategy, useDeleteStrategy } from "../hooks/mutations";
 import { queryClient } from "@/provider/react-query";
+import { Empty } from "@/components/ui/empty";
+import { Inbox, Loader2 } from "lucide-react";
 
 const PageLayout = () => {
   const [page, setPage] = useState(1);
@@ -154,19 +156,30 @@ const PageLayout = () => {
       <div className="space-y-8">
         <StrategyHeader setQueries={setQueries} />
 
-        {isLoading && !mergedStrategies.length ? (
-          <StrategySkeleton />
+        {/* ------------------- LOADING STATE (shadcn Loader2) ------------------- */}
+        {isLoading ? (
+          <div className="flex justify-center py-16">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+          </div>
+        ) : mergedStrategies.length === 0 ? (
+          /* ---------------------------- EMPTY STATE ---------------------------- */
+          <div className="flex flex-col items-center justify-center py-20 text-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+              <Inbox className="h-10 w-10 text-muted-foreground" />
+            </div>
+          </div>
         ) : (
+          /* --------------------------- STRATEGY GRID --------------------------- */
           <VirtuosoGrid
-            /** ---------------- FIX: use normalized array ---------------- */
             data={mergedStrategies}
             endReached={loadMore}
+            height={200}
             overscan={200}
             components={{
               Footer: () =>
                 isFetching ? (
-                  <div className="py-6 text-center text-gray-400">
-                    Loading more...
+                  <div className="py-6 flex justify-center">
+                    <Loader2 className="h-6 w-6 animate-spin text-primary" />
                   </div>
                 ) : null,
             }}
@@ -177,7 +190,7 @@ const PageLayout = () => {
                     deleteMutation.isPending || buyStratMutation.isPending
                   }
                   onDelete={handleDelete}
-                  strategy={strategy} // ← FIXED (no index mismatch)
+                  strategy={strategy}
                   onClick={onSelect}
                 />
               </div>

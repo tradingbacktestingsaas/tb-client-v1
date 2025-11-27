@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { memo, useMemo, useCallback } from "react";
+import { useIntl, FormattedMessage } from "react-intl";
 import { AreaChart, Area, CartesianGrid, XAxis } from "recharts";
 
 import {
@@ -20,11 +21,6 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 
-const chartConfig: ChartConfig = {
-  profit: { label: "Profit", color: "hsl(var(--chart-1))" },
-  loss: { label: "Loss", color: "hsl(var(--chart-2))" },
-};
-
 interface AreaChartWidgetProps {
   data: { date: string; profit: number; loss: number }[];
 }
@@ -32,15 +28,40 @@ interface AreaChartWidgetProps {
 const TradesAreaChart = memo(function TradesAreaChart({
   data,
 }: AreaChartWidgetProps) {
+  const intl = useIntl();
+
   const chartData = useMemo(() => data ?? [], [data]);
+
+  const chartConfig: ChartConfig = useMemo(
+    () => ({
+      profit: {
+        label: intl.formatMessage({
+          id: "dashboard.analytics.charts.plArea.series.profit",
+          defaultMessage: "Profit",
+        }),
+        color: "hsl(var(--chart-1))",
+      },
+      loss: {
+        label: intl.formatMessage({
+          id: "dashboard.analytics.charts.plArea.series.loss",
+          defaultMessage: "Loss",
+        }),
+        color: "hsl(var(--chart-2))",
+      },
+    }),
+    [intl]
+  );
 
   const formatDate = useCallback(
     (value: string) =>
-      new Date(value).toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-      }),
-    []
+      new Date(value).toLocaleDateString(
+        intl.locale === "es" ? "es-ES" : "en-US",
+        {
+          month: "short",
+          day: "numeric",
+        }
+      ),
+    [intl.locale]
   );
 
   const hasData = chartData.length > 0;
@@ -50,9 +71,17 @@ const TradesAreaChart = memo(function TradesAreaChart({
       <Card className="pt-0 w-full h-full">
         <CardHeader className="flex items-center gap-2 py-5 sm:flex-row">
           <div className="grid flex-1 gap-1">
-            <CardTitle>P/L Area-Chart</CardTitle>
+            <CardTitle>
+              <FormattedMessage
+                id="dashboard.analytics.charts.plArea.title"
+                defaultMessage="P/L Area Chart"
+              />
+            </CardTitle>
             <CardDescription>
-              Showing total profit and loss over time
+              <FormattedMessage
+                id="dashboard.analytics.charts.plArea.description"
+                defaultMessage="Showing total profit and loss over time"
+              />
             </CardDescription>
           </div>
         </CardHeader>
@@ -118,7 +147,12 @@ const TradesAreaChart = memo(function TradesAreaChart({
             </ChartContainer>
           ) : (
             <div className="flex items-center justify-center h-[250px]">
-              <p>No data to present</p>
+              <p className="text-sm text-muted-foreground">
+                <FormattedMessage
+                  id="dashboard.analytics.charts.plArea.noData"
+                  defaultMessage="No data to present"
+                />
+              </p>
             </div>
           )}
         </CardContent>

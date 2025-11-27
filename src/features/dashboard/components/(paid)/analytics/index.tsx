@@ -23,6 +23,7 @@ import {
   ThumbsDown,
 } from "lucide-react";
 import { FormattedMessage, useIntl } from "react-intl";
+import { getRawDataBadgeColor } from "./getbadge";
 
 // ----- Types ----- //
 export type TradeAnalytics = {
@@ -492,25 +493,19 @@ export default function TradeAnalyticsOverview({
           )}
         </CardContent>
       </Card>
-
       {/* Raw data debug grid */}
       <Card className="border-none shadow-none bg-transparent">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg font-semibold">
-            <FormattedMessage
-              id="dashboard.analytics.rawData.title"
-              defaultMessage="Raw Data"
-            />
+            <FormattedMessage id="dashboard.analytics.rawData.title" />
           </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
-            <FormattedMessage
-              id="dashboard.analytics.rawData.description"
-              defaultMessage="For quick inspection and debugging."
-            />
+            <FormattedMessage id="dashboard.analytics.rawData.description" />
           </CardDescription>
         </CardHeader>
+
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-2">
             {Object.entries(d)
               .filter(
                 ([k]) =>
@@ -525,17 +520,31 @@ export default function TradeAnalyticsOverview({
               .map((group, idx) => (
                 <Card
                   key={idx}
-                  className="border border-border/50 bg-gradient-to-br from-muted/40 to-muted/10 backdrop-blur-sm hover:shadow-md transition-all duration-200"
+                  // className="border w-full border-border/40 bg-gradient-to-br from-muted/40 to-muted/10 backdrop-blur-md hover:shadow-lg transition-all duration-200 rounded-xl"
+                  className="border w-full border-border/40  hover:shadow-lg transition-all duration-200 rounded-xl"
                 >
-                  <CardContent className="p-4">
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-3">
+                  <CardContent className="p-4 w-full">
+                    <div className="grid grid-cols-2 gap-x-2 gap-y-3">
                       {group.map(([k, v]) => (
-                        <div key={k} className="flex flex-col">
-                          <span className="text-xs text-muted-foreground uppercase tracking-wide">
-                            {k.replace(/_/g, " ")}
+                        <div key={k} className="flex flex-col space-y-1">
+                          {/* KEY with Badge */}
+                          <span className="text-xs">
+                            <Badge
+                              variant="secondary"
+                              className={`uppercase tracking-wider px-2 py-0.5 rounded-md text-[10px] leading-tight ${getRawDataBadgeColor(
+                                k
+                              )}`}
+                            >
+                              <FormattedMessage
+                                id={`dashboard.analytics.rawData.${k}`}
+                                defaultMessage={k.replace(/_/g, " ")}
+                              />
+                            </Badge>
                           </span>
+
+                          {/* VALUE */}
                           <span className="text-sm font-medium text-foreground truncate">
-                            {String(v ?? "").length ? String(v) : "—"}
+                            {String(v ?? "")?.length ? String(v) : "—"}
                           </span>
                         </div>
                       ))}

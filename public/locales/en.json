@@ -154,7 +154,44 @@
       },
       "rawData": {
         "title": "Raw Data",
-        "description": "For quick inspection and debugging."
+        "description": "For quick inspection and debugging.",
+
+        "profit_loss": "Profit Loss",
+        "growth": "Growth",
+        "total_deposits": "Total Deposits",
+        "total_withdrawals": "Total Withdrawals",
+        "total_lots": "Total Lots",
+        "total_commission": "Total Commission",
+        "total_swap": "Total Swap",
+        "total_trades": "Total Trades",
+        "total_longs": "Total Longs",
+        "total_shorts": "Total Shorts",
+        "total_trades_won": "Total Trades Won",
+        "total_trades_lost": "Total Trades Lost",
+        "average_win": "Average Win",
+        "average_loss": "Average Loss",
+        "best_trade": "Best Trade",
+        "best_trade_date": "Best Trade Date",
+        "worst_trade": "Worst Trade",
+        "worst_trade_date": "Worst Trade Date",
+        "longs_won": "Longs Won",
+        "shorts_won": "Shorts Won"
+      },
+      "charts": {
+        "plArea": {
+          "title": "P/L Area Chart",
+          "description": "Showing total profit and loss over time",
+          "noData": "No data to present",
+          "series": {
+            "profit": "Profit",
+            "loss": "Loss"
+          }
+        },
+        "profitDistribution": {
+          "title": "Profit Distribution",
+          "description": "Distribution of profit by trading pair.",
+          "noData": "No data to present"
+        }
       },
       "empty": {
         "title": "No activity yet",
@@ -431,6 +468,12 @@
   },
   "table": {
     "operations": {
+      "filter_header": {
+        "current_month": "Current Month",
+        "last_3_months": "Last 3 Months",
+        "last_6_months": "Last 6 Months",
+        "clear": "Clear"
+      },
       "trade": {
         "ticket": "Ticket",
         "account": "Account",
