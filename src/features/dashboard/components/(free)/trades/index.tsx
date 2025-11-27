@@ -1,23 +1,32 @@
 import TradesList from "@/features/operations/components/(free)/table";
+import { getColumns } from "@/features/operations/components/(free)/table/columns";
+import { TradesTable } from "@/features/operations/components/(free)/table/data-table";
 import { useTradeAccountInfo } from "@/helpers/use-taccount";
 import { useUserInfo } from "@/helpers/use-user";
-import React from "react";
-
-const Trades = () => {
+import { normalizeTrades } from "@/utils/map-trades";
+import React, { useMemo } from "react";
+import { useIntl } from "react-intl";
+const Trades = ({ data, isLoading, query, setQuery }) => {
   // Use Redux account state (active account) if available, otherwise fallback to user's first account
-  const reduxAccountId = useTradeAccountInfo()?.id;
-  const { tradeAccounts } = useUserInfo();
-  const userFirstAccountId = tradeAccounts[0]?.id;
-
+  const intl = useIntl();
   // Priority: Redux active account > User's first account
-  const accountId = reduxAccountId ?? userFirstAccountId;
 
-  if (!accountId) return null;
+  const totalCount = data?.pagination?.total;
+  const columns = useMemo(() => getColumns(intl), [intl]);
 
   return (
     <div className=" md:p-12 lg:p-12">
       {/* <h1>Operations</h1> */}
-      <TradesList accountId={accountId as any} page={0} limit={8} />
+      <TradesTable
+        refetch={null}
+        isLoading={isLoading}
+        columns={columns}
+        data={normalizeTrades(data?.data)}
+        query={query}
+        isSync={data?.sync === true}
+        setQuery={setQuery}
+        totalCount={totalCount}
+      />
     </div>
   );
 };

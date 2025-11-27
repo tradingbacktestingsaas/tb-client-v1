@@ -4,7 +4,7 @@ import { useQueries, useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
 export const useGetMertics = (activeTradeAccountId: string) => {
-  const { data, isLoading, isFetching, isError, error } = useQuery({
+  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
     queryKey: ["metrics", "stats", activeTradeAccountId],
     queryFn: async () => {
       const res = await api.get(
@@ -21,6 +21,7 @@ export const useGetMertics = (activeTradeAccountId: string) => {
     data,
     isLoading,
     isFetching,
+    refetch,
     isError,
     error,
   };
@@ -41,6 +42,7 @@ export const useGetNews = () => {
     data,
     isLoading,
     isError,
+
     error,
   };
 };

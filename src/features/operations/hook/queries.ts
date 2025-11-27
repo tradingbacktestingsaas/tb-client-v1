@@ -6,17 +6,31 @@ interface TradeFilters {
   symbol: string;
   openDate: any;
   closeDate: any;
+  selectedDate?: any;
+  month?: any;
 }
 export const useGetTrades = (filters: TradeFilters, page = 0, limit = 8) => {
-  const { data, isLoading, isFetching, isError, error } = useQuery({
-    queryKey: ["trades", filters.accountId, page, limit],
+  const { data, isLoading, isFetching, isError, error, refetch } = useQuery({
+    queryKey: [
+      "trades",
+      filters.accountId,
+      filters.symbol,
+      filters.openDate,
+      filters.closeDate,
+      filters.selectedDate,
+      filters.month,
+      page,
+      limit,
+    ],
     queryFn: async () => {
       const res = await api.get(
         `${apiEndpoints.trades.get}/?page=${page}&limit=${limit}&symbol=${
           filters.symbol
         }&accountId=${filters.accountId}&openDate=${
           filters.openDate || ""
-        }&closeDate=${filters.closeDate || ""}`,
+        }&closeDate=${filters.closeDate || ""}&selectedDate=${
+          filters.selectedDate || ""
+        }&month=${filters.month || ""}`,
         {
           params: {
             page,
@@ -32,7 +46,7 @@ export const useGetTrades = (filters: TradeFilters, page = 0, limit = 8) => {
     refetchOnWindowFocus: false,
   });
 
-  return { data, isLoading, isFetching, isError, error };
+  return { data, isLoading, isFetching, isError, error, refetch };
 };
 
 export const useGetTradeById = () => {};

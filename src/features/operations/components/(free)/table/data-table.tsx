@@ -42,6 +42,7 @@ interface DataTableProps<TData, TValue> {
   setQuery: React.Dispatch<React.SetStateAction<TradesQuery>>;
   totalCount: number;
   isLoading: boolean;
+  refetch: () => void | Promise<unknown>;
 }
 
 export function TradesTable<TData, TValue>({
@@ -52,14 +53,17 @@ export function TradesTable<TData, TValue>({
   isSync,
   totalCount,
   isLoading,
+  refetch,
 }: DataTableProps<TData, TValue>) {
   const path = usePathname();
   const isDashboard = path === "/dashboard";
   const dispatch = useAppDispatch();
+
   const totalPages = Math.max(
     0,
     Math.ceil(totalCount / Math.max(1, query.pageSize))
   );
+
   const pageIndex = Math.min(
     Math.max(0, query.page - 1),
     Math.max(0, totalPages - 1)
@@ -127,12 +131,15 @@ export function TradesTable<TData, TValue>({
       <div className="relative rounded-md border overflow-hidden">
         {!isDashboard && (
           <TableFilterHeader
+            isLoading={isLoading}
             isSync={isSync}
             setQuery={setQuery}
+            refetch={refetch}
             query={query}
           />
         )}
-        {isDashboard  && !isSync && (
+
+        {isDashboard && !isSync && !isLoading && (
           <div className="flex items-center justify-between p-4">
             <Button
               onClick={() =>
@@ -214,9 +221,6 @@ export function TradesTable<TData, TValue>({
           {isLoading && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-background/70 backdrop-blur-sm z-10">
               <Spinner className="h-6 w-6 text-primary mb-2" />
-              {/* <span className="text-sm text-muted-foreground">
-                Loading data...
-              </span> */}
             </div>
           )}
         </div>
@@ -248,17 +252,6 @@ export function TradesTable<TData, TValue>({
               {n}
             </Button>
           ))}
-          {/* <select
-            className="h-9 rounded-md border px-2 text-sm bg-background"
-            value={query.pageSize}
-            onChange={(e) => table.setPageSize(Number(e.target.value))}
-          >
-            {[10, 20, 50, 100].map((size) => (
-              <option key={size} value={size}>
-                {size}
-              </option>
-            ))}
-          </select> */}
 
           {!isDashboard && (
             <div className="flex md:flex lg:flex gap-2">
@@ -310,6 +303,7 @@ export function TradesTable<TData, TValue>({
               </span>
             </div>
           )}
+
           {isDashboard && (
             <div className="flex items-center gap-2">
               <span className="text-sm tabular-nums">

@@ -206,7 +206,7 @@ const AccountLayout = () => {
 
         {user?.subscriptions?.plan?.code !== "FREE" && (
           <Button
-            disabled={accounts.length >= limit || isLoading}
+            disabled={mtAccounts.length >= limit || isLoading}
             onClick={() => setOpen(true)}
           >
             <Plus className="mr-2 size-4" />

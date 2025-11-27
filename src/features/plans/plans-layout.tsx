@@ -81,6 +81,9 @@ export default function PlansLayout() {
             currentPlan={currentPlan}
             billingCycle={cycle}
             loading={isLoading}
+            buttonLoading={
+              freePlanMutation.isPending || paidPlanMutation.isPending
+            }
             onSelectPlan={(plan, coupon) => {
               if (plan.code === "FREE") {
                 freePlanMutation.mutate(

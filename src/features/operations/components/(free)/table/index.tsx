@@ -3,9 +3,7 @@
 import { getColumns } from "./columns";
 import { TradesTable } from "./data-table";
 import { useGetTrades } from "../../../hook/queries";
-import { useEffect, useMemo, useState } from "react";
-import { TableSkeleton } from "./skeletion";
-import { TradeRaw } from "@/features/dashboard/types/trade-type";
+import { useMemo, useState } from "react";
 import { normalizeTrades } from "@/utils/map-trades";
 import { useIntl } from "react-intl";
 
@@ -16,7 +14,7 @@ type TradesQuery = {
     accountId: string;
     openDate: string;
     closeDate: string;
-    symbol: string; // keep this concrete to avoid 'never[]' widening
+    symbol: string;
   };
 };
 
@@ -30,27 +28,34 @@ export default function TradesList({
   limit: number;
 }) {
   const intl = useIntl();
+
   const [query, setQuery] = useState<TradesQuery>({
     page,
     pageSize: limit,
-    filters: { accountId, symbol: "", openDate: "", closeDate: "" },
+    filters: {
+      accountId,
+      symbol: "",
+      openDate: "",
+      closeDate: "",
+    },
   });
 
-  const { data, isLoading } = useGetTrades(
+  const { data, isLoading, refetch } = useGetTrades(
     query.filters,
     query.page,
     query.pageSize
   );
-
-  const totalCount = data?.pagination.total;
+  
+  const totalCount = data?.pagination.total ?? 0;
   const columns = useMemo(() => getColumns(intl), [intl]);
 
   return (
     <TradesTable
       isLoading={isLoading}
       columns={columns}
-      data={normalizeTrades(data?.data)}
+      data={normalizeTrades(data?.data ?? [])}
       query={query}
+      refetch={refetch} // ✅ pass function, not refetch()
       isSync={data?.sync === true}
       setQuery={setQuery}
       totalCount={totalCount}

@@ -27,6 +27,7 @@ import { Separator } from "@/components/ui/separator";
 import { Div, Span } from "../ui/tags";
 import { useUserInfo } from "@/helpers/use-user";
 import { Spinner } from "../ui/spinner";
+import { FormattedMessage } from "react-intl";
 
 function formatTs(ts?: number) {
   if (!ts) return "";
@@ -92,7 +93,12 @@ export default function NotificationsBell() {
 
       <DropdownMenuContent align="end" className="w-96 p-0">
         <Div className="flex items-center justify-between px-3 py-2 sticky top-0 bg-card z-50">
-          <DropdownMenuLabel className="p-0">Notifications</DropdownMenuLabel>
+          <DropdownMenuLabel className="p-0">
+            <FormattedMessage
+              id="notifications.title"
+              defaultMessage={"Notifications"}
+            />
+          </DropdownMenuLabel>
           <Div className="flex items-center gap-2">
             <Button
               size="sm"
@@ -101,7 +107,10 @@ export default function NotificationsBell() {
               disabled={items.length === 0 || isLoading}
               onClick={() => handleMarkAllRead()}
             >
-              Mark all read {}
+              <FormattedMessage
+                id="notifications.component.mark_all_read"
+                defaultMessage="Mark all as read"
+              />
             </Button>
             <Button
               size="sm"
@@ -110,7 +119,10 @@ export default function NotificationsBell() {
               disabled={items.length === 0 || isLoading}
               onClick={() => handleDeleteAll()}
             >
-              Clear
+              <FormattedMessage
+                id="notifications.component.clear_all"
+                defaultMessage="Clear all"
+              />
             </Button>
           </Div>
         </Div>

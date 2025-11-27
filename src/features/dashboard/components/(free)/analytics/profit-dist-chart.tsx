@@ -1,7 +1,9 @@
 "use client";
 
 import { memo, useMemo } from "react";
+import { useIntl, FormattedMessage } from "react-intl";
 import { Pie, PieChart } from "recharts";
+
 import {
   ChartConfig,
   ChartContainer,
@@ -29,6 +31,8 @@ interface DistributionPieChartProps {
 const DistributionPieChart = memo(function DistributionPieChart({
   chartData,
 }: DistributionPieChartProps) {
+  const intl = useIntl();
+
   const filteredData = useMemo(
     () => chartData.filter((d) => d.profit > 0),
     [chartData]
@@ -37,7 +41,7 @@ const DistributionPieChart = memo(function DistributionPieChart({
   const chartConfig: ChartConfig = useMemo(() => {
     return filteredData.reduce((config, item) => {
       config[item.pair] = {
-        label: item.pair,
+        label: item.pair, // pair itself (e.g. EURUSD) is usually not translated
         color: item.fill,
       };
       return config;
@@ -50,9 +54,17 @@ const DistributionPieChart = memo(function DistributionPieChart({
     <Card>
       <CardHeader className="items-center gap-4 !flex border-b">
         <div className="flex flex-col">
-          <CardTitle>Profit Distribution</CardTitle>
+          <CardTitle>
+            <FormattedMessage
+              id="dashboard.analytics.charts.profitDistribution.title"
+              defaultMessage="Profit Distribution"
+            />
+          </CardTitle>
           <CardDescription>
-            Distribution of profits on trade pair.
+            <FormattedMessage
+              id="dashboard.analytics.charts.profitDistribution.description"
+              defaultMessage="Distribution of profit by trading pair."
+            />
           </CardDescription>
         </div>
       </CardHeader>
@@ -78,7 +90,12 @@ const DistributionPieChart = memo(function DistributionPieChart({
           </ChartContainer>
         ) : (
           <div className="flex items-center justify-center h-[300px]">
-            <p>No data to present</p>
+            <p className="text-sm text-muted-foreground">
+              <FormattedMessage
+                id="dashboard.analytics.charts.profitDistribution.noData"
+                defaultMessage="No data to present"
+              />
+            </p>
           </div>
         )}
       </CardContent>
